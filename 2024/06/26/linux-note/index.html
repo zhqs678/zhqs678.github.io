@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+	
+	<!-- title -->
+	
+	<title>
+	
+		linux_note | 
+	 
+	ZQS工作笔记
+	</title>
+	
+	<!-- keywords,description -->
+	
+	
+		<meta name="description" content="我的工作日志" />
+	
+
+	<!-- favicon -->
+	
+
+
+	<!-- search -->
+	<script>
+		var searchEngine = "";
+		if(typeof searchEngine == "undefined" || searchEngine == null || searchEngine == ""){
+			searchEngine = "https://www.google.com/search?q=";
+		}
+		var homeHost = "";
+		if(typeof homeHost == "undefined" || homeHost == null || homeHost == ""){
+			homeHost = window.location.host;
+		}
+	</script>
+
+
+	
+<link rel="stylesheet" href="/blog/css/main.css">
+
+	
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/darcula.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery-pjax@2.0.1/jquery.pjax.min.js"></script>
+
+	
+<script src="/blog/js/main.js"></script>
+
+
+	
+	
+
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+<body>
+	<header id="header">
+    <a id="title" href="/blog/" class="logo">ZQS工作笔记</a>
+
+	<ul id="menu">
+    
+
+    
+
+    
+
+    
+  
+    
+	</ul>
+</header>
+
+	
+<div id="sidebar">
+	<button id="sidebar-toggle" class="toggle" ><i class="fa fa-arrow-right " aria-hidden="true"></i></button>
+	
+	<div id="site-toc">
+		<input id="search-input" class="search-input" type="search" placeholder="Press Enter to search">
+		<div id="tree">
+			
+
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/06/26/hello-world/">
+                     
+										    hello-world
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file active">
+									<a href="/blog/2024/06/26/linux-note/">
+                     
+										    linux-note
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+		</div>
+	</div>
+</div>
+
+	<!-- 引入正文 -->
+	<div id="content" class="content">
+		<h1 id="article-title">
+	linux_note
+</h1>
+
+<!-- meta -->
+<div class="article-meta">
+	
+
+	<span>ZQS</span>
+	<span>2024-06-26 14:22:26</span>
+
+  <div id="article-categories">
+    
+		  <span>Categories：</span>
+      
+    
+
+    
+		    <span>Tags：</span>
+        
+    
+  </div>
+
+</div>
+
+<!-- content -->
+<div id="article-content">
+	<h2 id="opt-fsl-imx-x11-4-1-15-2-0-0-environment-setup-cortexa7hf-neon-poky-linux-gnueabisource-build-sh"><a href="#opt-fsl-imx-x11-4-1-15-2-0-0-environment-setup-cortexa7hf-neon-poky-linux-gnueabisource-build-sh" class="headerlink" title=". &#x2F;opt&#x2F;fsl-imx-x11&#x2F;4.1.15-2.0.0&#x2F;environment-setup-cortexa7hf-neon-poky-linux-gnueabisource build.sh"></a>. &#x2F;opt&#x2F;fsl-imx-x11&#x2F;4.1.15-2.0.0&#x2F;environment-setup-cortexa7hf-neon-poky-linux-gnueabi<br>source build.sh</h2><h2 id="make-okmx6ul-defconfigmake-zImagemake-dtbsmake-modulesmake-distclean"><a href="#make-okmx6ul-defconfigmake-zImagemake-dtbsmake-modulesmake-distclean" class="headerlink" title="make okmx6ul_defconfigmake zImagemake dtbsmake modulesmake distclean"></a>make okmx6ul_defconfig<br>make zImage<br>make dtbs<br>make modules<br>make distclean</h2><h2 id="CC-gpiotest-c-o-gpiotestfile-gpiotest"><a href="#CC-gpiotest-c-o-gpiotestfile-gpiotest" class="headerlink" title="$CC gpiotest.c -o gpiotestfile gpiotest"></a>$CC gpiotest.c -o gpiotest<br>file gpiotest</h2><h2 id="qemu-system-arm-M-mcimx6ul-evk-cpu-cortex-a7-m-512M-kernel-arch-arm-boot-zImage-nographic-dtb-arch-arm-boot-dts-imx6ul-14x14-evk-dtb-s-S-d-int-append-“console-ttymxc0-loglevel-8-earlycon-earlyprintk”"><a href="#qemu-system-arm-M-mcimx6ul-evk-cpu-cortex-a7-m-512M-kernel-arch-arm-boot-zImage-nographic-dtb-arch-arm-boot-dts-imx6ul-14x14-evk-dtb-s-S-d-int-append-“console-ttymxc0-loglevel-8-earlycon-earlyprintk”" class="headerlink" title="qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel arch&#x2F;arm&#x2F;boot&#x2F;zImage -nographic -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;imx6ul-14x14-evk.dtb -s -S -d int -append “console&#x3D;ttymxc0 loglevel&#x3D;8 earlycon earlyprintk” "></a>qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel arch&#x2F;arm&#x2F;boot&#x2F;zImage -nographic -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;imx6ul-14x14-evk.dtb -s -S -d int -append “console&#x3D;ttymxc0 loglevel&#x3D;8 earlycon earlyprintk” </h2><h2 id="编译u-boot3-make-mrproper4-make-mx6ul-14x14-evk-defconfig5-makeqemu-system-arm-M-mcimx6ul-evk-m-512M-kernel-u-boot-nographic-no-reboot-S-s-d-intqemu-system-arm-M-mcimx6ul-evk-cpu-cortex-a7-m-512M-kernel-u-boot-nographic-dtb-arch-arm-boot-dts-imx6ul-14x14-evk-dtb"><a href="#编译u-boot3-make-mrproper4-make-mx6ul-14x14-evk-defconfig5-makeqemu-system-arm-M-mcimx6ul-evk-m-512M-kernel-u-boot-nographic-no-reboot-S-s-d-intqemu-system-arm-M-mcimx6ul-evk-cpu-cortex-a7-m-512M-kernel-u-boot-nographic-dtb-arch-arm-boot-dts-imx6ul-14x14-evk-dtb" class="headerlink" title="编译u-boot3. make mrproper4. make mx6ul_14x14_evk_defconfig5. makeqemu-system-arm -M mcimx6ul-evk -m 512M -kernel .&#x2F;u-boot -nographic -no-reboot -S -s -d intqemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel u-boot -nographic -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;imx6ul-14x14-evk.dtb"></a>编译u-boot<br>3. make mrproper<br>4. make mx6ul_14x14_evk_defconfig<br>5. make<br>qemu-system-arm -M mcimx6ul-evk -m 512M -kernel .&#x2F;u-boot -nographic -no-reboot -S -s -d int<br>qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel u-boot -nographic -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;imx6ul-14x14-evk.dtb</h2><h2 id="qemu-system-arm-M-mcimx6ul-evk-cpu-cortex-a7-m-512M-kernel-zImage-dtb-zImage-imx6ul-14x14-evk-dtbqemu-system-arm-M-mcimx6ul-evk-cpu-cortex-a7-m-512M-kernel-zImage-imx6ulevk-bin—–busybox—make-ARCH-arm-CROSS-COMPILE-home-zqs-tools-gcc-linaro-4-9-2016-02-x86-64-arm-linux-gnueabi-bin-arm-linux-gnueabi-make-ARCH-arm-CROSS-COMPILE-home-zqs-tools-gcc-linaro-4-9-2016-02-x86-64-arm-linux-gnueabi-bin-arm-linux-gnueabi-install-CONFIG-PREFIX-home-zqs-nfs-rootfscd-home-zqs-tools-gcc-linaro-4-9-2016-02-x86-64-arm-linux-gnueabi-arm-linux-gnueabi-libc-libsudo-cp-so-a-home-zqs-nfs-rootfs-lib-dcd-home-zqs-tools-gcc-linaro-4-9-2016-02-x86-64-arm-linux-gnueabi-arm-linux-gnueabi-libsudo-cp-so-a-home-zqs-nfs-rootfs-lib-dcd-home-zqs-tools-gcc-linaro-4-9-2016-02-x86-64-arm-linux-gnueabi-arm-linux-gnueabi-libc-usr-libsudo-cp-so-a-home-zqs-nfs-rootfs-usr-lib-d"><a href="#qemu-system-arm-M-mcimx6ul-evk-cpu-cortex-a7-m-512M-kernel-zImage-dtb-zImage-imx6ul-14x14-evk-dtbqemu-system-arm-M-mcimx6ul-evk-cpu-cortex-a7-m-512M-kernel-zImage-imx6ulevk-bin—–busybox—make-ARCH-arm-CROSS-COMPILE-home-zqs-tools-gcc-linaro-4-9-2016-02-x86-64-arm-linux-gnueabi-bin-arm-linux-gnueabi-make-ARCH-arm-CROSS-COMPILE-home-zqs-tools-gcc-linaro-4-9-2016-02-x86-64-arm-linux-gnueabi-bin-arm-linux-gnueabi-install-CONFIG-PREFIX-home-zqs-nfs-rootfscd-home-zqs-tools-gcc-linaro-4-9-2016-02-x86-64-arm-linux-gnueabi-arm-linux-gnueabi-libc-libsudo-cp-so-a-home-zqs-nfs-rootfs-lib-dcd-home-zqs-tools-gcc-linaro-4-9-2016-02-x86-64-arm-linux-gnueabi-arm-linux-gnueabi-libsudo-cp-so-a-home-zqs-nfs-rootfs-lib-dcd-home-zqs-tools-gcc-linaro-4-9-2016-02-x86-64-arm-linux-gnueabi-arm-linux-gnueabi-libc-usr-libsudo-cp-so-a-home-zqs-nfs-rootfs-usr-lib-d" class="headerlink" title="qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel zImage -dtb zImage-imx6ul-14x14-evk.dtbqemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel zImage-imx6ulevk.bin—–busybox—make ARCH&#x3D;arm CROSS_COMPILE&#x3D;&#x2F;home&#x2F;zqs&#x2F;tools&#x2F;gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi&#x2F;bin&#x2F;arm-linux-gnueabi-make ARCH&#x3D;arm CROSS_COMPILE&#x3D;&#x2F;home&#x2F;zqs&#x2F;tools&#x2F;gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi&#x2F;bin&#x2F;arm-linux-gnueabi- install CONFIG_PREFIX&#x3D;&#x2F;home&#x2F;zqs&#x2F;nfs&#x2F;rootfscd &#x2F;home&#x2F;zqs&#x2F;tools&#x2F;gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi&#x2F;arm-linux-gnueabi&#x2F;libc&#x2F;libsudo cp so *.a &#x2F;home&#x2F;zqs&#x2F;nfs&#x2F;rootfs&#x2F;lib&#x2F; -dcd &#x2F;home&#x2F;zqs&#x2F;tools&#x2F;gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi&#x2F;arm-linux-gnueabi&#x2F;libsudo cp so *.a &#x2F;home&#x2F;zqs&#x2F;nfs&#x2F;rootfs&#x2F;lib&#x2F; -dcd &#x2F;home&#x2F;zqs&#x2F;tools&#x2F;gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi&#x2F;arm-linux-gnueabi&#x2F;libc&#x2F;usr&#x2F;libsudo cp so *.a &#x2F;home&#x2F;zqs&#x2F;nfs&#x2F;rootfs&#x2F;usr&#x2F;lib&#x2F; -d"></a>qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel zImage -dtb zImage-imx6ul-14x14-evk.dtb<br>qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel zImage-imx6ulevk.bin<br>—–busybox—<br>make ARCH&#x3D;arm CROSS_COMPILE&#x3D;&#x2F;home&#x2F;zqs&#x2F;tools&#x2F;gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi&#x2F;bin&#x2F;arm-linux-gnueabi-<br>make ARCH&#x3D;arm CROSS_COMPILE&#x3D;&#x2F;home&#x2F;zqs&#x2F;tools&#x2F;gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi&#x2F;bin&#x2F;arm-linux-gnueabi- install CONFIG_PREFIX&#x3D;&#x2F;home&#x2F;zqs&#x2F;nfs&#x2F;rootfs<br>cd &#x2F;home&#x2F;zqs&#x2F;tools&#x2F;gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi&#x2F;arm-linux-gnueabi&#x2F;libc&#x2F;lib<br>sudo cp <em>so</em> *.a &#x2F;home&#x2F;zqs&#x2F;nfs&#x2F;rootfs&#x2F;lib&#x2F; -d<br>cd &#x2F;home&#x2F;zqs&#x2F;tools&#x2F;gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi&#x2F;arm-linux-gnueabi&#x2F;lib<br>sudo cp <em>so</em> *.a &#x2F;home&#x2F;zqs&#x2F;nfs&#x2F;rootfs&#x2F;lib&#x2F; -d<br>cd &#x2F;home&#x2F;zqs&#x2F;tools&#x2F;gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi&#x2F;arm-linux-gnueabi&#x2F;libc&#x2F;usr&#x2F;lib<br>sudo cp <em>so</em> *.a &#x2F;home&#x2F;zqs&#x2F;nfs&#x2F;rootfs&#x2F;usr&#x2F;lib&#x2F; -d</h2><h1 id="qemu-system-arm-M-mcimx6ul-evk-m-512M-kernel-arch-arm-boot-zImage-dtb-arch-arm-boot-dts-imx6ul-14x14-evk-dtb-nographic-append-“root-dev-mmcblk0-rw-console-ttyAMA0”-sd-disk-imgqemu-system-arm-M-vexpress-a9-m-512M-kernel-arch-arm-boot-zImage-dtb-arch-arm-boot-dts-vexpress-v2p-ca9-dtb-nographic-append-“root-dev-mmcblk0-rw-console-ttyAMA0”-sd-disk-img"><a href="#qemu-system-arm-M-mcimx6ul-evk-m-512M-kernel-arch-arm-boot-zImage-dtb-arch-arm-boot-dts-imx6ul-14x14-evk-dtb-nographic-append-“root-dev-mmcblk0-rw-console-ttyAMA0”-sd-disk-imgqemu-system-arm-M-vexpress-a9-m-512M-kernel-arch-arm-boot-zImage-dtb-arch-arm-boot-dts-vexpress-v2p-ca9-dtb-nographic-append-“root-dev-mmcblk0-rw-console-ttyAMA0”-sd-disk-img" class="headerlink" title="qemu-system-arm -M mcimx6ul-evk -m 512M -kernel arch&#x2F;arm&#x2F;boot&#x2F;zImage -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;imx6ul-14x14-evk.dtb -nographic -append “root&#x3D;&#x2F;dev&#x2F;mmcblk0 rw console&#x3D;ttyAMA0” -sd disk.imgqemu-system-arm -M vexpress-a9 -m 512M -kernel arch&#x2F;arm&#x2F;boot&#x2F;zImage -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;vexpress-v2p-ca9.dtb -nographic -append “root&#x3D;&#x2F;dev&#x2F;mmcblk0 rw console&#x3D;ttyAMA0” -sd disk.img"></a>qemu-system-arm -M mcimx6ul-evk -m 512M -kernel arch&#x2F;arm&#x2F;boot&#x2F;zImage -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;imx6ul-14x14-evk.dtb -nographic -append “root&#x3D;&#x2F;dev&#x2F;mmcblk0 rw console&#x3D;ttyAMA0” -sd disk.img<br>qemu-system-arm -M vexpress-a9 -m 512M -kernel arch&#x2F;arm&#x2F;boot&#x2F;zImage -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;vexpress-v2p-ca9.dtb -nographic -append “root&#x3D;&#x2F;dev&#x2F;mmcblk0 rw console&#x3D;ttyAMA0” -sd disk.img</h1><h1 id="官网的linuxwget-https-cdn-kernel-org-pub-linux-kernel-v4-x-linux-4-1-15-tar-xztar-xvJf-linux-4-1-15-tar-xz-opt-fsl-imx-x11-4-1-15-2-0-0-environment-setup-cortexa7hf-neon-poky-linux-gnueabimake-imx-v6-v7-defconfigmakeqemu-system-arm-M-mcimx6ul-evk-m-512M-kernel-arch-arm-boot-zImage-dtb-arch-arm-boot-dts-imx6ul-14x14-evk-dtb-nographic-append-“root-dev-mmcblk0-rw-console-ttyAMA0”-sd-disk-img-OK-make-vexpress-defconfigmakeqemu-system-arm-M-vexpress-a9-m-512M-kernel-arch-arm-boot-zImage-dtb-arch-arm-boot-dts-vexpress-v2p-ca9-dtb-nographic-append-“root-dev-mmcblk0-rw-console-ttyAMA0”-drive-format-raw-file-home-zqs-tools-rootfs-img-sd-disk-img"><a href="#官网的linuxwget-https-cdn-kernel-org-pub-linux-kernel-v4-x-linux-4-1-15-tar-xztar-xvJf-linux-4-1-15-tar-xz-opt-fsl-imx-x11-4-1-15-2-0-0-environment-setup-cortexa7hf-neon-poky-linux-gnueabimake-imx-v6-v7-defconfigmakeqemu-system-arm-M-mcimx6ul-evk-m-512M-kernel-arch-arm-boot-zImage-dtb-arch-arm-boot-dts-imx6ul-14x14-evk-dtb-nographic-append-“root-dev-mmcblk0-rw-console-ttyAMA0”-sd-disk-img-OK-make-vexpress-defconfigmakeqemu-system-arm-M-vexpress-a9-m-512M-kernel-arch-arm-boot-zImage-dtb-arch-arm-boot-dts-vexpress-v2p-ca9-dtb-nographic-append-“root-dev-mmcblk0-rw-console-ttyAMA0”-drive-format-raw-file-home-zqs-tools-rootfs-img-sd-disk-img" class="headerlink" title="官网的linuxwget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.1.15.tar.xztar xvJf linux-4.1.15.tar.xz. &#x2F;opt&#x2F;fsl-imx-x11&#x2F;4.1.15-2.0.0&#x2F;environment-setup-cortexa7hf-neon-poky-linux-gnueabimake imx_v6_v7_defconfigmakeqemu-system-arm     -M mcimx6ul-evk     -m 512M     -kernel arch&#x2F;arm&#x2F;boot&#x2F;zImage     -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;imx6ul-14x14-evk.dtb     -nographic     -append “root&#x3D;&#x2F;dev&#x2F;mmcblk0 rw console&#x3D;ttyAMA0”    -sd disk.img&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;OK&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;make vexpress_defconfigmakeqemu-system-arm     -M vexpress-a9     -m 512M     -kernel arch&#x2F;arm&#x2F;boot&#x2F;zImage     -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;vexpress-v2p-ca9.dtb     -nographic     -append “root&#x3D;&#x2F;dev&#x2F;mmcblk0 rw console&#x3D;ttyAMA0”        -drive format&#x3D;raw,file&#x3D;&#x2F;home&#x2F;zqs&#x2F;tools&#x2F;rootfs.img     -sd disk.img"></a>官网的linux<br>wget <a target="_blank" rel="noopener" href="https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.1.15.tar.xz">https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.1.15.tar.xz</a><br>tar xvJf linux-4.1.15.tar.xz<br>. &#x2F;opt&#x2F;fsl-imx-x11&#x2F;4.1.15-2.0.0&#x2F;environment-setup-cortexa7hf-neon-poky-linux-gnueabi<br>make imx_v6_v7_defconfig<br>make<br>qemu-system-arm <br>    -M mcimx6ul-evk <br>    -m 512M <br>    -kernel arch&#x2F;arm&#x2F;boot&#x2F;zImage <br>    -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;imx6ul-14x14-evk.dtb <br>    -nographic <br>    -append “root&#x3D;&#x2F;dev&#x2F;mmcblk0 rw console&#x3D;ttyAMA0”<br>    -sd disk.img<br>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;OK&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;<br>make vexpress_defconfig<br>make<br>qemu-system-arm <br>    -M vexpress-a9 <br>    -m 512M <br>    -kernel arch&#x2F;arm&#x2F;boot&#x2F;zImage <br>    -dtb arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;vexpress-v2p-ca9.dtb <br>    -nographic <br>    -append “root&#x3D;&#x2F;dev&#x2F;mmcblk0 rw console&#x3D;ttyAMA0”<br>        -drive format&#x3D;raw,file&#x3D;&#x2F;home&#x2F;zqs&#x2F;tools&#x2F;rootfs.img <br>    -sd disk.img</h1><h1 id="官方u-boot-opt-fsl-imx-x11-4-1-15-2-0-0-environment-setup-cortexa7hf-neon-poky-linux-gnueabimake-mx6ul-14x14-evk-defconfigmake-mx7dsabresd-secure-defconfigqemu-system-arm-M-mcimx6ul-evk-kernel-u-boot-nographic-m-512M-S-sqemu-system-arm-M-mcimx7d-sabre-kernel-u-boot-nographic-m-512M-S-sqemu-system-arm-M-mcimx6ul-evk-cpu-cortex-a7-m-512M-kernel-u-boot-nographic-dtb-arch-arm-dts-imx6ul-14x14-evk-dtb-OK-make-vexpress-ca9x4-defconfigqemu-system-arm-M-vexpress-a9-kernel-u-boot-nographic-m-512M-S-s"><a href="#官方u-boot-opt-fsl-imx-x11-4-1-15-2-0-0-environment-setup-cortexa7hf-neon-poky-linux-gnueabimake-mx6ul-14x14-evk-defconfigmake-mx7dsabresd-secure-defconfigqemu-system-arm-M-mcimx6ul-evk-kernel-u-boot-nographic-m-512M-S-sqemu-system-arm-M-mcimx7d-sabre-kernel-u-boot-nographic-m-512M-S-sqemu-system-arm-M-mcimx6ul-evk-cpu-cortex-a7-m-512M-kernel-u-boot-nographic-dtb-arch-arm-dts-imx6ul-14x14-evk-dtb-OK-make-vexpress-ca9x4-defconfigqemu-system-arm-M-vexpress-a9-kernel-u-boot-nographic-m-512M-S-s" class="headerlink" title="官方u-boot. &#x2F;opt&#x2F;fsl-imx-x11&#x2F;4.1.15-2.0.0&#x2F;environment-setup-cortexa7hf-neon-poky-linux-gnueabimake mx6ul_14x14_evk_defconfigmake mx7dsabresd_secure_defconfigqemu-system-arm -M mcimx6ul-evk -kernel u-boot -nographic -m 512M -S -sqemu-system-arm -M mcimx7d-sabre -kernel u-boot -nographic -m 512M -S -sqemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel u-boot -nographic -dtb arch&#x2F;arm&#x2F;dts&#x2F;imx6ul-14x14-evk.dtb&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;OK&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;make vexpress_ca9x4_defconfigqemu-system-arm -M vexpress-a9 -kernel u-boot -nographic -m 512M -S -s "></a>官方u-boot<br>. &#x2F;opt&#x2F;fsl-imx-x11&#x2F;4.1.15-2.0.0&#x2F;environment-setup-cortexa7hf-neon-poky-linux-gnueabi<br>make mx6ul_14x14_evk_defconfig<br>make mx7dsabresd_secure_defconfig<br>qemu-system-arm -M mcimx6ul-evk -kernel u-boot -nographic -m 512M -S -s<br>qemu-system-arm -M mcimx7d-sabre -kernel u-boot -nographic -m 512M -S -s<br>qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel u-boot -nographic -dtb arch&#x2F;arm&#x2F;dts&#x2F;imx6ul-14x14-evk.dtb<br>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;OK&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;<br>make vexpress_ca9x4_defconfig<br>qemu-system-arm -M vexpress-a9 -kernel u-boot -nographic -m 512M -S -s </h1><h1 id="DDqemu-img-create-rootfs-img-512mmkfs-ext4-rootfs-imgsudo-mount-rootfs-img-rootfssudo-cp-rf-busybox-1-35-0-install-rootfs"><a href="#DDqemu-img-create-rootfs-img-512mmkfs-ext4-rootfs-imgsudo-mount-rootfs-img-rootfssudo-cp-rf-busybox-1-35-0-install-rootfs" class="headerlink" title="DDqemu-img create rootfs.img 512mmkfs.ext4 rootfs.imgsudo mount rootfs.img rootfssudo cp -rf busybox-1.35.0&#x2F;_install&#x2F;*  rootfs"></a>DD<br>qemu-img create rootfs.img 512m<br>mkfs.ext4 rootfs.img<br>sudo mount rootfs.img rootfs<br>sudo cp -rf busybox-1.35.0&#x2F;_install&#x2F;*  rootfs</h1><h1 id="将makefs-arm32-sh的内容替换为以下内容"><a href="#将makefs-arm32-sh的内容替换为以下内容" class="headerlink" title="将makefs-arm32.sh的内容替换为以下内容"></a>将makefs-arm32.sh的内容替换为以下内容</h1><h1 id="dd-if-dev-zero-of-rootfs-arm-ext3-bs-1M-count-256echo-“hard-disk-partition-”sgdisk-n-0-0-32M-c-0-uboot-rootfs-arm-ext3sgdisk-n-0-0-0-c-0-rootfs-rootfs-arm-ext3sgdisk-p-rootfs-arm-ext3echo-“mount-loop-device-”LOOPDEV-losetup-fecho-LOOPDEVsudo-losetup-LOOPDEV-rootfs-arm-ext3sudo-partprobe-LOOPDEVsudo-losetup-lls-l-dev-loop-echo-“format-disk-to-ext3”echo-LOOPDEV-p1echo-LOOPDEV-p2sudo-mkfs-ext3-LOOPDEV-p1sudo-mkfs-ext3-LOOPDEV-p2sudo-mount-t-ext3-LOOPDEV-p1-mnt-uboot-o-loopsudo-mount-t-ext3-LOOPDEV-p2-mnt-rootfs-o-loop-sudo-cp-rf-rootfs-arm32-mnt-rootfs-sudo-cp-rf-tools-busybox-1-35-0-install-mnt-rootfs-sudo-cp-linux-4-14-7-vexpress-arch-arm-boot-dts-vexpress-v2p-ca9-dtb-mnt-uboot-sudo-cp-linux-4-14-7-vexpress-arch-arm-boot-uImage-mnt-uboot-sudo-umount-mnt-rootfs-sudo-umount-mnt-uboot-sudo-losetup-d-LOOPDEV"><a href="#dd-if-dev-zero-of-rootfs-arm-ext3-bs-1M-count-256echo-“hard-disk-partition-”sgdisk-n-0-0-32M-c-0-uboot-rootfs-arm-ext3sgdisk-n-0-0-0-c-0-rootfs-rootfs-arm-ext3sgdisk-p-rootfs-arm-ext3echo-“mount-loop-device-”LOOPDEV-losetup-fecho-LOOPDEVsudo-losetup-LOOPDEV-rootfs-arm-ext3sudo-partprobe-LOOPDEVsudo-losetup-lls-l-dev-loop-echo-“format-disk-to-ext3”echo-LOOPDEV-p1echo-LOOPDEV-p2sudo-mkfs-ext3-LOOPDEV-p1sudo-mkfs-ext3-LOOPDEV-p2sudo-mount-t-ext3-LOOPDEV-p1-mnt-uboot-o-loopsudo-mount-t-ext3-LOOPDEV-p2-mnt-rootfs-o-loop-sudo-cp-rf-rootfs-arm32-mnt-rootfs-sudo-cp-rf-tools-busybox-1-35-0-install-mnt-rootfs-sudo-cp-linux-4-14-7-vexpress-arch-arm-boot-dts-vexpress-v2p-ca9-dtb-mnt-uboot-sudo-cp-linux-4-14-7-vexpress-arch-arm-boot-uImage-mnt-uboot-sudo-umount-mnt-rootfs-sudo-umount-mnt-uboot-sudo-losetup-d-LOOPDEV" class="headerlink" title="dd if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;rootfs-arm.ext3 bs&#x3D;1M count&#x3D;256echo “hard disk partition!”sgdisk -n 0:0:+32M -c 0:uboot rootfs-arm.ext3sgdisk -n 0:0:0 -c 0:rootfs rootfs-arm.ext3sgdisk -p rootfs-arm.ext3echo “mount loop device!”LOOPDEV&#x3D;losetup -fecho $LOOPDEVsudo losetup $LOOPDEV  rootfs-arm.ext3sudo partprobe $LOOPDEVsudo losetup -lls -l &#x2F;dev&#x2F;loop*echo “format disk to ext3”echo ${LOOPDEV}p1echo ${LOOPDEV}p2sudo mkfs.ext3 ${LOOPDEV}p1sudo mkfs.ext3 ${LOOPDEV}p2sudo mount -t ext3 ${LOOPDEV}p1 &#x2F;mnt&#x2F;uboot -o loopsudo mount -t ext3 ${LOOPDEV}p2 &#x2F;mnt&#x2F;rootfs -o loop#sudo cp -rf rootfs-arm32&#x2F;* &#x2F;mnt&#x2F;rootfs&#x2F;sudo cp -rf tools&#x2F;busybox-1.35.0&#x2F;_install&#x2F;* &#x2F;mnt&#x2F;rootfs&#x2F;sudo cp linux-4.14.7-vexpress&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;vexpress-v2p-ca9.dtb &#x2F;mnt&#x2F;uboot&#x2F;sudo cp linux-4.14.7-vexpress&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;uImage &#x2F;mnt&#x2F;uboot&#x2F;sudo umount &#x2F;mnt&#x2F;rootfs&#x2F;sudo umount &#x2F;mnt&#x2F;uboot&#x2F;sudo losetup -d $LOOPDEV"></a>dd if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;rootfs-arm.ext3 bs&#x3D;1M count&#x3D;256<br><br>echo “hard disk partition!”<br>sgdisk -n 0:0:+32M -c 0:uboot rootfs-arm.ext3<br>sgdisk -n 0:0:0 -c 0:rootfs rootfs-arm.ext3<br>sgdisk -p rootfs-arm.ext3<br><br>echo “mount loop device!”<br>LOOPDEV&#x3D;<code>losetup -f</code><br>echo $LOOPDEV<br>sudo losetup $LOOPDEV  rootfs-arm.ext3<br>sudo partprobe $LOOPDEV<br>sudo losetup -l<br>ls -l &#x2F;dev&#x2F;loop*<br><br>echo “format disk to ext3”<br>echo ${LOOPDEV}p1<br>echo ${LOOPDEV}p2<br>sudo mkfs.ext3 ${LOOPDEV}p1<br>sudo mkfs.ext3 ${LOOPDEV}p2<br>sudo mount -t ext3 ${LOOPDEV}p1 &#x2F;mnt&#x2F;uboot -o loop<br>sudo mount -t ext3 ${LOOPDEV}p2 &#x2F;mnt&#x2F;rootfs -o loop<br>#sudo cp -rf rootfs-arm32&#x2F;* &#x2F;mnt&#x2F;rootfs&#x2F;<br>sudo cp -rf tools&#x2F;busybox-1.35.0&#x2F;_install&#x2F;* &#x2F;mnt&#x2F;rootfs&#x2F;<br>sudo cp linux-4.14.7-vexpress&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;vexpress-v2p-ca9.dtb &#x2F;mnt&#x2F;uboot&#x2F;<br>sudo cp linux-4.14.7-vexpress&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;uImage &#x2F;mnt&#x2F;uboot&#x2F;<br>sudo umount &#x2F;mnt&#x2F;rootfs&#x2F;<br>sudo umount &#x2F;mnt&#x2F;uboot&#x2F;<br>sudo losetup -d $LOOPDEV</h1><h1 id="dd-if-dev-zero-of-sd-card-bs-1M-count-512-使用losetup-将sd-card文件虚拟成块设备-dev-loop0sudo-losetup-dev-loop0-sd-card-进行分区，创建两个主分区-分区0-32M，分区1-剩下的区域sudo-fdisk-dev-loop0-从uboot开启内核OK，没有rootfs-dd-if-dev-zero-of-sdcard-img-bs-1M-count-512mkfs-fat-sdcard-imgsudo-mount-o-loop-sdcard-img-mntsudo-cp-zImage-vexpress-v2p-ca9-dtb-mntsudo-umount-mnt-qemu-system-arm-M-vexpress-a9-m-256M-kernel-u-boot-sd-sdcard-img-nographic-mmcinfo-load-mmc-0-0-0x60008000-zImage-load-mmc-0-0-0x61000000-vexpress-v2p-ca9-dtb-setenv-bootargs-“root-dev-mmcblk0-rw-console-ttyAMA0”-bootz-0x60008000-0x61000000"><a href="#dd-if-dev-zero-of-sd-card-bs-1M-count-512-使用losetup-将sd-card文件虚拟成块设备-dev-loop0sudo-losetup-dev-loop0-sd-card-进行分区，创建两个主分区-分区0-32M，分区1-剩下的区域sudo-fdisk-dev-loop0-从uboot开启内核OK，没有rootfs-dd-if-dev-zero-of-sdcard-img-bs-1M-count-512mkfs-fat-sdcard-imgsudo-mount-o-loop-sdcard-img-mntsudo-cp-zImage-vexpress-v2p-ca9-dtb-mntsudo-umount-mnt-qemu-system-arm-M-vexpress-a9-m-256M-kernel-u-boot-sd-sdcard-img-nographic-mmcinfo-load-mmc-0-0-0x60008000-zImage-load-mmc-0-0-0x61000000-vexpress-v2p-ca9-dtb-setenv-bootargs-“root-dev-mmcblk0-rw-console-ttyAMA0”-bootz-0x60008000-0x61000000" class="headerlink" title="dd if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;.&#x2F;sd_card bs&#x3D;1M count&#x3D;512# 使用losetup 将sd_card文件虚拟成块设备&#x2F;dev&#x2F;loop0sudo losetup &#x2F;dev&#x2F;loop0 sd_card# 进行分区，创建两个主分区,分区0: 32M，分区1: 剩下的区域sudo fdisk &#x2F;dev&#x2F;loop0&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;从uboot开启内核OK，没有rootfs&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;dd if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;sdcard.img bs&#x3D;1M count&#x3D;512mkfs.fat sdcard.imgsudo mount -o loop sdcard.img &#x2F;mntsudo cp zImage vexpress-v2p-ca9.dtb &#x2F;mntsudo umount &#x2F;mnt$ qemu-system-arm -M vexpress-a9 -m 256M -kernel u-boot -sd ..&#x2F;sdcard.img -nographic&#x3D;&gt; mmcinfo&#x3D;&gt; load mmc 0:0 0x60008000 zImage&#x3D;&gt; load mmc 0:0 0x61000000 vexpress-v2p-ca9.dtb&#x3D;&gt; setenv bootargs “root&#x3D;&#x2F;dev&#x2F;mmcblk0 rw console&#x3D;ttyAMA0”&#x3D;&gt; bootz 0x60008000 - 0x61000000"></a>dd if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;.&#x2F;sd_card bs&#x3D;1M count&#x3D;512<br># 使用losetup 将sd_card文件虚拟成块设备&#x2F;dev&#x2F;loop0<br>sudo losetup &#x2F;dev&#x2F;loop0 sd_card<br># 进行分区，创建两个主分区,分区0: 32M，分区1: 剩下的区域<br>sudo fdisk &#x2F;dev&#x2F;loop0<br>&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;从uboot开启内核OK，没有rootfs&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;<br>dd if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;sdcard.img bs&#x3D;1M count&#x3D;512<br>mkfs.fat sdcard.img<br>sudo mount -o loop sdcard.img &#x2F;mnt<br>sudo cp zImage vexpress-v2p-ca9.dtb &#x2F;mnt<br>sudo umount &#x2F;mnt<br>$ qemu-system-arm -M vexpress-a9 -m 256M -kernel u-boot -sd ..&#x2F;sdcard.img -nographic<br>&#x3D;&gt; mmcinfo<br>&#x3D;&gt; load mmc 0:0 0x60008000 zImage<br>&#x3D;&gt; load mmc 0:0 0x61000000 vexpress-v2p-ca9.dtb<br>&#x3D;&gt; setenv bootargs “root&#x3D;&#x2F;dev&#x2F;mmcblk0 rw console&#x3D;ttyAMA0”<br>&#x3D;&gt; bootz 0x60008000 - 0x61000000</h1><h1 id="dd-if-dev-zero-of-uboot-disk-bs-1M-count-512sgdisk-n-0-0-10M-c-0-kernel-uboot-disksgdisk-n-0-0-0-c-0-rootfs-uboot-disksgdisk-p-uboot-disk寻找一个空闲的loop设备losetup-f4、将SD卡镜像映射到loop设备上sudo-losetup-dev-loop0-uboot-disksudo-partprobe-dev-loop0"><a href="#dd-if-dev-zero-of-uboot-disk-bs-1M-count-512sgdisk-n-0-0-10M-c-0-kernel-uboot-disksgdisk-n-0-0-0-c-0-rootfs-uboot-disksgdisk-p-uboot-disk寻找一个空闲的loop设备losetup-f4、将SD卡镜像映射到loop设备上sudo-losetup-dev-loop0-uboot-disksudo-partprobe-dev-loop0" class="headerlink" title="dd if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;uboot.disk bs&#x3D;1M count&#x3D;512sgdisk -n 0:0:+10M -c 0:kernel uboot.disksgdisk -n 0:0:0 -c 0:rootfs uboot.disksgdisk -p uboot.disk寻找一个空闲的loop设备losetup -f4、将SD卡镜像映射到loop设备上sudo losetup &#x2F;dev&#x2F;loop0 uboot.disksudo partprobe &#x2F;dev&#x2F;loop0"></a>dd if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;uboot.disk bs&#x3D;1M count&#x3D;512<br>sgdisk -n 0:0:+10M -c 0:kernel uboot.disk<br>sgdisk -n 0:0:0 -c 0:rootfs uboot.disk<br>sgdisk -p uboot.disk<br>寻找一个空闲的loop设备<br>losetup -f<br>4、将SD卡镜像映射到loop设备上<br>sudo losetup &#x2F;dev&#x2F;loop0 uboot.disk<br>sudo partprobe &#x2F;dev&#x2F;loop0</h1><p>atp_1fz395yshw2gt9pvybfa3w24y2rb66w1<br>4.2 内核编译<br>注意：<br> 初次解压内核源码后，需要先对源码进行整体编译<br> 整体编译过后，可根据实际情况在进行单独编译<br>切换到 root 账户，将拷贝到&#x2F;home&#x2F;forlinx&#x2F;work 目录下的内核源码使用 tar 指令解压，进入到内核源码<br>路径。<br>forlinx@ubuntu:~&#x2F;work$ sudo su &#x2F;&#x2F;切换到 root 用户身份<br>[sudo] password for forlinx: &#x2F;&#x2F;按提示输入 forlinx 账户密码，无回显<br>root@ubuntu:&#x2F;home&#x2F;forlinx&#x2F;work# tar xvf linux-4.1.15.tar.bz2 &#x2F;&#x2F;解压内核源码<br>… …此处省略解压信息<br>root@ubuntu:&#x2F;home&#x2F;forlinx&#x2F;work# cd linux-4.1.15 &#x2F;&#x2F;进入到内核源码目录<br>切换账户后要重新设置环境变量：<br>. &#x2F;opt&#x2F;fsl-imx-x11&#x2F;4.1.15-2.0.0&#x2F;environment-setup-cortexa7hf-neon-poky-linux-gnueabi</p>
+<h2 id="4-2-1-整体编译Linux-4-1-15-内核在源码路径内，提供了编译脚本-build-sh，运行该脚本对整个源码进行编译。root-ubuntu-home-forlinx-work-cd-linux-4-1-15以下操作需要在源码目录下操作，编译内核方法：root-ubuntu-home-forlinx-work-linux-4-1-15-source-build-sh编译执行后结果，信息较多，只截取最后部分信息：编译成功后，会生成-ko-的模块文件，linux-4-1-15-arch-arm-boot-路径下生成-zImage，linux-4-1-15-arch-arm-boot-dts-路径下生成相关的-dtb-文件（单独编译设备树章节做详细说明）。对-build-sh-中部分命令进行说明：make-okmx6ul-defconfig1、该指令是加载配置文件到-config（menuconfig-进行图形配置时，是从-config-中读取出来）。2、linux-4-1-15-arch-arm-configs-okmx6ul-defconfig-是内核配置文件，初次使用源码时，需要通过该步进行内核配置。3、使用-menuconfig-进行配置，需先进行该步操作，保存退出图形界面配置后，会把最新的配置更新到-config-此时可以把-config-文件中配置复制到-okmx6ul-defconfig-中，作为新的配置文件。"><a href="#4-2-1-整体编译Linux-4-1-15-内核在源码路径内，提供了编译脚本-build-sh，运行该脚本对整个源码进行编译。root-ubuntu-home-forlinx-work-cd-linux-4-1-15以下操作需要在源码目录下操作，编译内核方法：root-ubuntu-home-forlinx-work-linux-4-1-15-source-build-sh编译执行后结果，信息较多，只截取最后部分信息：编译成功后，会生成-ko-的模块文件，linux-4-1-15-arch-arm-boot-路径下生成-zImage，linux-4-1-15-arch-arm-boot-dts-路径下生成相关的-dtb-文件（单独编译设备树章节做详细说明）。对-build-sh-中部分命令进行说明：make-okmx6ul-defconfig1、该指令是加载配置文件到-config（menuconfig-进行图形配置时，是从-config-中读取出来）。2、linux-4-1-15-arch-arm-configs-okmx6ul-defconfig-是内核配置文件，初次使用源码时，需要通过该步进行内核配置。3、使用-menuconfig-进行配置，需先进行该步操作，保存退出图形界面配置后，会把最新的配置更新到-config-此时可以把-config-文件中配置复制到-okmx6ul-defconfig-中，作为新的配置文件。" class="headerlink" title="4.2.1 整体编译Linux-4.1.15 内核在源码路径内，提供了编译脚本 build.sh，运行该脚本对整个源码进行编译。root@ubuntu:&#x2F;home&#x2F;forlinx&#x2F;work# cd linux-4.1.15以下操作需要在源码目录下操作，编译内核方法：root@ubuntu:&#x2F;home&#x2F;forlinx&#x2F;work&#x2F;linux-4.1.15# source build.sh编译执行后结果，信息较多，只截取最后部分信息：编译成功后，会生成.ko 的模块文件，linux-4.1.15&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;路径下生成 zImage，linux-4.1.15&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts 路径下生成相关的 dtb 文件（单独编译设备树章节做详细说明）。对 build.sh 中部分命令进行说明：make okmx6ul_defconfig1、该指令是加载配置文件到.config（menuconfig 进行图形配置时，是从.config 中读取出来）。2、linux-4.1.15&#x2F;arch&#x2F;arm&#x2F;configs&#x2F;okmx6ul_defconfig 是内核配置文件，初次使用源码时，需要通过该步进行内核配置。3、使用 menuconfig 进行配置，需先进行该步操作，保存退出图形界面配置后，会把最新的配置更新到.config,此时可以把.config 文件中配置复制到 okmx6ul_defconfig 中，作为新的配置文件。"></a>4.2.1 整体编译<br>Linux-4.1.15 内核<br>在源码路径内，提供了编译脚本 build.sh，运行该脚本对整个源码进行编译。<br>root@ubuntu:&#x2F;home&#x2F;forlinx&#x2F;work# cd linux-4.1.15<br>以下操作需要在源码目录下操作，编译内核方法：<br>root@ubuntu:&#x2F;home&#x2F;forlinx&#x2F;work&#x2F;linux-4.1.15# source build.sh<br>编译执行后结果，信息较多，只截取最后部分信息：<br>编译成功后，会生成.ko 的模块文件，linux-4.1.15&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;路径下生成 zImage，<br>linux-4.1.15&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts 路径下生成相关的 dtb 文件（单独编译设备树章节做详细说明）。<br>对 build.sh 中部分命令进行说明：<br>make okmx6ul_defconfig<br>1、该指令是加载配置文件到.config（menuconfig 进行图形配置时，是从.config 中读取出来）。<br>2、linux-4.1.15&#x2F;arch&#x2F;arm&#x2F;configs&#x2F;okmx6ul_defconfig 是内核配置文件，初次使用源码时，需要通过该步进行内核配置。<br>3、使用 menuconfig 进行配置，需先进行该步操作，保存退出图形界面配置后，会把最新的配置更新到.config,此时可以把.config 文件中配<br>置复制到 okmx6ul_defconfig 中，作为新的配置文件。</h2><h2 id="make-zImage编译-zImage，编译成功后，会在-linux-4-1-15-arch-arm-boot-路径下生成-zImage-文件。"><a href="#make-zImage编译-zImage，编译成功后，会在-linux-4-1-15-arch-arm-boot-路径下生成-zImage-文件。" class="headerlink" title="make zImage编译 zImage，编译成功后，会在 linux-4.1.15&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;路径下生成 zImage 文件。"></a>make zImage<br>编译 zImage，编译成功后，会在 linux-4.1.15&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;路径下<br>生成 zImage 文件。</h2><h2 id="make-dtbs编译设备树。在-inux-4-1-15-arch-arm-boot-dts-路径下生成对应的-dtb文件。"><a href="#make-dtbs编译设备树。在-inux-4-1-15-arch-arm-boot-dts-路径下生成对应的-dtb文件。" class="headerlink" title="make dtbs编译设备树。在 inux-4.1.15&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts 路径下生成对应的 dtb文件。"></a>make dtbs<br>编译设备树。在 inux-4.1.15&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts 路径下生成对应的 dtb<br>文件。</h2><h2 id="make-modules编译模块。"><a href="#make-modules编译模块。" class="headerlink" title="make modules编译模块。"></a>make modules<br>编译模块。</h2><p>make distclean<br>会清除最新的.config，操作后需重新对内核进行配置。<br>—cd<br>4.2.2 单独编译 zImage<br>用户在内核源码路径下进行操作，前提是设置好环境变量。<br>root@ubuntu:&#x2F;home&#x2F;forlinx&#x2F;work&#x2F;linux-4.1.15# make okmx6ul_defconfig<br>root@ubuntu:&#x2F;home&#x2F;forlinx&#x2F;work&#x2F;linux-4.1.15# make zImage<br>编译成功后会在 linux-4.1.15&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;路径下生成 zImage。<br>4.2.3 单独编译设备树<br>root@ubuntu:&#x2F;home&#x2F;forlinx&#x2F;work&#x2F;linux-4.1.15# make dtbs<br>设备树在源码 linux-4.1.15&#x2F;arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;中的路径下，编译成功后，会在该路径下生成对应的 dtb<br>文件：<br>设备树文件 生成文件 说明<br>imx6ul-14x14-evk-c-emmc.dts imx6ul-14x14-evk-c-emmc.dtb 适用于 eMMC 核心板<br>imx6ul-14x14-evk-c-1g.dts imx6ul-14x14-evk-c-1g.dtb 适用于 1G-NAND 核心板<br>imx6ul-14x14-evk-c-256m.dts imx6ul-14x14-evk-c-256m.dtb 适用于 256M-NAND 核心板<br>4.2.4 单独编译模块<br>root@ubuntu:&#x2F;home&#x2F;forlinx&#x2F;work&#x2F;linux-4.1.15# make modules<br>编译成功后，在驱动对应路径下会生成相应的.ko 文件。<br>使用“make modules_install INSTALL_MOD_PATH&#x3D;&#x2F;home&#x2F;forlinx&#x2F;work&#x2F;”指令将模块导出到指定目<br>录&#x2F;home&#x2F;forlinx&#x2F;work&#x2F;下，将导出的模块压缩打包为 modules.tar.bz2，烧录时替换烧录工具的相同文件。</p>
+<p>4.3 制作文件系统<br>注意：<br> 飞凌提供了两种文件系统：qt 版（rootfs-qt.tar.bz2）和 console 版（rootfs-console.tar.bz2）<br> 不同核心板使用的文件系统有差异，使用情况在软件使用手册 中做了资料说明<br>用户在使用过程中需要添加应用等涉及到修改文件系统，可以参考以下方法。<br>以 rootfs-console.tar.bz2 为例进行操作：<br>1、建立目标文件系统 rootfs 存放文件夹如&#x2F;home&#x2F;forlinx&#x2F;work，并进入该目录。<br>forlinx@ubuntu:<del>&#x2F;work$ sudo mkdir rootfs<br>[sudo] password for forlinx:<br>forlinx@ubuntu:</del>&#x2F;work$ cd rootfs&#x2F;<br>forlinx@ubuntu:<del>&#x2F;work&#x2F;rootfs$<br>2、拷贝&#x2F;home&#x2F;forlinx&#x2F;work 路径下的文件系统到新建的 rootfs 目录，并解压。<br>forlinx@ubuntu:</del>&#x2F;work&#x2F;rootfs$ sudo cp ..&#x2F;rootfs-console.tar.bz2 .&#x2F;<br>forlinx@ubuntu:<del>&#x2F;work&#x2F;rootfs$ ls<br>rootfs-console.tar.bz2 &#x2F;&#x2F;拷贝成功<br>forlinx@ubuntu:</del>&#x2F;work&#x2F;rootfs$ sudo tar xvf rootfs-console.tar.bz2 &#x2F;&#x2F;解压文件系统<br>3、用 rm 命令删除原文件系统压缩包。<br>forlinx@ubuntu:<del>&#x2F;work&#x2F;rootfs$ ls<br>bin dev etc forlinx home lib media mnt proc rootfs-console.tar.bz2 run sbin<br>sys tmp usr var<br>forlinx@ubuntu:</del>&#x2F;work&#x2F;rootfs$ sudo rm rootfs-console.tar.bz2<br>forlinx@ubuntu:<del>&#x2F;work&#x2F;rootfs$ ls<br>bin dev etc forlinx home lib media mnt proc run sbin sys tmp usr var<br>forlinx@ubuntu:</del>&#x2F;work&#x2F;rootfs$<br>4、用户根据自己需求对文件系统做出修改后，利用 tar 命令再压缩文件系统。若使用普通账户操作，需<br>要使用 fakeroot 指令模拟 root 权限，避免文件权限发生改变。<br>forlinx@ubuntu:<del>&#x2F;work&#x2F;rootfs$ sudo fakeroot tar cvjf rootfs-console.tar.bz2 * &#x2F;&#x2F;*前边有空格<br>forlinx@ubuntu:</del>&#x2F;work&#x2F;rootfs$ ls<br>bin dev etc forlinx home lib media mnt proc rootfs-console.tar.bz2 run sbin<br>sys tmp usr var<br>用 ls 查看，可以看到生成 rootfs-console.tar.bz2 压缩包，是可以烧写到开发板 flash 中的文件系统镜<br>像。<br>4.4 应用程序编译及运行<br>4.4.1 编译并运行命令行应用<br>注意：以下操作默认已经安装了交叉编译器，并设置好环境变量。<br>本小节使用看门狗测试程序，默认程序拷贝到&#x2F;home&#x2F;forlinx&#x2F;work 目录，方法参考“4.1.2 拷贝源码”。<br>1、使用 cd 命令进入&#x2F;home&#x2F;forlinx&#x2F;work 目录，并给于此目录读写的权限。<br>forlinx@ubuntu:<del>$ cd &#x2F;home&#x2F;forlinx&#x2F;work&#x2F;<br>forlinx@ubuntu:</del>$ chmod 777 &#x2F;home&#x2F;forlinx&#x2F;work&#x2F;<br>2、使用$CC 进行交叉编译，设置完环境变量后$CC 为交叉编译器的 GCC，具体配置可查看设置环境变<br>量的脚本：environment-setup-cortexa7hf-neon-poky-linux-gnueabi。<br>forlinx@ubuntu:<del>&#x2F;work$ $CC wdttest.c -o wdttest<br>用 file 命令查看生成的文件信息。<br>forlinx@ubuntu:</del>&#x2F;work$ file wdttest<br>信息结果为：<br>wdttest: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), dynamically linked,<br>interpreter &#x2F;lib&#x2F;ld-linux-armhf.so.3, for GNU&#x2F;Linux 2.6.32,<br>BuildID[sha1]&#x3D;400fbba6005ea8e7344df7080ab10d9ef54e3a45, not stripped<br>通过结果可以看到编译生成的是 32 位、ARM 的文件。<br>3、将编译生成的 wdttest 通过 U 盘拷贝到板子上，比如&#x2F;forlinx&#x2F;cmdbin 路径下，运行测试。<br>用 cd 命令进入到开发板的&#x2F;forlinx&#x2F;cmdbin 路径下。<br>root@imx6ulevk:<del># cd &#x2F;forlinx&#x2F;cmdbin<br>将编译生成的 wdttest 程序从 U 盘挂载路径拷贝到当前路径下。<br>root@imx6ulevk:&#x2F;forlinx&#x2F;cmdbin# cp &#x2F;run&#x2F;media&#x2F;sda1&#x2F;wdttest .&#x2F;<br>赋予程序可执行权限，并运行。<br>root@imx6ulevk:&#x2F;forlinx&#x2F;cmdbin# chmod 777 wdttest &#x2F;&#x2F;给程序设置可执行权限<br>root@imx6ulevk:&#x2F;forlinx&#x2F;cmdbin# .&#x2F;wdttest &#x2F;dev&#x2F;watchdog settimeout 10 &amp;<br>&#x2F;&#x2F;运行程序 10S 后复位<br>4、参考软件使用手册“看门狗测试”章节测试。<br>4.4.2 编译并运行 QT 应用程序<br>4.4.2.1 编译 QT 应用程序<br>注意：以下操作默认已经安装了交叉编译器，并设置好环境变量。<br> 方法 1：通过命令行使用 qmake 进行编译。<br>forlinx@ubuntu:</del>&#x2F;work$ sudo chmod -R 777 audio&#x2F; &#x2F;&#x2F; audio 应用程序添加权限<br>forlinx@ubuntu:<del>&#x2F;work$ cd audio&#x2F;<br>forlinx@ubuntu:</del>&#x2F;work&#x2F;audio$ qmake<br>forlinx@ubuntu:<del>&#x2F;work&#x2F;audio$ make<br> 方法 2：通过 Qt Creator 调用 qmake 进行编译。<br>给 audio 应用程序添加权限。<br>forlinx@ubuntu:</del>&#x2F;work$ sudo chmod -R 777 audio&#x2F;<br>使用命令行方式打开 Qt Creator（用户根据自己的实际路径打开）。<br>forlinx@ubuntu:~&#x2F;work$ &#x2F;home&#x2F;forlinx&#x2F;qtcreator-3.2.1&#x2F;bin&#x2F;qtcreator.sh &amp;<br>点击 Qt Creator 的 File-&gt;Open File or Project，弹出窗口，选择&#x2F;root&#x2F;Desktop&#x2F;audio&#x2F;audio.pro。<br>如下图：</p>
+<h1 id="门禁，通讯超时，"><a href="#门禁，通讯超时，" class="headerlink" title="门禁，通讯超时，"></a>门禁，通讯超时，</h1><p>zqs@LAPTOP-8GHA100U:<del>&#x2F;u-boot-u-boot-2016.09.y-imx6$ qemu-system-arm -M help<br>Supported machines are:<br>akita                Sharp SL-C1000 (Akita) PDA (PXA270)<br>ast2500-evb          Aspeed AST2500 EVB (ARM1176)<br>ast2600-evb          Aspeed AST2600 EVB (Cortex-A7)<br>borzoi               Sharp SL-C3100 (Borzoi) PDA (PXA270)<br>canon-a1100          Canon PowerShot A1100 IS (ARM946)<br>cheetah              Palm Tungsten|E aka. Cheetah PDA (OMAP310)<br>collie               Sharp SL-5500 (Collie) PDA (SA-1110)<br>connex               Gumstix Connex (PXA255)<br>cubieboard           cubietech cubieboard (Cortex-A8)<br>emcraft-sf2          SmartFusion2 SOM kit from Emcraft (M2S010)<br>fp5280g2-bmc         Inspur FP5280G2 BMC (ARM1176)<br>fuji-bmc             Facebook Fuji BMC (Cortex-A7)<br>g220a-bmc            Bytedance G220A BMC (ARM1176)<br>highbank             Calxeda Highbank (ECX-1000)<br>imx25-pdk            ARM i.MX25 PDK board (ARM926)<br>integratorcp         ARM Integrator&#x2F;CP (ARM926EJ-S)<br>kudo-bmc             Kudo BMC (Cortex-A9)<br>kzm                  ARM KZM Emulation Baseboard (ARM1136)<br>lm3s6965evb          Stellaris LM3S6965EVB (Cortex-M3)<br>lm3s811evb           Stellaris LM3S811EVB (Cortex-M3)<br>mainstone            Mainstone II (PXA27x)<br>mcimx6ul-evk         Freescale i.MX6UL Evaluation Kit (Cortex-A7)<br>mcimx7d-sabre        Freescale i.MX7 DUAL SABRE (Cortex-A7)<br>microbit             BBC micro:bit (Cortex-M0)<br>midway               Calxeda Midway (ECX-2000)<br>mps2-an385           ARM MPS2 with AN385 FPGA image for Cortex-M3<br>mps2-an386           ARM MPS2 with AN386 FPGA image for Cortex-M4<br>mps2-an500           ARM MPS2 with AN500 FPGA image for Cortex-M7<br>mps2-an505           ARM MPS2 with AN505 FPGA image for Cortex-M33<br>mps2-an511           ARM MPS2 with AN511 DesignStart FPGA image for Cortex-M3<br>mps2-an521           ARM MPS2 with AN521 FPGA image for dual Cortex-M33<br>mps3-an524           ARM MPS3 with AN524 FPGA image for dual Cortex-M33<br>mps3-an547           ARM MPS3 with AN547 FPGA image for Cortex-M55<br>musca-a              ARM Musca-A board (dual Cortex-M33)<br>musca-b1             ARM Musca-B1 board (dual Cortex-M33)<br>musicpal             Marvell 88w8618 &#x2F; MusicPal (ARM926EJ-S)<br>n800                 Nokia N800 tablet aka. RX-34 (OMAP2420)<br>n810                 Nokia N810 tablet aka. RX-44 (OMAP2420)<br>netduino2            Netduino 2 Machine (Cortex-M3)<br>netduinoplus2        Netduino Plus 2 Machine (Cortex-M4)<br>none                 empty machine<br>npcm750-evb          Nuvoton NPCM750 Evaluation Board (Cortex-A9)<br>nuri                 Samsung NURI board (Exynos4210)<br>orangepi-pc          Orange Pi PC (Cortex-A7)<br>palmetto-bmc         OpenPOWER Palmetto BMC (ARM926EJ-S)<br>quanta-gbs-bmc       Quanta GBS (Cortex-A9)<br>quanta-gsj           Quanta GSJ (Cortex-A9)<br>quanta-q71l-bmc      Quanta-Q71l BMC (ARM926EJ-S)<br>rainier-bmc          IBM Rainier BMC (Cortex-A7)<br>raspi0               Raspberry Pi Zero (revision 1.2)<br>raspi1ap             Raspberry Pi A+ (revision 1.1)<br>raspi2b              Raspberry Pi 2B (revision 1.1)<br>realview-eb          ARM RealView Emulation Baseboard (ARM926EJ-S)<br>realview-eb-mpcore   ARM RealView Emulation Baseboard (ARM11MPCore)<br>realview-pb-a8       ARM RealView Platform Baseboard for Cortex-A8<br>realview-pbx-a9      ARM RealView Platform Baseboard Explore for Cortex-A9<br>romulus-bmc          OpenPOWER Romulus BMC (ARM1176)<br>sabrelite            Freescale i.MX6 Quad SABRE Lite Board (Cortex-A9)<br>smdkc210             Samsung SMDKC210 board (Exynos4210)<br>sonorapass-bmc       OCP SonoraPass BMC (ARM1176)<br>spitz                Sharp SL-C3000 (Spitz) PDA (PXA270)<br>stm32vldiscovery     ST STM32VLDISCOVERY (Cortex-M3)<br>supermicrox11-bmc    Supermicro X11 BMC (ARM926EJ-S)<br>swift-bmc            OpenPOWER Swift BMC (ARM1176) (deprecated)<br>sx1                  Siemens SX1 (OMAP310) V2<br>sx1-v1               Siemens SX1 (OMAP310) V1<br>tacoma-bmc           OpenPOWER Tacoma BMC (Cortex-A7)<br>terrier              Sharp SL-C3200 (Terrier) PDA (PXA270)<br>tosa                 Sharp SL-6000 (Tosa) PDA (PXA255)<br>verdex               Gumstix Verdex (PXA270)<br>versatileab          ARM Versatile&#x2F;AB (ARM926EJ-S)<br>versatilepb          ARM Versatile&#x2F;PB (ARM926EJ-S)<br>vexpress-a15         ARM Versatile Express for Cortex-A15<br>vexpress-a9          ARM Versatile Express for Cortex-A9<br>virt-2.10            QEMU 2.10 ARM Virtual Machine<br>virt-2.11            QEMU 2.11 ARM Virtual Machine<br>virt-2.12            QEMU 2.12 ARM Virtual Machine<br>virt-2.6             QEMU 2.6 ARM Virtual Machine<br>virt-2.7             QEMU 2.7 ARM Virtual Machine<br>virt-2.8             QEMU 2.8 ARM Virtual Machine<br>virt-2.9             QEMU 2.9 ARM Virtual Machine<br>virt-3.0             QEMU 3.0 ARM Virtual Machine<br>virt-3.1             QEMU 3.1 ARM Virtual Machine<br>virt-4.0             QEMU 4.0 ARM Virtual Machine<br>virt-4.1             QEMU 4.1 ARM Virtual Machine<br>virt-4.2             QEMU 4.2 ARM Virtual Machine<br>virt-5.0             QEMU 5.0 ARM Virtual Machine<br>virt-5.1             QEMU 5.1 ARM Virtual Machine<br>virt-5.2             QEMU 5.2 ARM Virtual Machine<br>virt-6.0             QEMU 6.0 ARM Virtual Machine<br>virt-6.1             QEMU 6.1 ARM Virtual Machine<br>virt                 QEMU 6.2 ARM Virtual Machine (alias of virt-6.2)<br>virt-6.2             QEMU 6.2 ARM Virtual Machine<br>witherspoon-bmc      OpenPOWER Witherspoon BMC (ARM1176)<br>xilinx-zynq-a9       Xilinx Zynq Platform Baseboard for Cortex-A9<br>z2                   Zipit Z2 (PXA27x)<br>zqs@LAPTOP-8GHA100U:</del>&#x2F;u-boot-u-boot-2016.09.y-imx6$ </p>
+
+</div>
+
+<!-- post-guide -->
+
+    <div class="post-guide">
+        <div class="item left">
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/blog/2024/06/26/hello-world/">
+                Hello World
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+<!-- comment - giscus -->
+
+
+<!-- comment - valine -->
+
+
+<script>
+	
+	
+</script>
+
+	</div>
+	<div id="footer">
+	<p>
+	©<span id="footerYear-start"></span>-<span id="footerYear-end"></span>
+
+	
+	    <a href="/">ZQS</a>
+	
+	
+	
+	<br>
+	Theme <a href="//github.com/wujun234/hexo-theme-tree" target="_blank">Tree</a>
+	by <a href="//wujun.me" target="_blank">Wu Jun</a>
+	Powered by <a href="//hexo.io" target="_blank">Hexo</a>
+	</p>
+</div>
+
+
+<script type="text/javascript">
+	document.getElementById('footerYear-start').innerHTML = new Date().getFullYear() + '';
+</script>
+
+<script type="text/javascript">
+	document.getElementById('footerYear-end').innerHTML = new Date().getFullYear() + '';
+</script>
+
+	<button id="totop-toggle" class="toggle"><i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+</body>
+</html>
