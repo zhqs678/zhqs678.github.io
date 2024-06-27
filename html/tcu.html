@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"/>
+    <title>TCU报文解析程序</title>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <!--  <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>-->
+	<!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>-->
+	<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+</head>
+
+<body style="background-color: #fff;font-size: 14px;line-height: 1.428;">
+<form role="form">
+    <div class="container" style="margin-top: 5px;">
+	<!--
+        <div class="row">
+            <div class="col-md-12 input-group">
+                <span class="input-group-addon">帧 ID</span>
+				<select type="text" class="form-control" id="analysisMsg" style="width: 100%">
+                    <option value="02">充电启动应答帧</option>
+  					<option value="11">充电启动完成</option>
+					<option value="13">充电停止完成</option>
+					<option value="20">充电控制组件遥测帧</option>
+					<option value="21">充电控制组件遥测帧</option>
+					<option value="22">充电控制组件遥信帧</option>					
+  					<option value="23">充电控制组件遥信帧</option>  					
+  					<option value="1C">BSD_1C____BMS统计数据报文</option>
+					<option value="1D">CSD_1D____充电机统计数据报文</option>
+					<option value="1E">BEM_1E____BMS错误报文</option>
+					<option value="1F">CEM_1F____充电机错误报文</option>
+				</select>
+                <span class="input-group-btn">
+                    <button id="analysisMsgBtn" type="button" class="btn btn-default">解析</button>
+                </span>
+            </div>
+        </div>
+	-->
+	
+		<div class="row">
+
+				<input type="radio" checked id="02_start_ack" name="analysisMsg" value="02"/>
+				<label for="02_start_ack">02__充电启动应答帧 </label>
+				
+				<input type="radio" id="11_start_over" name="analysisMsg" value="11" />
+				<label for="11_start_over">11__充电启动完成 </label>
+				
+				<input type="radio" id="13_stop_over" name="analysisMsg" value="13" />
+				<label for="13_stop_over">13__充电停止完成 </label>
+
+				<input type="radio" id="20_yc" name="analysisMsg" value="20" />
+				<label for="20_yc">20__遥测帧 </label>				
+				
+				<input type="radio" id="22_yx" name="analysisMsg" value="22" />
+				<label for="22_yx">22__遥信帧 </label>
+				
+				<input type="radio" id="23_yx" name="analysisMsg" value="23" />
+				<label for="23_yx">23__遥信帧 </label>
+
+		</div>
+		<span class="input-group-btn">
+			<button id="analysisMsgBtn" type="button" class="btn btn-default">解析</button>
+			<button id="clean_button" type="button" class="btn btn-default">清空</button>
+		</span>
+		
+        <div class="row" style="margin-top: 10px">
+            <div class="col-md-12">
+                <textarea class="form-control" id="inputData" rows="10"></textarea>
+            </div>
+        </div>
+		<div class="row" style="margin-top: 10px">
+            <div class="col-md-12">
+                <textarea class="form-control" id="analysisResult" rows="20" readonly="readonly"></textarea>
+            </div>
+        </div>
+
+    </div>
+
+
+<script type="text/javascript">
+
+	function getRadioVal(radioName) {
+		var rads = document.getElementsByName(radioName);
+		for(var rad in rads) {
+			if(rads[rad].checked)
+				return rads[rad].value;
+		}
+		return null;
+	}
+	//清空
+    $("#clean_button").on("click", function () {
+        document.getElementById("inputData").value = "";
+		document.getElementById("analysisResult").value = "";
+	})
+
+    //解析报文开始
+    $("#analysisMsgBtn").on("click", function () {
+     
+        var resultMsg = "";
+
+		//充电启动应答帧
+        //var msg = document.getElementById("inputData").value = "00 02 00 00 01 00 00 00 ";
+		//充电启动完成
+        //var msg = document.getElementById("inputData").value = "01 09 36 00 00 00 01 00\
+		////\n02 00 01 00 01 01 00 01 \
+		// \n03 03 73 aa 19 77 01 00 \
+		// \n04 00 a4 16 6b 17 98 17 \
+		// \n05 ac 0d e4 02 4c 1d d0 \
+		// \n06 07 d0 07 a0 0f 4c 43 \
+		// \n07 39 53 32 48 31 53 30 \
+		// \n08 4e 36 43 44 4c 33 37 \
+		// \n09 37 86 0c ";
+        // var msg = document.getElementById("inputData").value = "\
+		// \n01 05 1e 00 00 00 00 a0 \
+		// \n02 0f 00 00 00 00 00 00 \
+		// \n03 00 32 90 01 00 00 a0 \
+		// \n04 0f 02 00 00 a0 0f 00 \
+		// \n05 00 32 32 32 32 bd 03";
+		//var msg = document.getElementById("inputData").value = "00 03 08 07 00 20 00 00";
+		//var msg = document.getElementById("inputData").value = "00 00 00 00 00 20 00 00";
+
+		//
+        var msg = document.getElementById("inputData").value;
+
+        var msgType = getRadioVal("analysisMsg");
+
+        //首先去掉报文中的空格
+        msg = msg.replace(/\s*/g,"");
+        var data = "";
+
+        if (msgType == "02") {	//02__充电启动应答帧
+
+            //data = read_msg_data(msg);
+			data = msg;
+
+            var cell = data.substr(0, 2);
+            resultMsg += "充电接口标识: " + cell + "\n";
+            cell = data.substr(2, 2);
+            resultMsg += "负荷控制开关: " + cell + " (01-启用，02-关闭)\n";
+            cell = data.substr(4, 2);
+            resultMsg += "确认标识: " + cell + " (00-成功，01-失败)" + "\n";
+			
+			resultMsg += "V1.14版本无失败原因.\n";
+            cell = data.substr(6, 2);
+            resultMsg += "失败原因: " + analysis_02(cell) + "\n";
+			cell = data.substr(8, 2);
+            resultMsg += "即插即充标识: " + cell + " (01-非即插即充,02-即插即充)" + "\n";
+
+        } else if (msgType == "11") {   //充电启动完成
+			data = read_msg_data(msg);
+            resultMsg += analysis_11(data);
+        } else if (msgType == "13") {     //充电停止完成
+			data = read_msg_data(msg);
+            resultMsg += analysis_13(data);
+        } else if (msgType == "20") {     //遥测帧
+			data = read_msg_data(msg);
+			resultMsg += analysis_20(data);
+		} else if (msgType == "22") {     //遥信帧1
+			data = msg;
+			resultMsg += analysis_22(data);
+		} else if (msgType == "23") {     //遥信帧2
+			data = msg;
+			resultMsg += analysis_23(data);
+		}
+		
+		
+        document.getElementById("analysisResult").value = resultMsg;
+    }
+    )
+	
+	
+	function analysis_02(code) {
+		var resultMsg = "";
+		
+		switch(code) {
+		case "00":
+			resultMsg = "00H:成功";
+			break;
+		case "01":
+			resultMsg = "01H:数据合法性校验失败";
+			break;
+		case "02":
+			resultMsg = "02H:充电控制组件与计费控制组件通讯超时";
+			break;
+		case "03":
+			resultMsg = "03H:充电控制组件与计费控制组件“版本校验”未完成";
+			break;
+		case "04":
+			resultMsg = "04H:充电控制组件与计费控制组件“下发充电参数”未完成";
+			break;
+		case "05":
+			resultMsg = "05H:充电桩暂停服务";
+			break;
+		case "06":
+			resultMsg = "06H:充电桩处于“工作”状态";
+			break;
+		case "07":
+			resultMsg = "07H:充电桩处于“暂停”状态";
+			break;
+		case "08":
+			resultMsg = "08H:充电桩与车辆处于未连接状态";
+			break;
+		case "09":
+			resultMsg = "09H:急停按钮动作故障";
+			break;
+		case "0A":
+			resultMsg = "0AH:门禁故障（ 充电桩）";
+			break;
+		case "0B":
+			resultMsg = "0BH:避雷器故障";
+			break;
+		case "0C":
+			resultMsg = "0CH:烟感故障";
+			break;
+		case "0D":
+			resultMsg = "0DH:充电桩过温故障";
+			break;
+		case "0E":
+			resultMsg = "0EH:充电接口过温故障";
+			break;
+		case "0F":
+			resultMsg = "0FH:充电接口电子锁故障";
+			break;
+		case "10":
+			resultMsg = "10H:绝缘监测故障";
+			break;
+		case "11":
+			resultMsg = "11H:电池极性反接故障";
+			break;
+		case "12":
+			resultMsg = "12H:BMS 通信超时故障";
+			break;
+		case "13":
+			resultMsg = "13H:输入高压断路器故障";
+			break;
+		case "14":
+			resultMsg = "14H:输入高压接触器拒动/误动故障";
+			break;
+		case "15":
+			resultMsg = "15H:输入高压接触器粘连故障";
+			break;
+		case "16":
+			resultMsg = "16H:输出高压接触器拒动/误动故障";
+			break;
+		case "17":
+			resultMsg = "17H:输出高压接触器粘连故障";
+			break;
+		case "18":
+			resultMsg = "18H:输出高压熔断器故障";
+			break;
+		case "19":
+			resultMsg = "19H:并联接触器拒动/误动故障";
+			break;
+		case "1A":
+			resultMsg = "1AH:并联接触器粘连故障";
+			break;
+		case "1B":
+			resultMsg = "1BH:泄放回路故障";
+			break;
+		case "1C":
+			resultMsg = "1CH:辅助电源故障";
+			break;
+		case "1D":
+			resultMsg = "1DH:充电机模块故障";
+			break;
+		case "1E":
+			resultMsg = "1EH:输入电源故障";
+			break;
+		case "1F":
+			resultMsg = "1FH:输出电压过压故障";
+			break;
+		case "20":
+			resultMsg = "20H:输出电压欠压故障";
+			break;
+		case "21":
+			resultMsg = "21H:输出电流过流故障";
+			break;
+		case "22":
+			resultMsg = "22H:输出短路故障";
+			break;
+		case "23":
+			resultMsg = "23H:无空余充电机模块可用";
+			break;
+		case "24":
+			resultMsg = "24H:预留";
+			break;
+		case "25":
+			resultMsg = "25H:门禁故障";
+			break;
+		case "26":
+			resultMsg = "26H:水浸故障";
+			break;
+		case "27":
+			resultMsg = "27H:水浸故障";
+			break;
+		case "28":
+			resultMsg = "28H:直流充电控制模块与功率控制模块通信超时";
+			break;
+		case "29":
+			resultMsg = "29H:功率控制模块与开关模块通信超时";
+			break;
+		case "2A":
+			resultMsg = "2AH:开关模块故障";
+			break;
+		case "2B":
+			resultMsg = "2BH:非即插即充设备";
+			break;
+		case "2C":
+			resultMsg = "2CH:辅助电源电压切换回路故障";
+			break;
+		case "2D":
+			resultMsg = "2DH:功率控制模块与充电模块通信超时";
+			break;
+		case "2E":
+			resultMsg = "2EH:功率控制器间通信超时";
+			break;
+		case "FF":
+			resultMsg = "FFH:充电桩其他故障";
+			break;
+		}
+		return resultMsg;
+	}
+
+    function analysis_11(msg) {
+		var resultMsg = "";
+		var cell = msg.substr(0, 2);
+		
+		resultMsg += "充电接口标识: " + cell + "\n";
+		cell = msg.substr(2, 2);
+		resultMsg += "负荷控制开关: " + cell + " (01-启用，02-关闭)\n";
+		cell = msg.substr(4, 2);
+		resultMsg += "确认标识: " + cell + " (00-成功，01-失败)" + "\n";
+		cell = msg.substr(6, 2);
+		resultMsg += "失败原因: ";
+		
+		switch(cell.toUpperCase()) {
+		case "00":
+			resultMsg += "00H：成功";
+			break;
+		case "01":
+			resultMsg += "01H：充电中控制导引故障";
+			break;
+		case "02":
+			resultMsg += "02H：充电控制组件与计费控制组件通讯超";
+			break;
+		case "03":
+			resultMsg += "03H：急停按钮动作故障";
+			break;
+		case "04":
+			resultMsg += "04H：门禁故障（ 充电桩）";
+			break;
+		case "05":
+			resultMsg += "05H：避雷器故障";
+			break;
+		case "06":
+			resultMsg += "06H：烟感故障";
+			break;
+		case "07":
+			resultMsg += "07H：交流输入断路器故障";
+			break;
+		case "08":
+			resultMsg += "08H：交流输入接触器拒动/误动故障";
+			break;
+		case "09":
+			resultMsg += "09H：交流输入接触器粘连故障";
+			break;
+		case "0A":
+			resultMsg += "0AH：交流输入故障（过压，欠压，缺相，过流）";
+			break;
+		case "0B":
+			resultMsg += "0BH：充电桩过温故障";
+			break;
+		case "0C":
+			resultMsg += "0CH：充电接口过温故障";
+			break;
+		case "0D":
+			resultMsg += "0DH：充电接口电子锁故障";
+			break;
+		case "0E":
+			resultMsg += "0EH：绝缘监测故障";
+			break;
+		case "0F":
+			resultMsg += "0FH：电池极性反接故障";
+			break;
+		case "10":
+			resultMsg += "10H：直流输出接触器拒动/误动故障";
+			break;
+		case "11":
+			resultMsg += "11H：直流输出接触器粘连故障";
+			break;
+		case "12":
+			resultMsg += "12H：直流输出熔断器故障";
+			break;
+		case "13":
+			resultMsg += "13H：并联接触器拒动/误动故障";
+			break;
+		case "14":
+			resultMsg += "14H：并联接触器粘连故障";
+			break;
+		case "15":
+			resultMsg += "15H：泄放回路故障";
+			break;
+		case "16":
+			resultMsg += "16H：辅助电源故障";
+			break;
+		case "17":
+			resultMsg += "17H：充电机模块故障";
+			break;
+		case "18":
+			resultMsg += "18H：直流输出电压过压故障";
+			break;
+		case "19":
+			resultMsg += "19H：直流输出电压欠压故障";
+			break;
+		case "1A":
+			resultMsg += "1AH：直流输出电流过流故障";
+			break;
+		case "1B":
+			resultMsg += "1BH：直流输出短路故障";
+			break;
+		case "1C":
+			resultMsg += "1CH：电池最高允许充电电压小于充电机最小输出电压";
+			break;
+		case "1D":
+			resultMsg += "1DH：绝缘监测前直流输出接触器外侧电压≥10V";
+			break;
+		case "1E":
+			resultMsg += "1EH：启动充电前直流输出接触器外侧电压与通信报文电池电压相差＞± 5%";
+			break;
+		case "1F":
+			resultMsg += "1FH：启动充电前直流输出接触器外侧电压小于充电机最小输出电压";
+			break;
+		case "20":
+			resultMsg += "20H：启动充电前直流输出接触器外侧电压大于充电机最大输出电压";
+			break;
+		case "21":
+			resultMsg += "21H：电池端电压大于电池最高允许充电电";
+			break;
+		case "22":
+			resultMsg += "22H：BRM 报文接收超时";
+			break;
+		case "23":
+			resultMsg += "23H：BRM 报文数据项异常";
+			break;
+		case "24":
+			resultMsg += "24H：BCP 报文接收超时";
+			break;
+		case "25":
+			resultMsg += "5H：BCP 报文数据项异常";
+			break;
+		case "26":
+			resultMsg += "26H：BRO 报文（ 0x00） 接收超时";
+			break;
+		case "27":
+			resultMsg += "27H：BRO 报文（ 0xAA） 接收超时";
+			break;
+		case "28":
+			resultMsg += "28H：充电机其他故障";
+			break;
+		case "29":
+			resultMsg += "29H：车辆验证确认帧超时";
+			//resultMsg += "29H：BCL 报文接收超时";
+			break;
+		case "2A":
+			resultMsg += "2AH：车辆鉴权不通过";
+			//resultMsg += "2AH：BCS 报文接收超时";
+			break;
+		//以上是1.14版本协议
+		case "2B":
+			resultMsg += "2BH：门禁故障";
+			break;
+		case "2C":
+			resultMsg += "2CH：水浸故障（ 充电桩）";
+			break;
+		case "2D":
+			resultMsg += "2DH：水浸故障（ 充电机柜，";
+			break;
+		case "2E":
+			resultMsg += "2EH：直流充电控制模块与功率控制模块通信超时";
+			break;
+		case "2F":
+			resultMsg += "2FH：功率控制模块与开关模块通信超时";
+			break;	
+		case "30":
+			resultMsg += "30H：开关模块故障";
+			break;	
+		case "31":
+			resultMsg += "31H：BMS 通信协议版本不匹配";
+			break;	
+		case "32":
+			resultMsg += "32H：VIN 码非法";
+			break;	
+		case "33":
+			resultMsg += "33H: 即插即充鉴权失败";
+			break;	
+		case "34":
+			resultMsg += "34H：平台鉴权超时";
+			break;	
+		case "35":
+			resultMsg += "35H: 车辆识别鉴权帧超时";
+			break;	
+		case "36":
+			resultMsg += "36H: 鉴权 VIN 与车辆 VIN 不一致";
+			break;
+		case "37":
+			resultMsg += "37H：低压辅助电源模块输出故障";
+			break;
+		case "38":
+			resultMsg += "38H：PE 断线故障";
+			break;	
+		case "39":
+			resultMsg += "39H：控制导引电压异常";
+			break;	
+		case "3A":
+			resultMsg += "3AH：充电机柜过温故障（充电机柜，仅直流桩使用）";
+			break;
+		case "3B":
+			resultMsg += "3BH：充电桩执行功率分配策略失败故障";
+			break;
+		case "3C":
+			resultMsg += "3CH：无空闲模块可用（具备分配功率机型）";
+			break;
+		case "3D":
+			resultMsg += "3DH：预充阶段调压失败";
+			break;
+		case "3E":
+			resultMsg += "3EH：BRO 准备就绪后取消";
+			break;
+		case "3F":
+			resultMsg += "3FH：BRO 报文接收超时";
+			break;
+		case "40":
+			resultMsg += "40H：功率控制模块与充电模块通信超时";
+			break;
+		case "41":
+			resultMsg += "41H：功率控制器间通信超时（并机扩容场景）";
+			break;
+		case "42":
+			resultMsg += "42H：BRO 充电准备就绪报文超时";
+			break;
+		case "43":
+			resultMsg += "43H：BMS 通信异常";
+			break;			
+		case "FF":
+			resultMsg += "FFH：充电机其他故障";
+			break;		
+			
+		}
+
+		cell = msg.substr(8, 6);
+		resultMsg += "\r\n" + "充电桩与BMS通信协议版本号:" + cell + ".";
+		cell = msg.substr(14, 6);
+		resultMsg += "\r\n" + "BMS与充电桩通信协议版本号:" + cell + ".";
+		cell = msg.substr(14, 6);
+		resultMsg += "\r\n" + "充电桩与BMS握手结果:" + cell + ".";
+		cell = msg.substr(14, 6);
+		resultMsg += "\r\n" + "BMS与充电桩通信协议版本号:" + cell + ".";
+
+		resultMsg += "\r\n" + "充电桩与BMS通信协议版本号" + parseInt(exchangeHL(cell), 16)/10 + ".";
+
+		cell = msg.substr(34, 4);
+		
+        return resultMsg;
+    }
+
+	function analysis_13(msg) {
+		var resultMsg = "";
+		var cell = msg.substr(0, 2);
+		
+		resultMsg += "充电接口标识: " + cell + "\n";
+		cell = msg.substr(2, 2);
+		resultMsg += "停止原因: ";
+		cell = cell.toUpperCase()
+		
+		switch(cell) {
+		case "00":
+			resultMsg += "00H";
+			break;
+		case "01":
+			resultMsg += "01H： 计费控制组件正常停止";
+			break;
+		case "02":
+			resultMsg += "02H： 计费控制组件自身故障终止";
+			break;
+		case "03":
+			resultMsg += "03H： 计费控制组件判断充电控制组件故障";
+			break;
+		case "04":
+			resultMsg += "04H： 启动完成状态帧确认超时故障终止";
+			break;
+		case "05":
+			resultMsg += "05H： 充电中控制导引故障";
+			break;
+		case "06":
+			resultMsg += "06H： 充电控制组件与计费控制组件通讯超时";
+			break;
+		case "07":
+			resultMsg += "07H： 充电桩充电中暂停超时";
+			break;
+		case "08":
+			resultMsg += "08H： 急停按钮动作故障";
+			break;
+		case "09":
+			resultMsg += "09H： 门禁故障";
+			break;
+		case "0A":
+			resultMsg += "0AH： 避雷器故障";
+			break;
+		case "0B":
+			resultMsg += "0BH： 烟感故障";
+			break;
+		case "0C":
+			resultMsg += "0CH： 交流输入断路器故障";
+			break;
+		case "0D":
+			resultMsg += "0DH： 交流输入接触器拒动/误动故障";
+			break;
+		case "0E":
+			resultMsg += "0EH： 交流输入接触器粘连故障";
+			break;
+		case "0F":
+			resultMsg += "0FH： 交流输入故障（ 过压， 欠压， 缺相，过流）";
+			break;
+		case "10":
+			resultMsg += "10H： 充电桩过温故障";
+			break;
+		case "11":
+			resultMsg += "11H： 充电接口过温故障";
+			break;
+		case "12":
+			resultMsg += "12H： 充电接口电子锁故障";
+			break;
+		case "13":
+			resultMsg += "13H： 直流输出接触器拒动/误动故障";
+			break;
+		case "14":
+			resultMsg += "14H： 直流输出接触器粘连故障";
+			break;
+		case "15":
+			resultMsg += "15H： 直流输出熔断器故障";
+			break;
+		case "16":
+			resultMsg += "16H： 并联接触器拒动/误动故障";
+			break;
+		case "17":
+			resultMsg += "17H： 并联接触器粘连故障";
+			break;
+		case "18":
+			resultMsg += "18H： 泄放回路故障";
+			break;
+		case "19":
+			resultMsg += "19H： 辅助电源故障";
+			break;
+		case "1A":
+			resultMsg += "1AH： 充电机模块故障";
+			break;
+		case "1B":
+			resultMsg += "1BH： 直流输出电压过压故障";
+			break;
+		case "1C":
+			resultMsg += "1CH： 直流输出电压欠压故障";
+			break;
+		case "1D":
+			resultMsg += "1DH： 直流输出电流过流故障";
+			break;
+		case "1E":
+			resultMsg += "1EH： 直流输出短路故障";
+			break;
+		case "1F":
+			resultMsg += "1FH： 电池充电需求报文（ BCL） 超时";
+			break;
+		case "20":
+			resultMsg += "20H： 电池充电总状态报文（ BCS） 超时";
+			break;
+		case "21":
+			resultMsg += "21H： 动力蓄电池状态信息（ BSM） 超时";
+			break;
+		case "22":
+			resultMsg += "22H： BSM 报文中单体动力蓄电池电压过压";
+			break;
+		case "23":
+			resultMsg += "23H： BSM 报文中单体动力蓄电池电压过低";
+			break;
+		case "24":
+			resultMsg += "24H： BSM 报文中 SOC 过高";
+			break;
+		case "25":
+			resultMsg += "25H： BSM 报文中 SOC 过低";
+			break;
+		case "26":
+			resultMsg += "26H： BSM 报文中充电过电流";
+			break;
+		case "27":
+			resultMsg += "27H： BSM 报文中动力蓄电池温度过高";
+			break;
+		case "28":
+			resultMsg += "28H： BSM 报文中动力蓄电池绝缘状态异常";
+			break;
+		case "29":
+			resultMsg += "29H： BSM 报文中连接器连接状态异常";
+			break;
+		case "2A":
+			resultMsg += "2AH： BMS 正常终止充电";
+			break;
+		case "2B":
+			resultMsg += "2BH： BMS 异常终止充电";
+			break;
+		case "2C":
+			resultMsg += "2CH： 充电桩判断 BMS 其他异常终止";
+			break;
+		case "2D":
+			resultMsg += "2DH： 充电桩其他故障";
+			break;
+
+		//以上是V1.14协议版本
+		case "2E":
+			resultMsg += "2EH： 低压辅助电源模块输出故障";
+			break;
+		case "2F":
+			resultMsg += "2FH： PE 断线故障";
+			break;	
+		case "30":
+			resultMsg += "30H： 控制导引电压异常";
+			break;	
+		case "31":
+			resultMsg += "31H： 充电机柜过温故障（ 充电机柜";
+			break;	
+		case "32":
+			resultMsg += "32H： 充电桩执行功率分配策略失败故障";
+			break;	
+		case "33":
+			resultMsg += "33H： 无空闲模块可用（ 具备分配功率机型）";
+			break;	
+		case "34":
+			resultMsg += "34H： 预充阶段调压失败";
+			break;	
+		case "35":
+			resultMsg += "35H： BST 停止未知故障";
+			break;	
+		case "36":
+			resultMsg += "36H： 输出电压大于车辆最高允许充电电压";
+			break;
+		case "37":
+			resultMsg += "37H： 需求电流超过车辆最高允许充电电流";
+			break;
+		case "38":
+			resultMsg += "38H： 需求电压超过车辆最高允许充电电压";
+			break;	
+		case "39":
+			resultMsg += "39H： 充电控制模块与功率控制模块通信超时";
+			break;	
+		case "3A":
+			resultMsg += "3AH： 功率控制模块与开关模块通信超时";
+			break;
+		case "3B":
+			resultMsg += "3BH： 功率控制模块与充电模块通信超时";
+			break;
+		case "3C":
+			resultMsg += "3CH： 功率控制器间通信超时（ 并机扩容场景）";
+			break;
+		case "3D":
+			resultMsg += "3DH： BMS 通讯异常";
+			break;
+		case "FF":
+			resultMsg += "FFH：充电桩其他故障";
+			break;
+		}
+		
+        return resultMsg;
+    }
+
+	function analysis_20(msg) {
+		var resultMsg = "";
+
+		var cell = msg.substr(0, 2);
+		resultMsg += "充电接口标识: " + cell + ".";
+		cell = msg.substr(2, 4);
+        resultMsg += "\r\n" + "充电输出电压：" + (parseInt(exchangeHL(cell), 16)/10) + "V";
+		cell = msg.substr(6, 4);
+        resultMsg += "\r\n" + "充电输出电流：" + (parseInt(exchangeHL(cell), 16)/10-400) + "A";
+		cell = msg.substr(10, 2);
+        resultMsg += "\r\n" + "SOC：" + parseInt(cell, 16) + ".";
+		cell = msg.substr(12, 2);
+        resultMsg += "\r\n" + "电池组最低温度：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(14, 2);
+        resultMsg += "\r\n" + "电池组最高温度：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(16, 4);
+        resultMsg += "\r\n" + "单体电池最高电压：" + parseInt(exchangeHL(cell), 16)/100 + ".";
+		cell = msg.substr(20, 4);
+        resultMsg += "\r\n" + "单体电池最低电压：" + parseInt(exchangeHL(cell), 16)/100 + ".";
+		cell = msg.substr(24, 2);
+        resultMsg += "\r\n" + "充电机环境温度：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(26, 4);
+        resultMsg += "\r\n" + "充电导引电压：" + parseInt(exchangeHL(cell), 16)/100 + ".";
+		cell = msg.substr(30, 4);
+        resultMsg += "\r\n" + "BMS 需求电压：" + parseInt(exchangeHL(cell), 16)/10 + ".";
+		cell = msg.substr(34, 4);
+        resultMsg += "\r\n" + "BMS 需求电流：" + (parseInt(exchangeHL(cell), 16)/10-400) + ".";
+		cell = msg.substr(38, 2);
+        resultMsg += "\r\n" + "充电模式：" + (parseInt(cell, 16)) + ".";
+		cell = msg.substr(40, 4);
+        resultMsg += "\r\n" + "BMS 充电电压测量值：" + parseInt(exchangeHL(cell), 16)/10 + ".";
+		cell = msg.substr(44, 4);
+        resultMsg += "\r\n" + "BMS 充电电流测量值：" + (parseInt(exchangeHL(cell), 16)/10-400) + ".";
+		cell = msg.substr(48, 4);
+        resultMsg += "\r\n" + "估算剩余充电时间：" + parseInt(exchangeHL(cell), 16) + ".";
+		cell = msg.substr(52, 2);
+        resultMsg += "\r\n" + "充电接口温度探头 1 温度(充电接口 1 DC+)：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(54, 2);
+        resultMsg += "\r\n" + "充电接口温度探头 2 温度(充电接口 1 DC-)：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(56, 2);
+        resultMsg += "\r\n" + "充电接口温度探头 3 温度(充电接口 2 DC+)：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(58, 2);
+        resultMsg += "\r\n" + "充电接口温度探头 4 温度(充电接口 2 DC-)：" + (parseInt(cell, 16)-50) + ".";
+		
+		//以上是V1.14版本协议
+		cell = msg.substr(60, 2);
+        resultMsg += "\r\n" + "最高单体动力蓄电池电压所在编号：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(62, 2);
+        resultMsg += "\r\n" + "最高温度检测点编号：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(64, 2);
+        resultMsg += "\r\n" + "最低动力蓄电池温度检测点编号：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(66, 2);
+        resultMsg += "\r\n" + "充电机进风口温度：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(68, 2);
+        resultMsg += "\r\n" + "充电机出风口温度：" + (parseInt(cell, 16)-50) + ".";
+		cell = msg.substr(70, 2);
+        resultMsg += "\r\n" + "充电机环境湿度：" + (parseInt(cell, 16)-50) + ".";
+		
+		return resultMsg;
+	}
+
+	function analysis_22(msg) {
+		var resultMsg = "";
+
+		var cell = msg.substr(0, 2);
+		resultMsg += "充电接口标识: " + cell + "\n";
+
+		cell = msg.substr(2, 2);
+		var code = parseInt(cell, 16);
+		if ((code & 0x03) == 0) {
+			resultMsg += "待机\n";
+		} else if ((code & 0x03) == 1) {
+			resultMsg += "工作\n";
+		} else if ((code & 0x03) == 2) {
+			resultMsg += "充电完成\n";
+		} else if ((code & 0x03) == 3) {
+			resultMsg += "充电暂停\n";
+		}
+
+		cell = msg.substr(2, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x04)
+			resultMsg += "总故障：1；\n";
+		else
+			resultMsg += "总故障：0；\n";
+		if (code & 0x08)
+			resultMsg += "总告警：1；\n";
+		else
+			resultMsg += "总告警：0；\n";
+		if (code & 0x10)
+			resultMsg += "急停按钮动作故障；\n";
+		if (code & 0x20)
+			resultMsg += "烟感故障；\n";
+		if (code & 0x40)
+			resultMsg += "交流输入断路器故障；\n";
+		if (code & 0x80)
+			resultMsg += "直流母线输出接触器拒动/误动故障工作；\n";
+
+		cell = msg.substr(4, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "直流母线输出熔断器故障；\n";
+		if (code & 0x02)
+			resultMsg += "充电接口电子锁故障；\n";
+		if (code & 0x04)
+			resultMsg += "充电桩风扇故障；\n";
+		if (code & 0x08)
+			resultMsg += "避雷器故障；\n";
+		if (code & 0x10)
+			resultMsg += "绝缘监测故障；\n";
+		if (code & 0x20)
+			resultMsg += "电池极性反接故障；\n";
+		if (code & 0x40)
+			resultMsg += "充电中车辆控制导引故障；\n";
+		if (code & 0x80)
+			resultMsg += "充电桩过温故障；\n";
+
+		cell = msg.substr(6, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "充电接口过温故障；\n";
+		if (code & 0x02)
+			resultMsg += "充电枪未归位告警；\n";
+		if (code & 0x04)
+			resultMsg += "BMS 通信故障；\n";
+		if (code & 0x08)
+			resultMsg += "输入电压过压故障；\n";
+		if (code & 0x10)
+			resultMsg += "输入电压欠压故障；\n";
+		if (code & 0x20)
+			resultMsg += "直流母线输出过压故障；\n";
+		if (code & 0x40)
+			resultMsg += "直流母线输出欠压故障；\n";
+		if (code & 0x80)
+			resultMsg += "直流母线输出过流故障；\n";
+
+		cell = msg.substr(8, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "充电模块故障；\n";
+		if (code & 0x02)
+			resultMsg += "充电模块交流输入故障；\n";
+		if (code & 0x04)
+			resultMsg += "充电模块交流输入过压故障；\n";
+		if (code & 0x08)
+			resultMsg += "充电模块交流输入欠压故障；\n";
+		if (code & 0x10)
+			resultMsg += "充电模块交流输入缺相故障；\n";
+		if (code & 0x20)
+			resultMsg += "充电模块直流输出短路故障；\n";
+		if (code & 0x40)
+			resultMsg += "充电模块直流输出过流故障；\n";
+		if (code & 0x80)
+			resultMsg += "充电模块直流输出过压故障；\n";
+
+		cell = msg.substr(10, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "充电模块直流输出欠压故障；\n";
+		if (code & 0x02)
+			resultMsg += "充电模块过温故障；\n";
+		if (code & 0x04)
+			resultMsg += "充电模块通信故障；\n";
+		if (code & 0x08)
+			resultMsg += "充电模块风扇故障；\n";
+		if (code & 0x10)
+			resultMsg += "车辆连接状态-未连接；\n";
+		else
+			resultMsg += "车辆连接状态-已连接；\n";
+		if (code & 0x20)
+			resultMsg += "充电桩充电枪座状态-未连接；\n";
+		else
+			resultMsg += "充电桩充电枪座状态-已连接；\n";
+		if (code & 0x40)
+			resultMsg += "充电接口电子锁状态-锁止；\n";
+		else
+			resultMsg += "充电接口电子锁状态-解锁；\n";
+		if (code & 0x80)
+			resultMsg += "直流输出接触器状态-闭合；\n";
+		else
+			resultMsg += "直流输出接触器状态-分断；\n";
+
+
+		return resultMsg;
+	}
+
+	function analysis_23(msg) {
+		var resultMsg = "";
+
+		var cell = msg.substr(0, 2);
+		resultMsg += "充电接口标识: " + cell + "\n";
+
+		cell = msg.substr(2, 2);
+		var code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "充电桩门禁故障\n";
+		if (code & 0x02)
+			resultMsg += "直流输出接触器粘连故障\n";
+		if (code & 0x04)
+			resultMsg += "绝缘监测告警\n";
+		if (code & 0x08)
+			resultMsg += "泄放回路故障\n";
+		if (code & 0x10)
+			resultMsg += "充电桩过温告警\n";
+		if (code & 0x20)
+			resultMsg += "充电枪过温告警\n";
+		if (code & 0x40)
+			resultMsg += "交流输入接触器拒动/误动故障\n";
+		if (code & 0x80)
+			resultMsg += "交流输入接触器粘连故障\n";
+
+		cell = msg.substr(4, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "辅助电源故障\n";
+		if (code & 0x02)
+			resultMsg += "并联接触器据动/误动故障\n";
+			//resultMsg += "桥接接触器拒动/误动故障\n";
+		if (code & 0x04)
+			resultMsg += "并联接触器粘连故障\n";
+			//resultMsg += "桥接接触器粘连故障\n";
+		//以上是1.14版本协议
+		
+		if (code & 0x08)
+			resultMsg += "桥接接触器状态\n";
+		if (code & 0x10)
+			resultMsg += "模块紧急停机状态\n";
+		if (code & 0x20)
+			resultMsg += "充电桩水浸故障\n";
+		if (code & 0x40)
+			resultMsg += "充电机柜门禁故障\n";
+		if (code & 0x80)
+			resultMsg += "充电机柜水浸故障\n";
+
+		cell = msg.substr(6, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "充电机柜烟雾故障\n";
+		if (code & 0x02)
+			resultMsg += "功率控制模块通信故障\n";
+		if (code & 0x04)
+			resultMsg += "功率控制模块通信告警\n";
+		if (code & 0x08)
+			resultMsg += "功率控制模块故障\n";
+		if (code & 0x10)
+			resultMsg += "功率控制模块告警\n";
+		if (code & 0x20)
+			resultMsg += "开关模块通信故障\n";
+		if (code & 0x40)
+			resultMsg += "开关模块通信告警\n";
+		if (code & 0x80)
+			resultMsg += "开关模块故障\n";
+
+		cell = msg.substr(8, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "开关模块告警\n";
+		if (code & 0x02)
+			resultMsg += "直流充电控制模块判断 BMS故障\n";
+		if (code & 0x04)
+			resultMsg += "BMS 发送故障信息\n";
+		if (code & 0x08)
+			resultMsg += "充电模块泄放故障\n";
+		if (code & 0x10)
+			resultMsg += "充电机请求即插即充启动\n";
+		if (code & 0x20)
+			resultMsg += "交流输入接触器状态\n";
+		if (code & 0x40)
+			resultMsg += "交流接触器控制状态\n";
+		if (code & 0x80)
+			resultMsg += "充电端口直流接触器 K1 控制状态\n";
+
+		cell = msg.substr(10, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "充电端口直流接触器 K2 控制状态\n";
+		// if (code & 0x02)
+		// 	resultMsg += "\n";
+		// if (code & 0x04)
+		// 	resultMsg += "\n";
+		if (code & 0x08)
+			resultMsg += "充电端口辅助电源输出开关控制状态\n";
+		if (code & 0x10)
+			resultMsg += "充电端口辅助电源输出开关控制状态\n";
+		if (code & 0x20)
+			resultMsg += "充电机柜风机开关控制状态\n";
+		if (code & 0x40)
+			resultMsg += "充电端口电子锁控制状态\n";
+		// if (code & 0x80)
+		// 	resultMsg += "充电端口直流接触器 K1 控制状态\n";
+
+		cell = msg.substr(12, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "PE 断线故障\n";
+		if (code & 0x02)
+			resultMsg += "控制导引电压异常\n";
+		if (code & 0x04)
+			resultMsg += "充电模块启动失败\n";
+		if (code & 0x08)
+			resultMsg += "充电模块关机失败\n";
+		if (code & 0x10)
+			resultMsg += "充电模块地址异常\n";
+		if (code & 0x20)
+			resultMsg += "散热系统故障\n";
+		if (code & 0x40)
+			resultMsg += "充电机柜过温告警\n";
+		if (code & 0x80)
+			resultMsg += "充电机柜过温故障\n";
+		
+		cell = msg.substr(14, 2);
+		code = parseInt(cell, 16);
+		if (code & 0x01)
+			resultMsg += "充电桩执行功率分配策略失败故障\n";
+		if (code & 0x02)
+			resultMsg += "无空闲模块可用故障\n";
+		if (code & 0x04)
+			resultMsg += "预充阶段调压失败\n";
+		if (code & 0x08)
+			resultMsg += "功率控制模块间通信超时\n";
+		if (code & 0x10)
+			resultMsg += "充电机环境湿度告警\n";
+
+		return resultMsg;
+	}
+
+	
+    
+	//自定义函数（用于将sessionId由16进制转换为10进制）
+    function bigMut(big, common) {
+		    big += "";
+		    common += "";
+		    if (big.length < common.length) {
+		        big = [common, common = big][0];
+		    }
+		    big = big.split("").reverse();
+		    var oneMutManyRes = [];
+		    var i = 0,
+		        len = big.length;
+		    for (; i < len; i++) {
+		        oneMutManyRes[oneMutManyRes.length] = oneMutMany(big[i], common) + getLenZero(i);
+		    }
+		    var result = oneMutManyRes[0];
+		    for (i = 1, len = oneMutManyRes.length; i < len; i++) {
+		        result = bigNumAdd(result, oneMutManyRes[i]);
+		    }
+		    return result;
+		}
+
+		function getLenZero(len) {
+		    len += 1;
+		    var ary = [];
+		    ary.length = len;
+		    return ary.join("0");
+		}
+
+		function oneMutMany(one, many) {
+		    one += "";
+		    many += "";
+		    if (one.length != 1) {
+		        one = [many, many = one][0];
+		    }
+		    one = parseInt(one, 10);
+		    var i = 0,
+		        len = many.length,
+		        resAry = [],
+		        addTo = 0,
+		        curItem,
+		        curRes,
+		        toSave;
+		    many = many.split("").reverse();
+		    for (; i <= len; i++) {
+		        curItem = parseInt(many[i] || 0, 10);
+		        curRes = curItem * one + addTo;
+		        toSave = curRes % 10;
+		        addTo = (curRes - curRes % 10) / 10;
+		        resAry.unshift(toSave);
+		    }
+		    if (resAry[0] == 0) {
+		        resAry.splice(0, 1);
+		    }
+		    return resAry.join("");
+		}
+
+		function bigNumAdd(big, common) {
+		    big += "";
+		    common += "";
+		    var maxLen = Math.max(big.length, common.length),
+		        bAry = big.split("").reverse(),
+		        cAry = common.split("").reverse(),
+		        i = 0,
+		        addToNext = 0,
+		        resAry = [],
+		        fn,
+		        sn,
+		        sum;
+		    for (; i <= maxLen; i++) {
+		        fn = parseInt(bAry[i] || 0);
+		        sn = parseInt(cAry[i] || 0);
+		        sum = fn + sn + addToNext;
+		        addToNext = (sum - sum % 10) / 10;
+		        resAry.unshift(sum % 10);
+		    }
+		    if (resAry[0] == 0) {
+		        resAry.splice(0, 1);
+		    }
+		    return resAry.join("");
+		}
+
+		function sumStrings(a, b) {
+		    var res = '',
+		        c = 0;
+		    a = a.split('');
+		    b = b.split('');
+		    while (a.length || b.length || c) {
+		        c += ~~a.pop() + ~~b.pop();
+		        res = c % 10 + res;
+		        c = c > 9;
+		    }
+		    return res.replace(/^0+/, '');
+		}
+
+        
+	
+    //十六进制转换为ASCII
+    function hexToAscii(pileCode){
+        var len = pileCode.length;
+        var asciiPileCode = "";
+        var resultStr = [];
+        for (var i = 0; i < len; i = i + 2) {
+            asciiPileCode = parseInt(pileCode.substr(i, 2), 16);
+            resultStr.push(String.fromCharCode(asciiPileCode));
+        }
+        return resultStr.join("");
+    }
+
+    
+    //十六进制转换为ASCII
+    function hexToAscii19(pileCode){
+        var len = pileCode.length;
+        var asciiPileCode = "";
+        var resultStr = [];
+        for (var i = 0; i < len; i = i + 2) {
+            asciiPileCode = parseInt(pileCode.substr(i, 2), 16);
+            resultStr.push(String.fromCharCode(asciiPileCode));
+        }
+        return resultStr.join("");
+    }
+
+    //切换高低位字符顺序
+    function exchangeHL(hexStr){
+        var resultStr  ='';
+        var hexStrLen = hexStr.length/2;
+        for(var i=0; i<hexStrLen;i++ ){
+            resultStr = hexStr.substr(i*2,2)+resultStr;
+        }
+        return resultStr;
+    }
+    //解析小时分钟
+    function analysistime(timeStr) {
+        var resultTime = "";
+        resultTime = parseInt(timeStr.substr(0, 2), 16) + ":" + parseInt(timeStr.substr(2, 2), 16);
+        return resultTime;
+    }
+    //解析时间
+    function analysisDate(dateStr){
+        var resultDate = "";
+        var dateStrLen = dateStr.length/2;
+        for(var i=0;i<dateStrLen;i++){
+            if(i==2||i==3){
+                resultDate = resultDate+"-" + parseInt(dateStr.substr(i*2,2),16);
+                continue;
+            }else if(i==5||i==6||i==7){
+                resultDate = resultDate+":" + parseInt(dateStr.substr(i*2,2),16);
+                continue;
+            }else if(i==4){
+                resultDate = resultDate+" "+ parseInt(dateStr.substr(i*2,2),16);
+                continue;
+            }
+            resultDate += parseInt(dateStr.substr(i*2,2),16);
+        }
+        return resultDate;
+    }
+
+    //截取多包里面的数据
+    function read_msg_data(msg) {
+        var msg_data = "";
+        var msg_packes = (msg.length / 16) + 1;
+
+		msg_data += msg.substr(8,8);
+        for (var i = 1; i < msg_packes; i++) {
+            msg_data += msg.substr((2+i*16),14);
+        }
+        return msg_data;
+    }
+
+
+</script>
+</form>
+
+</body></html>

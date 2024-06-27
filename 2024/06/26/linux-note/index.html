@@ -1,99 +1,195 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  
-  
-  <title>Linux内核编译笔记 | ZQS工作笔记</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="Linux内核编译笔记设置环境变量12. &#x2F;opt&#x2F;fsl-imx-x11&#x2F;4.1.15-2.0.0&#x2F;environment-setup-cortexa7hf-neon-poky-linux-gnueabisource build.sh 单独编译12345make okmx6ul_defconfigmake zImagemake dtbsmake modulesmake distclean 编译自">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Linux内核编译笔记">
-<meta property="og:url" content="https://janson.atomgit.net/blog/2024/06/26/linux-note/index.html">
-<meta property="og:site_name" content="ZQS工作笔记">
-<meta property="og:description" content="Linux内核编译笔记设置环境变量12. &#x2F;opt&#x2F;fsl-imx-x11&#x2F;4.1.15-2.0.0&#x2F;environment-setup-cortexa7hf-neon-poky-linux-gnueabisource build.sh 单独编译12345make okmx6ul_defconfigmake zImagemake dtbsmake modulesmake distclean 编译自">
-<meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-06-26T06:22:26.000Z">
-<meta property="article:modified_time" content="2024-06-27T03:31:10.266Z">
-<meta property="article:author" content="ZQS">
-<meta name="twitter:card" content="summary">
-  
-    <link rel="alternate" href="/blog/atom.xml" title="ZQS工作笔记" type="application/atom+xml">
-  
-  
-    <link rel="shortcut icon" href="/blog/favicon.png">
-  
-  
-  
-<link rel="stylesheet" href="/blog/css/style.css">
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+	
+	<!-- title -->
+	
+	<title>
+	
+		Linux内核编译笔记 | 
+	 
+	ZQS工作笔记
+	</title>
+	
+	<!-- keywords,description -->
+	
+	
+		<meta name="description" content="我的工作日志" />
+	
 
-  
-    
-<link rel="stylesheet" href="/blog/fancybox/jquery.fancybox.min.css">
+	<!-- favicon -->
+	
+	<link rel="shortcut icon" href="/blog/favicon.ico">
+	
 
-  
-  
+
+	<!-- search -->
+	<script>
+		var searchEngine = "https://www.google.com/search?q=";
+		if(typeof searchEngine == "undefined" || searchEngine == null || searchEngine == ""){
+			searchEngine = "https://www.google.com/search?q=";
+		}
+		var homeHost = "wujun234.com";
+		if(typeof homeHost == "undefined" || homeHost == null || homeHost == ""){
+			homeHost = window.location.host;
+		}
+	</script>
+
+
+	
+<link rel="stylesheet" href="/blog/css/main.css">
+
+	
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/darcula.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery-pjax@2.0.1/jquery.pjax.min.js"></script>
+
+	
+<script src="/blog/js/main.js"></script>
+
+
+	
+		
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min.js"></script>
+
+		
+<script src="https://cdn.jsdelivr.net/npm/valine@v1.5.1/dist/Valine.min.js"></script>
+
+	
+	
+
 <meta name="generator" content="Hexo 7.2.0"></head>
 
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/blog/" id="logo">ZQS工作笔记</a>
-      </h1>
+	<header id="header">
+    <a id="title" href="/blog/" class="logo">ZQS工作笔记</a>
+
+	<ul id="menu">
+    
+      <li class="menu-item">
+        <a href="/about" class="menu-item-link">About</a>
+      </li>
+    
+
+    
+      <li class="menu-item">
+        <a href="/tags" class="menu-item-link">Tags</a>
+      </li>
+    
+
+    
+      <li class="menu-item">
+        <a href="/categories" class="menu-item-link">Categories</a>
+      </li>
+    
+
+    
       
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
-        
-          <a class="main-nav-link" href="/blog/">Home</a>
-        
-          <a class="main-nav-link" href="/blog/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-        
-          <a class="nav-icon" href="/blog/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
-        
-        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://janson.atomgit.net/blog"></form>
-      </div>
-    </div>
-  </div>
+      
+        <li class="menu-item">
+          <a href='html/tcu.html' class="menu-item-link" target="_blank">
+            tcu
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a href='html/bms.html' class="menu-item-link" target="_blank">
+            bms
+          </a>
+        </li>
+      
+    
+  
+    
+	</ul>
 </header>
 
-      <div class="outer">
-        <section id="main"><article id="post-linux-note" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/blog/2024/06/26/linux-note/" class="article-date">
-  <time class="dt-published" datetime="2024-06-26T06:22:26.000Z" itemprop="datePublished">2024-06-26</time>
-</a>
+	
+<div id="sidebar">
+	<button id="sidebar-toggle" class="toggle" ><i class="fa fa-arrow-right " aria-hidden="true"></i></button>
+	
+	<div id="site-toc">
+		<input id="search-input" class="search-input" type="search" placeholder="Press Enter to search">
+		<div id="tree">
+			
+
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/06/26/hello-world/">
+                     
+										    Hello World
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file active">
+									<a href="/blog/2024/06/26/linux-note/">
+                     
+										    Linux内核编译笔记
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+		</div>
+	</div>
+</div>
+
+	<!-- 引入正文 -->
+	<div id="content" class="content">
+		<h1 id="article-title">
+	Linux内核编译笔记
+</h1>
+
+<!-- meta -->
+<div class="article-meta">
+	
+
+	<span>ZQS</span>
+	<span>2024-06-26 14:22:26</span>
+
+  <div id="article-categories">
+    
+		  <span>Categories：</span>
+      
+    
+
+    
+		    <span>Tags：</span>
+        
     
   </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="p-name article-title" itemprop="headline name">
-      Linux内核编译笔记
-    </h1>
-  
 
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="Linux内核编译笔记"><a href="#Linux内核编译笔记" class="headerlink" title="Linux内核编译笔记"></a>Linux内核编译笔记</h2><h3 id="设置环境变量"><a href="#设置环境变量" class="headerlink" title="设置环境变量"></a>设置环境变量</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">. /opt/fsl-imx-x11/4.1.15-2.0.0/environment-setup-cortexa7hf-neon-poky-linux-gnueabi</span><br><span class="line">source build.sh</span><br></pre></td></tr></table></figure>
+</div>
+
+<!-- content -->
+<div id="article-content">
+	<h2 id="Linux内核编译笔记"><a href="#Linux内核编译笔记" class="headerlink" title="Linux内核编译笔记"></a>Linux内核编译笔记</h2><h3 id="设置环境变量"><a href="#设置环境变量" class="headerlink" title="设置环境变量"></a>设置环境变量</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">. /opt/fsl-imx-x11/4.1.15-2.0.0/environment-setup-cortexa7hf-neon-poky-linux-gnueabi</span><br><span class="line">source build.sh</span><br></pre></td></tr></table></figure>
 <h3 id="单独编译"><a href="#单独编译" class="headerlink" title="单独编译"></a>单独编译</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">make okmx6ul_defconfig</span><br><span class="line">make zImage</span><br><span class="line">make dtbs</span><br><span class="line">make modules</span><br><span class="line">make distclean</span><br></pre></td></tr></table></figure>
 <h3 id="编译自己的代码"><a href="#编译自己的代码" class="headerlink" title="编译自己的代码"></a>编译自己的代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$CC gpiotest.c -o gpiotest</span><br><span class="line">file gpiotest</span><br></pre></td></tr></table></figure>
 <h3 id="使用qemu启动内核"><a href="#使用qemu启动内核" class="headerlink" title="使用qemu启动内核"></a>使用qemu启动内核</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-arm -M mcimx6ul-evk -cpu cortex-a7 -m 512M -kernel arch/arm/boot/zImage -nographic -dtb arch/arm/boot/dts/imx6ul-14x14-evk.dtb -s -S -d int -append &quot;console=ttymxc0 loglevel=8 earlycon earlyprintk&quot; </span><br></pre></td></tr></table></figure>
@@ -109,113 +205,62 @@
 
 <h3 id="引用文档"><a href="#引用文档" class="headerlink" title="引用文档"></a>引用文档</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br></pre></td><td class="code"><pre><span class="line">atp_1fz395yshw2gt9pvybfa3w24y2rb66w1</span><br><span class="line">4.2 内核编译</span><br><span class="line">注意：</span><br><span class="line"> 初次解压内核源码后，需要先对源码进行整体编译</span><br><span class="line"> 整体编译过后，可根据实际情况在进行单独编译</span><br><span class="line">切换到 root 账户，将拷贝到/home/forlinx/work 目录下的内核源码使用 tar 指令解压，进入到内核源码</span><br><span class="line">路径。</span><br><span class="line">forlinx@ubuntu:~/work$ sudo su //切换到 root 用户身份</span><br><span class="line">[sudo] password for forlinx: //按提示输入 forlinx 账户密码，无回显</span><br><span class="line">root@ubuntu:/home/forlinx/work# tar xvf linux-4.1.15.tar.bz2 //解压内核源码</span><br><span class="line">… …此处省略解压信息</span><br><span class="line">root@ubuntu:/home/forlinx/work# cd linux-4.1.15 //进入到内核源码目录</span><br><span class="line">切换账户后要重新设置环境变量：</span><br><span class="line">. /opt/fsl-imx-x11/4.1.15-2.0.0/environment-setup-cortexa7hf-neon-poky-linux-gnueabi</span><br><span class="line"></span><br><span class="line">4.2.1 整体编译 </span><br><span class="line">Linux-4.1.15 内核</span><br><span class="line">在源码路径内，提供了编译脚本 build.sh，运行该脚本对整个源码进行编译。</span><br><span class="line">root@ubuntu:/home/forlinx/work# cd linux-4.1.15</span><br><span class="line">以下操作需要在源码目录下操作，编译内核方法：</span><br><span class="line">root@ubuntu:/home/forlinx/work/linux-4.1.15# source build.sh</span><br><span class="line">编译执行后结果，信息较多，只截取最后部分信息：</span><br><span class="line">编译成功后，会生成.ko 的模块文件，linux-4.1.15/arch/arm/boot/路径下生成 zImage，</span><br><span class="line">linux-4.1.15/arch/arm/boot/dts 路径下生成相关的 dtb 文件（单独编译设备树章节做详细说明）。</span><br><span class="line">对 build.sh 中部分命令进行说明：</span><br><span class="line">make okmx6ul_defconfig </span><br><span class="line">1、该指令是加载配置文件到.config（menuconfig 进行图形配置时，是从.config 中读取出来）。</span><br><span class="line">2、linux-4.1.15/arch/arm/configs/okmx6ul_defconfig 是内核配置文件，初次使用源码时，需要通过该步进行内核配置。</span><br><span class="line">3、使用 menuconfig 进行配置，需先进行该步操作，保存退出图形界面配置后，会把最新的配置更新到.config,此时可以把.config 文件中配</span><br><span class="line">置复制到 okmx6ul_defconfig 中，作为新的配置文件。</span><br><span class="line">---</span><br><span class="line">make zImage</span><br><span class="line">编译 zImage，编译成功后，会在 linux-4.1.15/arch/arm/boot/路径下</span><br><span class="line">生成 zImage 文件。</span><br><span class="line">---</span><br><span class="line">make dtbs</span><br><span class="line">编译设备树。在 inux-4.1.15/arch/arm/boot/dts 路径下生成对应的 dtb</span><br><span class="line">文件。</span><br><span class="line">---</span><br><span class="line">make modules</span><br><span class="line">编译模块。</span><br><span class="line">---</span><br><span class="line">make distclean </span><br><span class="line">会清除最新的.config，操作后需重新对内核进行配置。</span><br><span class="line">---cd</span><br><span class="line">4.2.2 单独编译 zImage</span><br><span class="line">用户在内核源码路径下进行操作，前提是设置好环境变量。</span><br><span class="line">root@ubuntu:/home/forlinx/work/linux-4.1.15# make okmx6ul_defconfig</span><br><span class="line">root@ubuntu:/home/forlinx/work/linux-4.1.15# make zImage</span><br><span class="line">编译成功后会在 linux-4.1.15/arch/arm/boot/路径下生成 zImage。</span><br><span class="line">4.2.3 单独编译设备树</span><br><span class="line">root@ubuntu:/home/forlinx/work/linux-4.1.15# make dtbs</span><br><span class="line">设备树在源码 linux-4.1.15/arch/arm/boot/dts/中的路径下，编译成功后，会在该路径下生成对应的 dtb</span><br><span class="line">文件：</span><br><span class="line">设备树文件 生成文件 说明</span><br><span class="line">imx6ul-14x14-evk-c-emmc.dts imx6ul-14x14-evk-c-emmc.dtb 适用于 eMMC 核心板</span><br><span class="line">imx6ul-14x14-evk-c-1g.dts imx6ul-14x14-evk-c-1g.dtb 适用于 1G-NAND 核心板</span><br><span class="line">imx6ul-14x14-evk-c-256m.dts imx6ul-14x14-evk-c-256m.dtb 适用于 256M-NAND 核心板</span><br><span class="line">4.2.4 单独编译模块</span><br><span class="line">root@ubuntu:/home/forlinx/work/linux-4.1.15# make modules</span><br><span class="line">编译成功后，在驱动对应路径下会生成相应的.ko 文件。</span><br><span class="line">使用“make modules_install INSTALL_MOD_PATH=/home/forlinx/work/”指令将模块导出到指定目</span><br><span class="line">录/home/forlinx/work/下，将导出的模块压缩打包为 modules.tar.bz2，烧录时替换烧录工具的相同文件。</span><br><span class="line"></span><br><span class="line">4.3 制作文件系统</span><br><span class="line">注意：</span><br><span class="line"> 飞凌提供了两种文件系统：qt 版（rootfs-qt.tar.bz2）和 console 版（rootfs-console.tar.bz2）</span><br><span class="line"> 不同核心板使用的文件系统有差异，使用情况在软件使用手册 中做了资料说明</span><br><span class="line">用户在使用过程中需要添加应用等涉及到修改文件系统，可以参考以下方法。</span><br><span class="line">以 rootfs-console.tar.bz2 为例进行操作：</span><br><span class="line">1、建立目标文件系统 rootfs 存放文件夹如/home/forlinx/work，并进入该目录。</span><br><span class="line">forlinx@ubuntu:~/work$ sudo mkdir rootfs</span><br><span class="line">[sudo] password for forlinx:</span><br><span class="line">forlinx@ubuntu:~/work$ cd rootfs/</span><br><span class="line">forlinx@ubuntu:~/work/rootfs$ </span><br><span class="line">2、拷贝/home/forlinx/work 路径下的文件系统到新建的 rootfs 目录，并解压。</span><br><span class="line">forlinx@ubuntu:~/work/rootfs$ sudo cp ../rootfs-console.tar.bz2 ./</span><br><span class="line">forlinx@ubuntu:~/work/rootfs$ ls</span><br><span class="line">rootfs-console.tar.bz2 //拷贝成功</span><br><span class="line">forlinx@ubuntu:~/work/rootfs$ sudo tar xvf rootfs-console.tar.bz2 //解压文件系统</span><br><span class="line">3、用 rm 命令删除原文件系统压缩包。</span><br><span class="line">forlinx@ubuntu:~/work/rootfs$ ls</span><br><span class="line">bin dev etc forlinx home lib media mnt proc rootfs-console.tar.bz2 run sbin </span><br><span class="line">sys tmp usr var</span><br><span class="line">forlinx@ubuntu:~/work/rootfs$ sudo rm rootfs-console.tar.bz2 </span><br><span class="line">forlinx@ubuntu:~/work/rootfs$ ls</span><br><span class="line">bin dev etc forlinx home lib media mnt proc run sbin sys tmp usr var</span><br><span class="line">forlinx@ubuntu:~/work/rootfs$ </span><br><span class="line">4、用户根据自己需求对文件系统做出修改后，利用 tar 命令再压缩文件系统。若使用普通账户操作，需</span><br><span class="line">要使用 fakeroot 指令模拟 root 权限，避免文件权限发生改变。</span><br><span class="line">forlinx@ubuntu:~/work/rootfs$ sudo fakeroot tar cvjf rootfs-console.tar.bz2 * //*前边有空格</span><br><span class="line">forlinx@ubuntu:~/work/rootfs$ ls</span><br><span class="line">bin dev etc forlinx home lib media mnt proc rootfs-console.tar.bz2 run sbin </span><br><span class="line">sys tmp usr var</span><br><span class="line">用 ls 查看，可以看到生成 rootfs-console.tar.bz2 压缩包，是可以烧写到开发板 flash 中的文件系统镜</span><br><span class="line">像。</span><br><span class="line">4.4 应用程序编译及运行</span><br><span class="line">4.4.1 编译并运行命令行应用</span><br><span class="line">注意：以下操作默认已经安装了交叉编译器，并设置好环境变量。</span><br><span class="line">本小节使用看门狗测试程序，默认程序拷贝到/home/forlinx/work 目录，方法参考“4.1.2 拷贝源码”。</span><br><span class="line">1、使用 cd 命令进入/home/forlinx/work 目录，并给于此目录读写的权限。</span><br><span class="line">forlinx@ubuntu:~$ cd /home/forlinx/work/</span><br><span class="line">forlinx@ubuntu:~$ chmod 777 /home/forlinx/work/</span><br><span class="line">2、使用$CC 进行交叉编译，设置完环境变量后$CC 为交叉编译器的 GCC，具体配置可查看设置环境变</span><br><span class="line">量的脚本：environment-setup-cortexa7hf-neon-poky-linux-gnueabi。</span><br><span class="line">forlinx@ubuntu:~/work$ $CC wdttest.c -o wdttest</span><br><span class="line">用 file 命令查看生成的文件信息。</span><br><span class="line">forlinx@ubuntu:~/work$ file wdttest</span><br><span class="line">信息结果为：</span><br><span class="line">wdttest: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), dynamically linked, </span><br><span class="line">interpreter /lib/ld-linux-armhf.so.3, for GNU/Linux 2.6.32, </span><br><span class="line">BuildID[sha1]=400fbba6005ea8e7344df7080ab10d9ef54e3a45, not stripped</span><br><span class="line">通过结果可以看到编译生成的是 32 位、ARM 的文件。</span><br><span class="line">3、将编译生成的 wdttest 通过 U 盘拷贝到板子上，比如/forlinx/cmdbin 路径下，运行测试。</span><br><span class="line">用 cd 命令进入到开发板的/forlinx/cmdbin 路径下。</span><br><span class="line">root@imx6ulevk:~# cd /forlinx/cmdbin</span><br><span class="line">将编译生成的 wdttest 程序从 U 盘挂载路径拷贝到当前路径下。</span><br><span class="line">root@imx6ulevk:/forlinx/cmdbin# cp /run/media/sda1/wdttest ./</span><br><span class="line">赋予程序可执行权限，并运行。</span><br><span class="line">root@imx6ulevk:/forlinx/cmdbin# chmod 777 wdttest //给程序设置可执行权限</span><br><span class="line">root@imx6ulevk:/forlinx/cmdbin# ./wdttest /dev/watchdog settimeout 10 &amp; </span><br><span class="line">//运行程序 10S 后复位</span><br><span class="line">4、参考软件使用手册“看门狗测试”章节测试。</span><br><span class="line">4.4.2 编译并运行 QT 应用程序</span><br><span class="line">4.4.2.1 编译 QT 应用程序</span><br><span class="line">注意：以下操作默认已经安装了交叉编译器，并设置好环境变量。</span><br><span class="line"> 方法 1：通过命令行使用 qmake 进行编译。</span><br><span class="line">forlinx@ubuntu:~/work$ sudo chmod -R 777 audio/ // audio 应用程序添加权限</span><br><span class="line">forlinx@ubuntu:~/work$ cd audio/</span><br><span class="line">forlinx@ubuntu:~/work/audio$ qmake</span><br><span class="line">forlinx@ubuntu:~/work/audio$ make</span><br><span class="line"> 方法 2：通过 Qt Creator 调用 qmake 进行编译。</span><br><span class="line">给 audio 应用程序添加权限。</span><br><span class="line">forlinx@ubuntu:~/work$ sudo chmod -R 777 audio/</span><br><span class="line">使用命令行方式打开 Qt Creator（用户根据自己的实际路径打开）。</span><br><span class="line">forlinx@ubuntu:~/work$ /home/forlinx/qtcreator-3.2.1/bin/qtcreator.sh &amp;</span><br><span class="line">点击 Qt Creator 的 File-&gt;Open File or Project，弹出窗口，选择/root/Desktop/audio/audio.pro。</span><br><span class="line">如下图：</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">门禁，通讯超时，</span><br><span class="line">==========================</span><br><span class="line">zqs@LAPTOP-8GHA100U:~/u-boot-u-boot-2016.09.y-imx6$ qemu-system-arm -M help</span><br><span class="line">Supported machines are:</span><br><span class="line">akita                Sharp SL-C1000 (Akita) PDA (PXA270)</span><br><span class="line">ast2500-evb          Aspeed AST2500 EVB (ARM1176)</span><br><span class="line">ast2600-evb          Aspeed AST2600 EVB (Cortex-A7)</span><br><span class="line">borzoi               Sharp SL-C3100 (Borzoi) PDA (PXA270)</span><br><span class="line">canon-a1100          Canon PowerShot A1100 IS (ARM946)</span><br><span class="line">cheetah              Palm Tungsten|E aka. Cheetah PDA (OMAP310)</span><br><span class="line">collie               Sharp SL-5500 (Collie) PDA (SA-1110)</span><br><span class="line">connex               Gumstix Connex (PXA255)</span><br><span class="line">cubieboard           cubietech cubieboard (Cortex-A8)</span><br><span class="line">emcraft-sf2          SmartFusion2 SOM kit from Emcraft (M2S010)</span><br><span class="line">fp5280g2-bmc         Inspur FP5280G2 BMC (ARM1176)</span><br><span class="line">fuji-bmc             Facebook Fuji BMC (Cortex-A7)</span><br><span class="line">g220a-bmc            Bytedance G220A BMC (ARM1176)</span><br><span class="line">highbank             Calxeda Highbank (ECX-1000)</span><br><span class="line">imx25-pdk            ARM i.MX25 PDK board (ARM926)</span><br><span class="line">integratorcp         ARM Integrator/CP (ARM926EJ-S)</span><br><span class="line">kudo-bmc             Kudo BMC (Cortex-A9)</span><br><span class="line">kzm                  ARM KZM Emulation Baseboard (ARM1136)</span><br><span class="line">lm3s6965evb          Stellaris LM3S6965EVB (Cortex-M3)</span><br><span class="line">lm3s811evb           Stellaris LM3S811EVB (Cortex-M3)</span><br><span class="line">mainstone            Mainstone II (PXA27x)</span><br><span class="line">mcimx6ul-evk         Freescale i.MX6UL Evaluation Kit (Cortex-A7)</span><br><span class="line">mcimx7d-sabre        Freescale i.MX7 DUAL SABRE (Cortex-A7)</span><br><span class="line">microbit             BBC micro:bit (Cortex-M0)</span><br><span class="line">midway               Calxeda Midway (ECX-2000)</span><br><span class="line">mps2-an385           ARM MPS2 with AN385 FPGA image for Cortex-M3</span><br><span class="line">mps2-an386           ARM MPS2 with AN386 FPGA image for Cortex-M4</span><br><span class="line">mps2-an500           ARM MPS2 with AN500 FPGA image for Cortex-M7</span><br><span class="line">mps2-an505           ARM MPS2 with AN505 FPGA image for Cortex-M33</span><br><span class="line">mps2-an511           ARM MPS2 with AN511 DesignStart FPGA image for Cortex-M3</span><br><span class="line">mps2-an521           ARM MPS2 with AN521 FPGA image for dual Cortex-M33</span><br><span class="line">mps3-an524           ARM MPS3 with AN524 FPGA image for dual Cortex-M33</span><br><span class="line">mps3-an547           ARM MPS3 with AN547 FPGA image for Cortex-M55</span><br><span class="line">musca-a              ARM Musca-A board (dual Cortex-M33)</span><br><span class="line">musca-b1             ARM Musca-B1 board (dual Cortex-M33)</span><br><span class="line">musicpal             Marvell 88w8618 / MusicPal (ARM926EJ-S)</span><br><span class="line">n800                 Nokia N800 tablet aka. RX-34 (OMAP2420)</span><br><span class="line">n810                 Nokia N810 tablet aka. RX-44 (OMAP2420)</span><br><span class="line">netduino2            Netduino 2 Machine (Cortex-M3)</span><br><span class="line">netduinoplus2        Netduino Plus 2 Machine (Cortex-M4)</span><br><span class="line">none                 empty machine</span><br><span class="line">npcm750-evb          Nuvoton NPCM750 Evaluation Board (Cortex-A9)</span><br><span class="line">nuri                 Samsung NURI board (Exynos4210)</span><br><span class="line">orangepi-pc          Orange Pi PC (Cortex-A7)</span><br><span class="line">palmetto-bmc         OpenPOWER Palmetto BMC (ARM926EJ-S)</span><br><span class="line">quanta-gbs-bmc       Quanta GBS (Cortex-A9)</span><br><span class="line">quanta-gsj           Quanta GSJ (Cortex-A9)</span><br><span class="line">quanta-q71l-bmc      Quanta-Q71l BMC (ARM926EJ-S)</span><br><span class="line">rainier-bmc          IBM Rainier BMC (Cortex-A7)</span><br><span class="line">raspi0               Raspberry Pi Zero (revision 1.2)</span><br><span class="line">raspi1ap             Raspberry Pi A+ (revision 1.1)</span><br><span class="line">raspi2b              Raspberry Pi 2B (revision 1.1)</span><br><span class="line">realview-eb          ARM RealView Emulation Baseboard (ARM926EJ-S)</span><br><span class="line">realview-eb-mpcore   ARM RealView Emulation Baseboard (ARM11MPCore)</span><br><span class="line">realview-pb-a8       ARM RealView Platform Baseboard for Cortex-A8</span><br><span class="line">realview-pbx-a9      ARM RealView Platform Baseboard Explore for Cortex-A9</span><br><span class="line">romulus-bmc          OpenPOWER Romulus BMC (ARM1176)</span><br><span class="line">sabrelite            Freescale i.MX6 Quad SABRE Lite Board (Cortex-A9)</span><br><span class="line">smdkc210             Samsung SMDKC210 board (Exynos4210)</span><br><span class="line">sonorapass-bmc       OCP SonoraPass BMC (ARM1176)</span><br><span class="line">spitz                Sharp SL-C3000 (Spitz) PDA (PXA270)</span><br><span class="line">stm32vldiscovery     ST STM32VLDISCOVERY (Cortex-M3)</span><br><span class="line">supermicrox11-bmc    Supermicro X11 BMC (ARM926EJ-S)</span><br><span class="line">swift-bmc            OpenPOWER Swift BMC (ARM1176) (deprecated)</span><br><span class="line">sx1                  Siemens SX1 (OMAP310) V2</span><br><span class="line">sx1-v1               Siemens SX1 (OMAP310) V1</span><br><span class="line">tacoma-bmc           OpenPOWER Tacoma BMC (Cortex-A7)</span><br><span class="line">terrier              Sharp SL-C3200 (Terrier) PDA (PXA270)</span><br><span class="line">tosa                 Sharp SL-6000 (Tosa) PDA (PXA255)</span><br><span class="line">verdex               Gumstix Verdex (PXA270)</span><br><span class="line">versatileab          ARM Versatile/AB (ARM926EJ-S)</span><br><span class="line">versatilepb          ARM Versatile/PB (ARM926EJ-S)</span><br><span class="line">vexpress-a15         ARM Versatile Express for Cortex-A15</span><br><span class="line">vexpress-a9          ARM Versatile Express for Cortex-A9</span><br><span class="line">virt-2.10            QEMU 2.10 ARM Virtual Machine</span><br><span class="line">virt-2.11            QEMU 2.11 ARM Virtual Machine</span><br><span class="line">virt-2.12            QEMU 2.12 ARM Virtual Machine</span><br><span class="line">virt-2.6             QEMU 2.6 ARM Virtual Machine</span><br><span class="line">virt-2.7             QEMU 2.7 ARM Virtual Machine</span><br><span class="line">virt-2.8             QEMU 2.8 ARM Virtual Machine</span><br><span class="line">virt-2.9             QEMU 2.9 ARM Virtual Machine</span><br><span class="line">virt-3.0             QEMU 3.0 ARM Virtual Machine</span><br><span class="line">virt-3.1             QEMU 3.1 ARM Virtual Machine</span><br><span class="line">virt-4.0             QEMU 4.0 ARM Virtual Machine</span><br><span class="line">virt-4.1             QEMU 4.1 ARM Virtual Machine</span><br><span class="line">virt-4.2             QEMU 4.2 ARM Virtual Machine</span><br><span class="line">virt-5.0             QEMU 5.0 ARM Virtual Machine</span><br><span class="line">virt-5.1             QEMU 5.1 ARM Virtual Machine</span><br><span class="line">virt-5.2             QEMU 5.2 ARM Virtual Machine</span><br><span class="line">virt-6.0             QEMU 6.0 ARM Virtual Machine</span><br><span class="line">virt-6.1             QEMU 6.1 ARM Virtual Machine</span><br><span class="line">virt                 QEMU 6.2 ARM Virtual Machine (alias of virt-6.2)</span><br><span class="line">virt-6.2             QEMU 6.2 ARM Virtual Machine</span><br><span class="line">witherspoon-bmc      OpenPOWER Witherspoon BMC (ARM1176)</span><br><span class="line">xilinx-zynq-a9       Xilinx Zynq Platform Baseboard for Cortex-A9</span><br><span class="line">z2                   Zipit Z2 (PXA27x)</span><br><span class="line">zqs@LAPTOP-8GHA100U:~/u-boot-u-boot-2016.09.y-imx6$ </span><br></pre></td></tr></table></figure>
 
-      
+</div>
+
+<!-- post-guide -->
+
+    <div class="post-guide">
+        <div class="item left">
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/blog/2024/06/26/hello-world/">
+                Hello World
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
     </div>
-    <footer class="article-footer">
-      <a data-url="https://janson.atomgit.net/blog/2024/06/26/linux-note/" data-id="clxwuwi2h00027gtafvc1179p" data-title="Linux内核编译笔记" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
-  
-    
-<nav id="article-nav">
-  
-  
-    <a href="/blog/2024/06/26/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">Hello World</div>
-    </a>
-  
-</nav>
-
-  
-</article>
 
 
-</section>
-        
-          <aside id="sidebar">
-  
-    
-
-  
-    
-
-  
-    
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2024/06/">June 2024</a></li></ul>
-    </div>
-  </div>
+<!-- comment - giscus -->
 
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/blog/2024/06/26/linux-note/">Linux内核编译笔记</a>
-          </li>
-        
-          <li>
-            <a href="/blog/2024/06/26/hello-world/">Hello World</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      
-      &copy; 2024 ZQS<br>
-      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/blog/" class="mobile-nav-link">Home</a>
-  
-    <a href="/blog/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
+<!-- comment - valine -->
 
 
-<script src="/blog/js/jquery-3.6.4.min.js"></script>
+<script>
+	
+	
+</script>
+
+	</div>
+	<div id="footer">
+	<p>
+	©<span id="footerYear-start"></span>-<span id="footerYear-end"></span>
+
+	
+	    <a href="/">ZQS</a>
+	
+	
+	
+	<br>
+	Theme <a href="//github.com/wujun234/hexo-theme-tree" target="_blank">Tree</a>
+	by <a href="//wujun.me" target="_blank">Wu Jun</a>
+	Powered by <a href="//hexo.io" target="_blank">Hexo</a>
+	</p>
+</div>
 
 
+<script type="text/javascript">
+	document.getElementById('footerYear-start').innerHTML = new Date().getFullYear() + '';
+</script>
 
-  
-<script src="/blog/fancybox/jquery.fancybox.min.js"></script>
+<script type="text/javascript">
+	document.getElementById('footerYear-end').innerHTML = new Date().getFullYear() + '';
+</script>
 
-
-
-
-<script src="/blog/js/script.js"></script>
-
-
-
-
-
-  </div>
+	<button id="totop-toggle" class="toggle"><i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
 </body>
 </html>
