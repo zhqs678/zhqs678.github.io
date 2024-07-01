@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		linux_core_note | 
+		用tcp上传到linux并adb调试 | 
 	 
 	工作小记
 	</title>
@@ -168,7 +168,7 @@
 							</ul>
 			
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/blog/2024/07/01/%E7%94%A8tcp%E4%B8%8A%E4%BC%A0%E5%88%B0linux%E5%B9%B6adb%E8%B0%83%E8%AF%95/">
                      
 										    用tcp上传到linux并adb调试
@@ -185,7 +185,7 @@
 	<!-- 引入正文 -->
 	<div id="content" class="content">
 		<h1 id="article-title">
-	linux_core_note
+	用tcp上传到linux并adb调试
 </h1>
 
 <!-- meta -->
@@ -193,11 +193,25 @@
 	
 
 	<span>simith</span>
-	<span>2024-06-26 14:21:50</span>
+	<span>2024-07-01 11:10:33</span>
 
   <div id="article-categories">
     
+		  <span>Categories：</span>
+      
+    
 
+    
+		    <span>Tags：</span>
+        
+            
+                <span>
+                    <i class="fa fa-tag" aria-hidden="true">
+                    <a href="/tags/Linux/">Linux</a>
+                    </i>
+                </span>
+            
+        
     
   </div>
 
@@ -205,10 +219,31 @@
 
 <!-- content -->
 <div id="article-content">
-	
+	<p><strong>上传文件</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">#arm-linux-strip /home/player/workspace/sytcu/Debug/sytcu</span><br><span class="line">#arm-linux-strip /home/player/build_ui_4_8_6/sytcu_gui</span><br><span class="line">#prompt</span><br><span class="line"></span><br><span class="line">ftp -n&lt;&lt;!</span><br><span class="line">open 192.168.137.232</span><br><span class="line">user root root</span><br><span class="line">binary</span><br><span class="line">hash</span><br><span class="line">passive</span><br><span class="line">prompt</span><br><span class="line"></span><br><span class="line">cd  ../lib</span><br><span class="line">lcd /home/zqs/program/sytcu_bjbus/library</span><br><span class="line">mput *</span><br><span class="line"></span><br><span class="line">cd  /App</span><br><span class="line">lcd /home/zqs/program/sytcu_bjbus/bin</span><br><span class="line">put mainArch sytcu</span><br><span class="line"></span><br><span class="line">close</span><br><span class="line">bye</span><br><span class="line">!</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>开始调试</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/expect -f</span><br><span class="line"></span><br><span class="line">send_user &quot;development by zqs.\r&quot;</span><br><span class="line"></span><br><span class="line">set timeout 3</span><br><span class="line"></span><br><span class="line">#system &quot;./put.sh&quot;</span><br><span class="line"></span><br><span class="line">spawn telnet 192.168.137.232</span><br><span class="line">expect &quot;freescale login:&quot; &#123; send &quot;root\r&quot; &#125;</span><br><span class="line">expect &quot;root@freescale&quot; &#123; send &quot;cd /App\r&quot; &#125;</span><br><span class="line">expect &quot;root@freescale&quot; &#123; send &quot;./ipcrm.sh\r&quot; &#125;</span><br><span class="line">#expect &quot;root@freescale&quot; &#123; send &quot;./gdbserver 192.168.137.232:9002 sytcu\r&quot; &#125;</span><br><span class="line">expect &quot;root@freescale&quot; &#123; send &quot;./sytcu\r&quot; &#125;</span><br><span class="line"></span><br><span class="line">expect &quot;root@freescale&quot; &#123; send &quot;exit\r&quot; &#125;</span><br><span class="line"></span><br><span class="line">interact</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
 </div>
 
 <!-- post-guide -->
+
+    <div class="post-guide">
+        <div class="item left">
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/blog/2024/06/27/698%E6%95%B0%E6%8D%AE%E8%A7%A3%E6%9E%90/">
+                698数据解析
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
 
 
 <!-- comment - giscus -->

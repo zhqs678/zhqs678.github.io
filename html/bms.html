@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>GB27930解析程序</title>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+</head>
+<body style="background-color: #fff;font-size: 14px;line-height: 1.428;">
+<form role="form">
+    <div class="container" style="margin-top: 5px;">
+        <div class="row">
+            <div class="col-md-12 input-group">
+                <span class="input-group-addon">帧 ID</span>
+				<select type="text" class="form-control" id="analysisMsg" style="width: 100%">
+                    <option value ="19">BST_19____BMS中止充电</option>
+  					<option value ="06">BCP_06____动力蓄电池充电参数</option>
+					<option value ="08">CML_08____充电机最大输出能力</option>
+					<option value ="10">BCL_10____电池充电需求</option>
+					<option value ="11">BCS_11____电池充电总状态</option>
+					<option value ="13">BSM_13____BMS发送动力蓄电池状态信息报文</option>					
+  					<option value ="1A">CST_1A____充电机中止充电</option>  					
+  					<option value ="1C">BSD_1C____BMS统计数据报文</option>
+					<option value ="1D">CSD_1D____充电机统计数据报文</option>
+					<option value ="1E">BEM_1E____BMS错误报文</option>
+					<option value ="1F">CEM_1F____充电机错误报文</option>
+				</select>
+                <span class="input-group-btn">
+                    <button id="analysisMsgBtn" type="button" class="btn btn-default">解析</button>
+                </span>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 10px">
+            <div class="col-md-12">
+                <textarea class="form-control" id="inputData" rows="10"></textarea>
+            </div>
+        </div>
+		<div class="row" style="margin-top: 10px">
+            <div class="col-md-12">
+                <textarea class="form-control" id="analysisResult" rows="20" readonly="readonly"></textarea>
+            </div>
+        </div>
+    </div>
+
+
+<script type="text/javascript">
+
+    //解析报文开始
+    $("#analysisMsgBtn").on("click", function () {
+     
+        var resultMsg = "";
+        //var msg = document.getElementById("inputData").value = "01 a4 01 d0 07 9e 01 72 \n02 1a 6e d7 01 00 00 ff";
+        //var msg = document.getElementById("inputData").value = "00 04 00 00 ff ff ff ff ";
+        var msg = document.getElementById("inputData").value;
+
+        var msgType = document.getElementById("analysisMsg").value;
+
+        //首先去掉报文中的空格
+        msg = msg.replace(/\s*/g,"");
+        var data = "";
+
+        if (msgType == "06") {
+
+            data = read_msg_data(msg);
+
+            var cell = data.substr(0, 4);
+            resultMsg += "单体动力蓄电池最高允许充电电压: " + parseInt(exchangeHL(cell), 16) / 100 + " V\n";
+            cell = data.substr(4, 4);
+            resultMsg += "最高允许充电电流: " + (parseInt(exchangeHL(cell), 16) - 4000) / 10 + " A\n";
+            cell = data.substr(8, 4);
+            resultMsg += "动力蓄电池标称总能量: " + (parseInt(exchangeHL(cell), 16)) / 10 + " kwh\n";
+            cell = data.substr(12, 4);
+            resultMsg += "最高允许充电总电压: " + (parseInt(exchangeHL(cell), 16)) / 10 + " V\n";
+            cell = data.substr(16, 2);
+            resultMsg += "最高允许温度: " + ((parseInt(16)) + 50) + " 度\n";
+            cell = data.substr(18, 4);
+            resultMsg += "整车动力蓄电池荷电状态: " + (parseInt(exchangeHL(cell), 16)) / 10 + " %\n";
+            cell = data.substr(22, 4);
+            resultMsg += "整车动力蓄电池当前电池电压: " + (parseInt(exchangeHL(cell), 16)) / 10 + " V\n";
+
+        } else if (msgType == "19") {   //BMS中止充电
+            resultMsg += analysis_19(msg);
+        }
+        else if (msgType == "1A") {     //充电机中止充电
+
+        }
+        document.getElementById("analysisResult").value = resultMsg;
+    }
+    )
+
+    function analysis_19(msg) {
+        var temp = parseInt(msg.substr(0, 2), 16);
+        var resultMsg = "达到所需求得SOC目标值: ";
+        if ((temp & 0x03) == 0) {
+            resultMsg += "未达到" + "\n";
+        }
+        if ((temp & 0x01)) {
+            resultMsg += "达到" + "\n";
+        }
+        if ((temp & 0x02)) {
+            resultMsg += "不可信" + "\n";
+        }
+        resultMsg += "达到总电压的设定值: "
+        if ((temp & 0x0C) == 0) {
+            resultMsg += "未达到" + "\n";
+        }
+        if ((temp & 0x04)) {
+            resultMsg += "达到" + "\n";
+        }
+        if ((temp & 0x08)) {
+            resultMsg += "不可信" + "\n";
+        }
+        resultMsg += "达到单体压的设定值: "
+        if ((temp & 0x30) == 0) {
+            resultMsg += "未达到" + "\n";
+        }
+        if ((temp & 0x10)) {
+            resultMsg += "达到" + "\n";
+        }
+        if ((temp & 0x20)) {
+            resultMsg += "不可信" + "\n";
+        }
+        resultMsg += "充电机主动中止: "
+        if ((temp & 0xC0) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x40)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x80)) {
+            resultMsg += "不可信" + "\n";
+        }
+        //BMS 中止充电故障原因
+        temp = parseInt(msg.substr(2, 2), 16);
+        resultMsg += "绝缘故障: "
+        if ((temp & 0x03) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x01)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x02)) {
+            resultMsg += "不可信" + "\n";
+        }
+        resultMsg += "输出连接器过温故障: "
+        if ((temp & 0x0C) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x04)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x08)) {
+            resultMsg += "不可信" + "\n";
+        }
+        resultMsg += "BMS元件、输出连接器过温: "
+        if ((temp & 0x30) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x10)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x20)) {
+            resultMsg += "不可信" + "\n";
+        }
+        resultMsg += "充电连接器故障: "
+        if ((temp & 0xC0) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x40)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x80)) {
+            resultMsg += "不可信" + "\n";
+        }
+        //
+        temp = parseInt(msg.substr(4, 2), 16);
+        resultMsg += "电池组温度过高故障: "
+        if ((temp & 0x03) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x01)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x02)) {
+            resultMsg += "不可信" + "\n";
+        }
+        resultMsg += "高压继电器故障: "
+        if ((temp & 0x0C) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x04)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x08)) {
+            resultMsg += "不可信" + "\n";
+        }
+        resultMsg += "检测点2电压检测故障: "
+        if ((temp & 0x30) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x10)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x20)) {
+            resultMsg += "不可信" + "\n";
+        }
+        resultMsg += "其他故障: "
+        if ((temp & 0xC0) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x40)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x80)) {
+            resultMsg += "不可信" + "\n";
+        }
+        //
+        temp = parseInt(msg.substr(6, 2), 16);
+        resultMsg += "电流过大: "
+        if ((temp & 0x03) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x01)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x02)) {
+            resultMsg += "不可信" + "\n";
+        }
+        resultMsg += "电压异常: "
+        if ((temp & 0x0C) == 0) {
+            resultMsg += "无" + "\n";
+        }
+        if ((temp & 0x04)) {
+            resultMsg += "故障" + "\n";
+        }
+        if ((temp & 0x08)) {
+            resultMsg += "不可信" + "\n";
+        }
+        return resultMsg;
+    }
+    
+	//自定义函数（用于将sessionId由16进制转换为10进制）
+    function bigMut(big, common) {
+		    big += "";
+		    common += "";
+		    if (big.length < common.length) {
+		        big = [common, common = big][0];
+		    }
+		    big = big.split("").reverse();
+		    var oneMutManyRes = [];
+		    var i = 0,
+		        len = big.length;
+		    for (; i < len; i++) {
+		        oneMutManyRes[oneMutManyRes.length] = oneMutMany(big[i], common) + getLenZero(i);
+		    }
+		    var result = oneMutManyRes[0];
+		    for (i = 1, len = oneMutManyRes.length; i < len; i++) {
+		        result = bigNumAdd(result, oneMutManyRes[i]);
+		    }
+		    return result;
+		}
+
+		function getLenZero(len) {
+		    len += 1;
+		    var ary = [];
+		    ary.length = len;
+		    return ary.join("0");
+		}
+
+		function oneMutMany(one, many) {
+		    one += "";
+		    many += "";
+		    if (one.length != 1) {
+		        one = [many, many = one][0];
+		    }
+		    one = parseInt(one, 10);
+		    var i = 0,
+		        len = many.length,
+		        resAry = [],
+		        addTo = 0,
+		        curItem,
+		        curRes,
+		        toSave;
+		    many = many.split("").reverse();
+		    for (; i <= len; i++) {
+		        curItem = parseInt(many[i] || 0, 10);
+		        curRes = curItem * one + addTo;
+		        toSave = curRes % 10;
+		        addTo = (curRes - curRes % 10) / 10;
+		        resAry.unshift(toSave);
+		    }
+		    if (resAry[0] == 0) {
+		        resAry.splice(0, 1);
+		    }
+		    return resAry.join("");
+		}
+
+		function bigNumAdd(big, common) {
+		    big += "";
+		    common += "";
+		    var maxLen = Math.max(big.length, common.length),
+		        bAry = big.split("").reverse(),
+		        cAry = common.split("").reverse(),
+		        i = 0,
+		        addToNext = 0,
+		        resAry = [],
+		        fn,
+		        sn,
+		        sum;
+		    for (; i <= maxLen; i++) {
+		        fn = parseInt(bAry[i] || 0);
+		        sn = parseInt(cAry[i] || 0);
+		        sum = fn + sn + addToNext;
+		        addToNext = (sum - sum % 10) / 10;
+		        resAry.unshift(sum % 10);
+		    }
+		    if (resAry[0] == 0) {
+		        resAry.splice(0, 1);
+		    }
+		    return resAry.join("");
+		}
+
+		function sumStrings(a, b) {
+		    var res = '',
+		        c = 0;
+		    a = a.split('');
+		    b = b.split('');
+		    while (a.length || b.length || c) {
+		        c += ~~a.pop() + ~~b.pop();
+		        res = c % 10 + res;
+		        c = c > 9;
+		    }
+		    return res.replace(/^0+/, '');
+		}
+
+        
+	
+    //十六进制转换为ASCII
+    function hexToAscii(pileCode){
+        var len = pileCode.length;
+        var asciiPileCode = "";
+        var resultStr = [];
+        for (var i = 0; i < len; i = i + 2) {
+            asciiPileCode = parseInt(pileCode.substr(i, 2), 16);
+            resultStr.push(String.fromCharCode(asciiPileCode));
+        }
+        return resultStr.join("");
+    }
+
+    
+    //十六进制转换为ASCII
+    function hexToAscii19(pileCode){
+        var len = pileCode.length;
+        var asciiPileCode = "";
+        var resultStr = [];
+        for (var i = 0; i < len; i = i + 2) {
+            asciiPileCode = parseInt(pileCode.substr(i, 2), 16);
+            resultStr.push(String.fromCharCode(asciiPileCode));
+        }
+        return resultStr.join("");
+    }
+
+    //切换高低位字符顺序
+    function exchangeHL(hexStr){
+        var resultStr  ='';
+        var hexStrLen = hexStr.length/2;
+        for(var i=0; i<hexStrLen;i++ ){
+            resultStr = hexStr.substr(i*2,2)+resultStr;
+        }
+        return resultStr;
+    }
+    //解析小时分钟
+    function analysistime(timeStr) {
+        var resultTime = "";
+        resultTime = parseInt(timeStr.substr(0, 2), 16) + ":" + parseInt(timeStr.substr(2, 2), 16);
+        return resultTime;
+    }
+    //解析时间
+    function analysisDate(dateStr){
+        var resultDate = "";
+        var dateStrLen = dateStr.length/2;
+        for(var i=0;i<dateStrLen;i++){
+            if(i==2||i==3){
+                resultDate = resultDate+"-" + parseInt(dateStr.substr(i*2,2),16);
+                continue;
+            }else if(i==5||i==6||i==7){
+                resultDate = resultDate+":" + parseInt(dateStr.substr(i*2,2),16);
+                continue;
+            }else if(i==4){
+                resultDate = resultDate+" "+ parseInt(dateStr.substr(i*2,2),16);
+                continue;
+            }
+            resultDate += parseInt(dateStr.substr(i*2,2),16);
+        }
+        return resultDate;
+    }
+
+    //截取多包里面的数据
+    function read_msg_data(msg) {
+        var msg_data = "";
+        var msg_packes = msg.length / 8;
+        for (var i = 0; i < msg_packes; i++) {
+            msg_data += msg.substr((2+i*16),14);
+        }
+        return msg_data;
+    }
+
+
+</script>
+</form>
+</body>
+</html>
