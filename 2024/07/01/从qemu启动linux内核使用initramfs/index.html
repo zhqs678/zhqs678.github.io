@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+	
+	<!-- title -->
+	
+	<title>
+	
+		从qemu启动linux内核使用initramfs | 
+	 
+	工作小记
+	</title>
+	
+	<!-- keywords,description -->
+	
+	
+		<meta name="description" content="我的工作小记" />
+	
+
+	<!-- favicon -->
+	
+	<link rel="shortcut icon" href="/blog/favicon.ico">
+	
+
+
+	<!-- search -->
+	<script>
+		var searchEngine = "https://www.google.com/search?q=";
+		if(typeof searchEngine == "undefined" || searchEngine == null || searchEngine == ""){
+			searchEngine = "https://www.google.com/search?q=";
+		}
+		var homeHost = "wujun234.com";
+		if(typeof homeHost == "undefined" || homeHost == null || homeHost == ""){
+			homeHost = window.location.host;
+		}
+	</script>
+
+
+	
+<link rel="stylesheet" href="/blog/css/main.css">
+
+	
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/darcula.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery-pjax@2.0.1/jquery.pjax.min.js"></script>
+
+	
+<script src="/blog/js/main.js"></script>
+
+
+	
+		
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min.js"></script>
+
+		
+<script src="https://cdn.jsdelivr.net/npm/valine@v1.5.1/dist/Valine.min.js"></script>
+
+	
+	
+
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+<body>
+	<header id="header">
+    <a id="title" href="/blog/" class="logo">工作小记</a>
+
+	<ul id="menu">
+    
+      <li class="menu-item">
+        <a href="/blog//about" class="menu-item-link">About</a>
+      </li>
+    
+
+    
+      <li class="menu-item">
+        <a href="/blog//tags" class="menu-item-link">Tags</a>
+      </li>
+    
+
+    
+      <li class="menu-item">
+        <a href="/blog//categories" class="menu-item-link">Categories</a>
+      </li>
+    
+
+    
+      
+      
+        <li class="menu-item">
+          <a href='html/tcu.html' class="menu-item-link" target="_blank">
+            tcu
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a href='html/bms.html' class="menu-item-link" target="_blank">
+            bms
+          </a>
+        </li>
+      
+    
+  
+    
+	</ul>
+</header>
+
+	
+<div id="sidebar">
+	<button id="sidebar-toggle" class="toggle" ><i class="fa fa-arrow-right " aria-hidden="true"></i></button>
+	
+	<div id="site-toc">
+		<input id="search-input" class="search-input" type="search" placeholder="Press Enter to search">
+		<div id="tree">
+			
+
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/07/01/645%E6%95%B0%E6%8D%AE%E8%A7%A3%E6%9E%90/">
+                     
+										    645数据解析
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/06/27/698%E6%95%B0%E6%8D%AE%E8%A7%A3%E6%9E%90/">
+                     
+										    698数据解析
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/07/01/chatGPT%E7%9A%84promt/">
+                     
+										    chatGPT的promt
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/06/26/hello-world/">
+                     
+										    Hello World
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/06/26/linux-note/">
+                     
+										    Linux内核编译笔记
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/07/01/vscode%E9%87%8C%E9%9D%A2%E4%BD%BF%E7%94%A8%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%90%9C%E7%B4%A2/">
+                     
+										    vscode里面使用正则表达式搜索
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file active">
+									<a href="/blog/2024/07/01/%E4%BB%8Eqemu%E5%90%AF%E5%8A%A8linux%E5%86%85%E6%A0%B8%E4%BD%BF%E7%94%A8initramfs/">
+                     
+										    从qemu启动linux内核使用initramfs
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/07/02/%E5%8F%AF%E4%BB%A5%E8%BF%90%E8%A1%8C%E7%9A%84Linux%E8%84%9A%E6%9C%AC/">
+                     
+										    可以运行的Linux脚本
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/07/01/%E7%94%A8tcp%E4%B8%8A%E4%BC%A0%E5%88%B0linux%E5%B9%B6adb%E8%B0%83%E8%AF%95/">
+                     
+										    用tcp上传到linux并adb调试
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+		</div>
+	</div>
+</div>
+
+	<!-- 引入正文 -->
+	<div id="content" class="content">
+		<h1 id="article-title">
+	从qemu启动linux内核使用initramfs
+</h1>
+
+<!-- meta -->
+<div class="article-meta">
+	
+
+	<span>simith</span>
+	<span>2024-07-01 16:08:29</span>
+
+  <div id="article-categories">
+    
+		  <span>Categories：</span>
+      
+    
+
+    
+		    <span>Tags：</span>
+        
+            
+                <span>
+                    <i class="fa fa-tag" aria-hidden="true">
+                    <a href="/tags/linux-qemu/">linux, qemu</a>
+                    </i>
+                </span>
+            
+        
+    
+  </div>
+
+</div>
+
+<!-- content -->
+<div id="article-content">
+	<h3 id="img制作命令成功"><a href="#img制作命令成功" class="headerlink" title="img制作命令成功"></a>img制作命令成功</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">dd if=/dev/zero of=rootfs_ext4.img bs=1M count=256</span><br><span class="line">mkfs.ext4 rootfs_ext4.img</span><br><span class="line">mkdir -p tmpfs</span><br><span class="line">sudo mount  -t ext4 rootfs_ext4.img  tmpfs/ -o loop</span><br><span class="line">sudo cp -af _install_arm64/* tmpfs/</span><br><span class="line">sudo umount  tmpfs</span><br><span class="line">chmod 777 rootfs_ext4.img</span><br><span class="line">---------------------</span><br><span class="line">qemu-system-arm -M vexpress-a9 \</span><br><span class="line">-m 512 -smp 4 -kernel arch/arm/boot/zImage \</span><br><span class="line">-dtb arch/arm/boot/dts/vexpress-v2p-ca9.dtb \</span><br><span class="line">--append &quot;noinitrd root=/dev/vda rw console=ttyAMA0 loglevel=8&quot;  \</span><br><span class="line">-nographic \</span><br><span class="line">-drive if=none,file=rootfs_ext4.img,id=hd0 \</span><br><span class="line">-device virtio-blk-device,drive=hd0 \</span><br><span class="line">--fsdev local,id=kmod_dev,path=$PWD/kmodules,security_model=none </span><br><span class="line"></span><br><span class="line">-device virtio-9p-device,fsdev=kmod_dev,mount_tag=kmod_mount</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="三、制作根文件系统"><a href="#三、制作根文件系统" class="headerlink" title="三、制作根文件系统"></a>三、制作根文件系统</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">完成最小的根文件系统，并且可以运行动态编译的应用程序</span><br><span class="line"></span><br><span class="line">1、从busybox下载最新版本源码</span><br><span class="line">        下载网址：Index of /downloads</span><br><span class="line"></span><br><span class="line">tar jxvf busybox-1.36.1.tar.bz2</span><br><span class="line">2、制定编译工具链</span><br><span class="line">cd busybox-1.36.1</span><br><span class="line">export ARCH=arm64</span><br><span class="line">export CROSS_COMPILE=aarch64-linux-gnu-</span><br><span class="line">3、编译</span><br><span class="line">1、make menuconfig</span><br><span class="line">    Settings ---&gt;</span><br><span class="line">     [*] Build static binary (no shared libs)   </span><br><span class="line">2、make</span><br><span class="line">3、make install</span><br><span class="line">4、创建需要的目录</span><br><span class="line">        编译完成后，会生成_install目录</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd _install/</span><br><span class="line">mkdir dev etc lib sys proc tmp var home root mnt</span><br></pre></td></tr></table></figure>
+<p>###（1）etc目录更新</p>
+<p>a.创建 profile 文件，添加下面内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/sh</span><br><span class="line">export HOSTNAME=user</span><br><span class="line">export USER=root</span><br><span class="line">export HOME=/home</span><br><span class="line">export PS1=&quot;[$USER@$HOSTNAME \W]\# &quot;</span><br><span class="line">PATH=/bin:/sbin:/usr/bin:/usr/sbin</span><br><span class="line">LD_LIBRARY_PATH=/lib:/usr/lib:$LD_LIBRARY_PATH</span><br><span class="line">export PATH LD_LIBRARY_PATH</span><br></pre></td></tr></table></figure>
+
+<p>b.创建 inittab 文件，添加下面内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">::sysinit:/etc/init.d/rcS</span><br><span class="line">::respawn:-/bin/sh</span><br><span class="line">::askfirst:-/bin/sh</span><br><span class="line">::ctrlaltdel:/bin/umount -a -r</span><br></pre></td></tr></table></figure>
+
+<p>c. 创建 fstab 文件，添加下面内容，指定挂载的文件系统</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#device  mount-point    type     options   dump   fsck order</span><br><span class="line">proc /proc proc defaults 0 0</span><br><span class="line">tmpfs /tmp tmpfs defaults 0 0</span><br><span class="line">sysfs /sys sysfs defaults 0 0</span><br><span class="line">tmpfs /dev tmpfs defaults 0 0</span><br><span class="line">debugfs /sys/kernel/debug debugfs defaults 0 0</span><br><span class="line">kmod_mount /mnt 9p trans=virtio 0 0</span><br></pre></td></tr></table></figure>
+
+<p>d.创建init.d目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">mkdir  init.d</span><br><span class="line">cd init.d</span><br><span class="line">创建 rcS文件，添加下面内容</span><br><span class="line"></span><br><span class="line">mkdir -p /sys</span><br><span class="line">mkdir -p /tmp</span><br><span class="line">mkdir -p /proc</span><br><span class="line">mkdir -p /mnt</span><br><span class="line">/bin/mount -a</span><br><span class="line">mkdir -p /dev/pts</span><br><span class="line">mount -t devpts devpts /dev/pts</span><br><span class="line">echo /sbin/mdev &gt; /proc/sys/kernel/hotplug</span><br><span class="line">mdev -s</span><br><span class="line">添加权限</span><br><span class="line"></span><br><span class="line">chmod 777 rcS</span><br></pre></td></tr></table></figure>
+
+<p>e.利用tree命令查看etc下目录结构如下所示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">tree</span><br><span class="line">.</span><br><span class="line">├── fstab</span><br><span class="line">├── init.d</span><br><span class="line">│   └── rcS</span><br><span class="line">├── inittab</span><br><span class="line">└── profile</span><br><span class="line"> </span><br><span class="line">1 directory, 4 files</span><br><span class="line">（2）dev目录下必要文件</span><br><span class="line"></span><br><span class="line">cd dev</span><br><span class="line">sudo mknod console c 5 1</span><br><span class="line">（3）lib下必要文件</span><br><span class="line"></span><br><span class="line">为了支持动态编译的应用程序的执行，根文件系统需要支持动态库，所以我们添加arm64相关的动态库文件到lib下</span><br><span class="line"></span><br><span class="line">cd lib</span><br><span class="line">cp /usr/aarch64-linux-gnu/lib/*.so* -a .</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="拷贝lib文件"><a href="#拷贝lib文件" class="headerlink" title="拷贝lib文件"></a>拷贝lib文件</h3><p>1、向 rootfs 的“&#x2F;lib”目录添加库文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">cd /home/zqs/tools/gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi/arm-linux-gnueabi/libc/lib</span><br><span class="line">cp *so* *.a /home/zqs/tools/busybox-1.35.0/_install/lib/ -d</span><br><span class="line"></span><br><span class="line">// cd /home/zqs/tools/busybox-1.35.0/_install/lib/</span><br><span class="line">// rm ld-linux-armhf.so.3</span><br><span class="line"></span><br><span class="line">// cd /home/zqs/tools/gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi/arm-linux-gnueabi/libc/lib</span><br><span class="line">// cp ld-linux-armhf.so.3 /home/zqs/tools/busybox-1.35.0/_install/lib/</span><br><span class="line"></span><br><span class="line">cd /home/zqs/tools/gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi/arm-linux-gnueabi/lib</span><br><span class="line">cp *so* *.a /home/zqs/tools/busybox-1.35.0/_install/lib/ -d</span><br></pre></td></tr></table></figure>
+
+<p> 2、向 rootfs 的“usr&#x2F;lib”目录添加库文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd /home/zqs/tools/gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi/arm-linux-gnueabi/libc/usr/lib</span><br><span class="line">cp *so* *.a /home/zqs/tools/busybox-1.35.0/_install/usr/lib/ -d</span><br><span class="line"></span><br><span class="line">根文件系统的库文件就全部添加好了，可以使用“du”命令来查看一下 rootfs/lib 和</span><br><span class="line">rootfs/usr/lib 这两个目录的大小，命令如下：</span><br><span class="line"></span><br><span class="line">du ./lib ./usr/lib/ -sh</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+</div>
+
+<!-- post-guide -->
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/blog/2024/07/02/%E5%8F%AF%E4%BB%A5%E8%BF%90%E8%A1%8C%E7%9A%84Linux%E8%84%9A%E6%9C%AC/">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  可以运行的Linux脚本
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/blog/2024/07/01/chatGPT%E7%9A%84promt/">
+                chatGPT的promt
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+<!-- comment - giscus -->
+
+
+<!-- comment - valine -->
+
+
+<script>
+	
+	
+</script>
+
+	</div>
+	<div id="footer">
+	<p>
+	©<span id="footerYear-start"></span>-<span id="footerYear-end"></span>
+
+	
+	    <a href="/">simith</a>
+	
+	
+	
+	<br>
+	Theme <a href="//github.com/wujun234/hexo-theme-tree" target="_blank">Tree</a>
+	by <a href="//wujun.me" target="_blank">Wu Jun</a>
+	Powered by <a href="//hexo.io" target="_blank">Hexo</a>
+	</p>
+</div>
+
+
+<script type="text/javascript">
+	document.getElementById('footerYear-start').innerHTML = new Date().getFullYear() + '';
+</script>
+
+<script type="text/javascript">
+	document.getElementById('footerYear-end').innerHTML = new Date().getFullYear() + '';
+</script>
+
+	<button id="totop-toggle" class="toggle"><i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+</body>
+</html>
