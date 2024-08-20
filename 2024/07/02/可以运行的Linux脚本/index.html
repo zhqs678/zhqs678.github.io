@@ -191,6 +191,17 @@
 			
 							<ul>
 								<li class="file">
+									<a href="/blog/2024/08/19/stm32f10x%E7%9A%84can%E6%94%B6%E5%8F%91/">
+                     
+										    stm32f10x的can收发
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
 									<a href="/blog/2024/07/01/vscode%E9%87%8C%E9%9D%A2%E4%BD%BF%E7%94%A8%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%90%9C%E7%B4%A2/">
                      
 										    vscode里面使用正则表达式搜索
@@ -205,6 +216,17 @@
 									<a href="/blog/2024/07/01/%E4%BB%8Eqemu%E5%90%AF%E5%8A%A8linux%E5%86%85%E6%A0%B8%E4%BD%BF%E7%94%A8initramfs/">
                      
 										    从qemu启动linux内核使用initramfs
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/07/30/%E5%85%85%E7%94%B5%E6%A1%A9%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95%E7%AC%94%E8%AE%B0/">
+                     
+										    充电桩程序调试笔记
                      
 									</a>
 								</li>
@@ -276,10 +298,49 @@
 <h3 id="使用uboot启动内核"><a href="#使用uboot启动内核" class="headerlink" title="使用uboot启动内核"></a>使用uboot启动内核</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">dd if=/dev/zero of=sdcard.img bs=1M count=256</span><br><span class="line">mkfs.fat sdcard.img</span><br><span class="line">sudo mount -o loop sdcard.img /mnt</span><br><span class="line">sudo cp /home/zqs/linux-4.14.7-vexpress/arch/arm/boot/zImage /home/zqs/linux-4.14.7-vexpress/arch/arm/boot/dts/vexpress-v2p-ca9.dtb /mnt</span><br><span class="line">sudo umount /mnt</span><br><span class="line">$ qemu-system-arm -M vexpress-a9 -m 256M -kernel u-boot -sd sdcard.img -nographic</span><br><span class="line">=&gt; mmcinfo </span><br><span class="line">=&gt; load mmc 0:0 0x60008000 zImage</span><br><span class="line">=&gt; load mmc 0:0 0x61000000 vexpress-v2p-ca9.dtb</span><br><span class="line">=&gt; setenv bootargs &quot;root=/dev/mmcblk0 rw console=ttyAMA0&quot;</span><br><span class="line">=&gt; bootz 0x60008000 - 0x61000000</span><br><span class="line"></span><br><span class="line">开启内核后提升下面错误:</span><br><span class="line">---[ end Kernel panic - not syncing: No working init found.  Try passing init= option to kernel. </span><br><span class="line">See Linux Documentation/admin-guide/init.rst for guidance.</span><br></pre></td></tr></table></figure>
 
 <h3 id="使用内核加载rootfs-终于成功"><a href="#使用内核加载rootfs-终于成功" class="headerlink" title="使用内核加载rootfs,终于成功!!!!!!!!!!"></a>使用内核加载rootfs,终于成功!!!!!!!!!!</h3><p>sudo cp -af _install_arm64&#x2F;* tmpfs&#x2F;</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">cd /home/</span><br><span class="line">sudo mkdir temp</span><br><span class="line">sudo dd if=/dev/zero of=rootfs.ext3 bs=1M count=256</span><br><span class="line">sudo mkfs.ext3 rootfs.ext3</span><br><span class="line">sudo mount -t ext3 rootfs.ext3 temp/ -o loop</span><br><span class="line">sudo cp -r /home/zqs/tools/busybox-1.35.0/_install/* temp/</span><br><span class="line">sudo umount temp</span><br><span class="line">sudo chmod 777 rootfs.ext3</span><br><span class="line"></span><br><span class="line">qemu-system-arm \</span><br><span class="line">        -M vexpress-a9 \</span><br><span class="line">        -m 512M \</span><br><span class="line">        -kernel arch/arm/boot/zImage \</span><br><span class="line">        -dtb arch/arm/boot/dts/vexpress-v2p-ca9.dtb \</span><br><span class="line">        -nographic \</span><br><span class="line">        -append &quot;root=/dev/mmcblk0 rw console=ttyAMA0&quot; \</span><br><span class="line">        -sd /home/rootfs.ext3</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">cd /home/</span><br><span class="line">sudo mkdir rootfs</span><br><span class="line">sudo dd if=/dev/zero of=rootfs.ext3 bs=1M count=256</span><br><span class="line">sudo mkfs.ext3 rootfs.ext3</span><br><span class="line">sudo mount -t ext3 rootfs.ext3 rootfs/ -o loop</span><br><span class="line">sudo cp -r /home/zqs/tools/busybox-1.35.0/_install/* rootfs/</span><br><span class="line">sudo umount rootfs</span><br><span class="line">sudo chmod 777 rootfs.ext3</span><br><span class="line"></span><br><span class="line">qemu-system-arm \</span><br><span class="line">        -M vexpress-a9 \</span><br><span class="line">        -m 512M \</span><br><span class="line">        -kernel /home/zqs/linux-4.14.7-vexpress/arch/arm/boot/zImage \</span><br><span class="line">        -dtb /home/zqs/linux-4.14.7-vexpress/arch/arm/boot/dts/vexpress-v2p-ca9.dtb \</span><br><span class="line">        -nographic \</span><br><span class="line">        -append &quot;root=/dev/mmcblk0 rw console=ttyAMA0&quot; \</span><br><span class="line">        -sd /home/zqs/rootfs.ext3</span><br></pre></td></tr></table></figure>
 
 <h3 id="采用initramfs也可以成功启动"><a href="#采用initramfs也可以成功启动" class="headerlink" title="采用initramfs也可以成功启动"></a>采用initramfs也可以成功启动</h3><p>之前不成功是因为lib没拷贝,就是启动速度有点慢<br>增加设置项目</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">CONFIG_BLK_DEV_INITRD=y</span><br><span class="line">CONFIG_INITRAMFS_SOURCE=&quot;_install_arm64&quot;  #zqs,之前没有这一行</span><br><span class="line"></span><br><span class="line">CONFIG_UEVENT_HELPER=y	#zqs,之前没有这一行</span><br><span class="line">CONFIG_UEVENT_HELPER_PATH=&quot;/sbin/hotplug&quot;</span><br><span class="line"></span><br><span class="line">sudo cp  ../tools/busybox-1.35.0/_install _install_arm64 -a</span><br><span class="line"></span><br><span class="line">qemu-system-arm -M vexpress-a9 \</span><br><span class="line">-m 512M \</span><br><span class="line">-smp 4 \</span><br><span class="line">-kernel arch/arm/boot/zImage \</span><br><span class="line">-dtb arch/arm/boot/dts/vexpress-v2p-ca9.dtb \</span><br><span class="line">-nographic  \</span><br><span class="line">--append &quot;rdinit=/linuxrc root=/dev/vda rw console=ttyAMA0 loglevel=8&quot;  </span><br><span class="line"></span><br><span class="line">--fsdev local,id=kmod_dev,path=$PWD/kmodules,security_model=none </span><br><span class="line">-device virtio-9p-device,fsdev=kmod_dev,mount_tag=kmod_mount</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>####3、利用共享目录传递文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">        在内核源码的kmodules目录中echo一个文件</span><br><span class="line"></span><br><span class="line">…linux/kmodules$ echo &quot;hello world!&quot; &gt; hello.txt</span><br><span class="line">        可以在QEMU的mnt目录下看到</span><br><span class="line"></span><br><span class="line">[root@user mnt]# ls </span><br><span class="line">hello.txt</span><br><span class="line">[root@user mnt]# cat hello.txt </span><br><span class="line">hello world!</span><br></pre></td></tr></table></figure>
+
+<p>4、利用共享目录传递应用程序并在QEMU中执行<br>        （1）应用测试</p>
+<p>1、编写程序</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">  </span><br><span class="line">int main(int argc, char **argv)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;Hello World!\n&quot;);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>2、编译</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">aarch64-linux-gnu-gcc test.c -o run</span><br><span class="line">/home/zqs/tools/gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi/bin/arm-linux-gnueabi-gcc test.c -o run</span><br></pre></td></tr></table></figure>
+<p>3、利用共享目录传递到QEMU中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">cp ./run ../../../kmodules/</span><br><span class="line">        在QEMU中可以正常运行，说明应用程序可以使用动态链接库</span><br><span class="line"></span><br><span class="line">[root@user mnt]# ls</span><br><span class="line">hello.txt  run</span><br><span class="line">[root@user mnt]# ./run</span><br><span class="line">Hello World!</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">（2）内核module测试</span><br><span class="line">编写Makefile</span><br></pre></td></tr></table></figure>
+<p>export ARCH&#x3D;arm64<br>export CROSS_COMPILE&#x3D;aarch64-linux-gnu-</p>
+<p>KERNEL_DIR ?&#x3D; &#x2F;&#x2F;此处填写你内核源码的目录<br>obj-m :&#x3D; module_test.o</p>
+<p>modules:<br>     $(MAKE) -C $(KERNEL_DIR) M&#x3D;$(PWD) modules</p>
+<p>clean:<br>     $(MAKE) -C $(KERNEL_DIR) M&#x3D;$(PWD) clean</p>
+<p>install:<br>     cp *.ko $(KERNEL_DIR)&#x2F;kmodules<br>                a.编写一个简单的module</p>
+<p>#include &lt;linux&#x2F;init.h&gt;<br>#include &lt;linux&#x2F;module.h&gt;<br>#include &lt;linux&#x2F;kernel.h&gt;</p>
+<p>static int __init test_init(void)<br>{<br>    printk(“test_init\n”);<br>    return 0;<br>}    </p>
+<p>static void __exit test_exit(void)<br>{<br>    printk(“test_exit\n”);<br>}</p>
+<p>module_init(test_init);<br>module_exit(test_exit);<br>MODULE_LICENSE(“GPL”);</p>
+<p>b.编译module，拷贝到共享目录</p>
+<p>make modules<br>make install</p>
+<p>c.在QEUM执行module的插入与卸载，可以看到成功执行并打印log</p>
+<p>[root@user mnt]# ls<br>hello.txt       module_test.ko  run<br>[root@user mnt]# insmod module_test.ko<br>[  570.643309] module_test: loading out-of-tree module taints kernel.<br>[  570.649633] test_init<br>[root@user mnt]# lsmod<br>module_test 16384 0 - Live 0xffff800000ff0000 (O)<br>[root@user mnt]# rmmod module_test.ko<br>[  582.596130] test_exit</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">### tap 进行网络互连的方式</span><br><span class="line"></span><br><span class="line">首先安装一些配置网络的工具</span><br></pre></td></tr></table></figure>
+<p>apt-get install bridge-utils        # 虚拟网桥工具<br>apt-get install uml-utilities       # UML（User-mode linux）工具<br>主要介绍几个命令</p>
+<p>增加一个虚拟网桥 br0</p>
+<p>brctl addbr br0<br>创建一个tap0接口，只允许root 用户访问</p>
+<p>tunctl -t tap0 -u root<br>在虚拟网桥中增加一个tap0 接口</p>
+<p>brctl addif br0 tap0<br>设置 tap0 口的地址</p>
+<p>sudo ifconfig tap0 192.168.0.220</p>
+<pre><code>
+
+</code></pre>
 
 </div>
 
@@ -287,6 +348,11 @@
 
     <div class="post-guide">
         <div class="item left">
+            
+              <a href="/blog/2024/07/30/%E5%85%85%E7%94%B5%E6%A1%A9%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95%E7%AC%94%E8%AE%B0/">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  充电桩程序调试笔记
+              </a>
             
         </div>
         <div class="item right">

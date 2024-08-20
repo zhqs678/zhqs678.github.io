@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		linux_core_note | 
+		充电桩程序调试笔记 | 
 	 
 	工作小记
 	</title>
@@ -223,7 +223,7 @@
 							</ul>
 			
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/blog/2024/07/30/%E5%85%85%E7%94%B5%E6%A1%A9%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95%E7%AC%94%E8%AE%B0/">
                      
 										    充电桩程序调试笔记
@@ -262,7 +262,7 @@
 	<!-- 引入正文 -->
 	<div id="content" class="content">
 		<h1 id="article-title">
-	linux_core_note
+	充电桩程序调试笔记
 </h1>
 
 <!-- meta -->
@@ -270,11 +270,17 @@
 	
 
 	<span>simith</span>
-	<span>2024-06-26 14:21:50</span>
+	<span>2024-07-30 14:57:36</span>
 
   <div id="article-categories">
     
+		  <span>Categories：</span>
+      
+    
 
+    
+		    <span>Tags：</span>
+        
     
   </div>
 
@@ -282,10 +288,31 @@
 
 <!-- content -->
 <div id="article-content">
-	
+	<h3 id="1、can数据接收丢失问题"><a href="#1、can数据接收丢失问题" class="headerlink" title="1、can数据接收丢失问题"></a>1、can数据接收丢失问题</h3><p>2024年7月30日<br>查找半天，发现是基于板卡调试，另一路的can通道没有借外设，产生通讯故障，<br>can通道在不停的初始化，导致本通道can数据有丢失。<br>LPC1778的两路can在初始化是互相影响。</p>
+<h3 id="2、Jlink下载不了程序"><a href="#2、Jlink下载不了程序" class="headerlink" title="2、Jlink下载不了程序"></a>2、Jlink下载不了程序</h3><p>2024年8月14日<br>jlink使用7.20，频率200k，中试的硬件jlink可以下载程序了。<br>不确定是那里的问题，可能板卡也得重新上电。<br>后来跟换第一版板卡好了。</p>
+<h3 id="3、"><a href="#3、" class="headerlink" title="3、"></a>3、</h3>
 </div>
 
 <!-- post-guide -->
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/blog/2024/08/19/stm32f10x%E7%9A%84can%E6%94%B6%E5%8F%91/">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  stm32f10x的can收发
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/blog/2024/07/02/%E5%8F%AF%E4%BB%A5%E8%BF%90%E8%A1%8C%E7%9A%84Linux%E8%84%9A%E6%9C%AC/">
+                可以运行的Linux脚本
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
 
 
 <!-- comment - giscus -->
