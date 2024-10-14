@@ -213,6 +213,17 @@
 			
 							<ul>
 								<li class="file">
+									<a href="/blog/2024/10/11/wsl%E4%B8%8A%E5%AE%89%E8%A3%85qt2-8-6/">
+                     
+										    wsl上安装qt4.8.6
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
 									<a href="/blog/2024/07/01/%E4%BB%8Eqemu%E5%90%AF%E5%8A%A8linux%E5%86%85%E6%A0%B8%E4%BD%BF%E7%94%A8initramfs/">
                      
 										    从qemu启动linux内核使用initramfs
@@ -289,8 +300,9 @@
 <!-- content -->
 <div id="article-content">
 	<h3 id="1、can数据接收丢失问题"><a href="#1、can数据接收丢失问题" class="headerlink" title="1、can数据接收丢失问题"></a>1、can数据接收丢失问题</h3><p>2024年7月30日<br>查找半天，发现是基于板卡调试，另一路的can通道没有借外设，产生通讯故障，<br>can通道在不停的初始化，导致本通道can数据有丢失。<br>LPC1778的两路can在初始化是互相影响。</p>
-<h3 id="2、Jlink下载不了程序"><a href="#2、Jlink下载不了程序" class="headerlink" title="2、Jlink下载不了程序"></a>2、Jlink下载不了程序</h3><p>2024年8月14日<br>jlink使用7.20，频率200k，中试的硬件jlink可以下载程序了。<br>不确定是那里的问题，可能板卡也得重新上电。<br>后来跟换第一版板卡好了。</p>
-<h3 id="3、"><a href="#3、" class="headerlink" title="3、"></a>3、</h3>
+<h3 id="2、Jlink下载不了程序"><a href="#2、Jlink下载不了程序" class="headerlink" title="2、Jlink下载不了程序"></a>2、Jlink下载不了程序</h3><p>2024年8月14日<br>jlink使用7.20，频率200k，中试的硬件jlink可以下载程序了。<br>不确定是那里的问题，可能板卡也得重新上电。<br>后来跟换第一版板卡好了。是因为复位芯片的原因导致下载不了程序。</p>
+<h3 id="3、CAN发送文件"><a href="#3、CAN发送文件" class="headerlink" title="3、CAN发送文件"></a>3、CAN发送文件</h3><p>OTA调试，修改以下代码。问题不是以下代码的问题，是应该can盒经过usbhub转换的问题，can盒直接接电脑测试OK。<br>pCAN-&gt;CMR  &#x3D; 0x23;	&#x2F;&#x2F;不重发<br>    if (pCAN-&gt;GSR &amp; 0x00C0) {	&#x2F;&#x2F;总线出错或关闭<br>        s32_can_init(1, e_can1_baud);<br>    }<br>t_can1_tx_msg.u32_read_index &#x3D; t_can1_tx_msg.u32_write_index &#x3D; 0;</p>
+<h3 id="4、"><a href="#4、" class="headerlink" title="4、"></a>4、</h3><h3 id="5、"><a href="#5、" class="headerlink" title="5、"></a>5、</h3>
 </div>
 
 <!-- post-guide -->
