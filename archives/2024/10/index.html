@@ -277,9 +277,20 @@
 			
 							<ul>
 								<li class="file">
-									<a href="/blog/2024/10/25/2024-10-25%20core%20dump%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/">
+									<a href="/blog/2024/10/25/2024-10-25%20core_dump%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/">
                      
 										    core dump使用方法
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/10/28/2024-10-28%20robot-a-%E8%B0%83%E8%AF%95%E7%AC%94%E8%AE%B0/">
+                     
+										    robot_a_调试笔记
                      
 									</a>
 								</li>
@@ -297,17 +308,6 @@
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
-							<ul>
-								<li class="file">
-									<a href="/blog/2024/10/28/robot-a-%E8%B0%83%E8%AF%95%E7%AC%94%E8%AE%B0/">
-                     
-										    robot_a_调试笔记
-                     
-									</a>
-								</li>
-								<div class="article-toc" style="display: none;"></div>
-							</ul>
-			
 		</div>
 	</div>
 </div>
@@ -317,7 +317,7 @@
 		<div id="index">
 	
 		<div class="index-li">
-			<a href="/blog/2024/10/28/robot-a-%E8%B0%83%E8%AF%95%E7%AC%94%E8%AE%B0/">
+			<a href="/blog/2024/10/28/2024-10-28%20robot-a-%E8%B0%83%E8%AF%95%E7%AC%94%E8%AE%B0/">
 				<h2 class="index-title">
 					robot_a_调试笔记
 				</h2>
@@ -336,13 +336,13 @@
 		</div>	
 	
 		<div class="index-li">
-			<a href="/blog/2024/10/25/2024-10-25%20core%20dump%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/">
+			<a href="/blog/2024/10/25/2024-10-25%20core_dump%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/">
 				<h2 class="index-title">
 					core dump使用方法
 				</h2>
 				<div class="index-brief">
-					使用gdb查找死机原因OK，1、运行环境的rootfs文件和lib库要拷贝ubuntu上，用于adb符号分析。2、应用程序sytcu也需要拷贝到Ubuntu上。3、执行adb后才能加载lib，使用set solib-search-path命令
-打开coredump：ulimit -c unlimit
+					（1）首先确保，在 &#x2F;etc&#x2F;profile 中添加了ulimit -c unlimited保证开启coredump；
+（2）修改&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_pattern和&#x2F;proc&#x2F;sys&#x2F;
 					...
 				</div>
 			</a>

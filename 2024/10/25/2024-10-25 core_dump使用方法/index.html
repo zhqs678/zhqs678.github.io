@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		Hello World | 
+		core dump使用方法 | 
 	 
 	工作小记
 	</title>
@@ -17,7 +17,7 @@
 	<!-- keywords,description -->
 	
 	
-		<meta name="description" content="hello" />
+		<meta name="description" content="我的工作小记" />
 	
 
 	<!-- favicon -->
@@ -278,7 +278,7 @@
 							</ul>
 			
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/blog/2024/10/25/2024-10-25%20core_dump%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/">
                      
 										    core dump使用方法
@@ -300,7 +300,7 @@
 							</ul>
 			
 							<ul>
-								<li class="file active">
+								<li class="file">
 									<a href="/blog/2024/06/26/hello-world/">
                      
 										    Hello World
@@ -317,7 +317,7 @@
 	<!-- 引入正文 -->
 	<div id="content" class="content">
 		<h1 id="article-title">
-	Hello World
+	core dump使用方法
 </h1>
 
 <!-- meta -->
@@ -325,7 +325,7 @@
 	
 
 	<span>simith</span>
-	<span>2024-06-26 10:17:02</span>
+	<span>2024-10-25 15:21:09</span>
 
   <div id="article-categories">
     
@@ -343,21 +343,56 @@
 
 <!-- content -->
 <div id="article-content">
-	<span id="more"></span>
-
-<p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+	<p>（1）首先确保，在 &#x2F;etc&#x2F;profile 中添加了<br>ulimit -c unlimited<br>保证开启coredump；</p>
+<p>（2）<br>修改&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_pattern和&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_uses_pid<br>或者<br>修改sudo vi &#x2F;etc&#x2F;sysctl.conf, 添加coredump对应目录及格式，此处user为你的用户名对应目录，别忘记创建这个&#x2F;home&#x2F;user&#x2F;coredump文件夹：<br>&#x2F;home&#x2F;user&#x2F;coredump&#x2F;core.%e.%p.%s.%E</p>
+<p>二. 修改core dump文件路径：<br>方法1：临时修改&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_pattern文件，但&#x2F;proc目录本身是动态加载的，每次系统重启都会重新加载，因此这种方法只能作为临时修改： &#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_pattern</p>
+<h1 id="echo-‘-var-log-e-core-p’-proc-sys-kernel-core-pattern"><a href="#echo-‘-var-log-e-core-p’-proc-sys-kernel-core-pattern" class="headerlink" title="echo ‘&#x2F;var&#x2F;log&#x2F;%e.core.%p’ &gt; &#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_pattern"></a>echo ‘&#x2F;var&#x2F;log&#x2F;%e.core.%p’ &gt; &#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_pattern</h1><p>方法2：永久修改：使用sysctl -w name&#x3D;value命令。</p>
+<h1 id="sbin-sysctl-w-kernel-core-pattern-var-log-e-core-p"><a href="#sbin-sysctl-w-kernel-core-pattern-var-log-e-core-p" class="headerlink" title="&#x2F;sbin&#x2F;sysctl -w kernel.core_pattern&#x3D;&#x2F;var&#x2F;log&#x2F;%e.core.%p"></a>&#x2F;sbin&#x2F;sysctl -w kernel.core_pattern&#x3D;&#x2F;var&#x2F;log&#x2F;%e.core.%p</h1><p>为了更详尽的记录core dump当时的系统状态，可通过以下参数来丰富core文件的命名： %% 单个%字符。</p>
+<h2 id="使用gdb查找死机原因OK，"><a href="#使用gdb查找死机原因OK，" class="headerlink" title="使用gdb查找死机原因OK，"></a>使用gdb查找死机原因OK，</h2><p>1、运行环境的rootfs文件和lib库要拷贝ubuntu上，用于adb符号分析。<br>2、应用程序sytcu也需要拷贝到Ubuntu上。<br>3、执行adb后才能加载lib，使用set solib-search-path命令</p>
+<p>打开coredump：<br>ulimit -c unlimited。</p>
+<h1 id="使用如下脚本分析core文件。"><a href="#使用如下脚本分析core文件。" class="headerlink" title="使用如下脚本分析core文件。"></a>使用如下脚本分析core文件。<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line"># writen by zqs.</span><br><span class="line"></span><br><span class="line"># 应用目录</span><br><span class="line">APP_DIR=/home/zqs/robot/sy_tcu_final</span><br><span class="line"></span><br><span class="line"># core文件</span><br><span class="line">CORE_FILE=/home/zqs/core_analyse/core</span><br><span class="line"></span><br><span class="line"># GDB文件</span><br><span class="line">GDB=/home/zqs/tools/gcc-linaro-4.9-2016.02-x86_64_arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb</span><br><span class="line"></span><br><span class="line"># rootfs文件</span><br><span class="line">ROOTFS_DIR=/home/zqs/core_analyse/rootfs/</span><br><span class="line"></span><br><span class="line"># 拷贝库文件</span><br><span class="line"># cp -r $APP_DIR/bin/sytcu       $ROOTFS_DIR/App/sytcu</span><br><span class="line">cp -r $APP_DIR/library/*   $ROOTFS_DIR/lib</span><br><span class="line"></span><br><span class="line">echo &quot;set solib-search-path /home/zqs/core_analyse/rootfs/lib&quot;</span><br><span class="line"></span><br><span class="line"># gdb分析</span><br><span class="line">$GDB $APP_DIR/bin/sytcu -c $CORE_FILE</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#set solib-search-path /home/zqs/core_analyse/rootfs/lib</span><br><span class="line">#set sysroot /home/zqs/core_analyse/rootfs</span><br><span class="line">#info sharedlibrary</span><br><span class="line"></span><br><span class="line">#where or bt</span><br><span class="line"></span><br></pre></td></tr></table></figure></h1><p>该文件也是ELF文件，可以采用readelf查看该文件：<br>&#x2F;&#x2F;例：<br>readelf -h core.test.32469<br>readelf -h &#x2F;home&#x2F;zqs&#x2F;robot&#x2F;core-timeTick-3000-6076</p>
+<p>我们可以直接查看core文件是否含有符号表信息，执行以下命令：<br>objdump -x core.test.32469 | tail<br>objdump -x &#x2F;home&#x2F;zqs&#x2F;robot&#x2F;core-timeTick-3000-6076 | tail<br>objdump -x &#x2F;home&#x2F;zqs&#x2F;robot&#x2F;core | tail</p>
+<h1 id="可能是没有关联调试文件，可以通过”objdump-s-j-gnu-debuglink-xxx”命令查看关联信息。"><a href="#可能是没有关联调试文件，可以通过”objdump-s-j-gnu-debuglink-xxx”命令查看关联信息。" class="headerlink" title="可能是没有关联调试文件，可以通过”objdump -s -j .gnu_debuglink xxx”命令查看关联信息。"></a>可能是没有关联调试文件，可以通过”objdump -s -j .gnu_debuglink xxx”命令查看关联信息。</h1><p>下面说一下永久打开生成Core文件的步骤：</p>
+<p>1、设置core文件的大小不受限制。</p>
+<p>ulimit -c unlimited</p>
+<p>2、ulimit -c校验是否设置成功（如果是0，说明生成core文件开关为关闭）</p>
+<p>[root@A03-R05-I115-53-5254972 jimdb]# ulimit -c Unlimited</p>
+<p>3、【重要！！】打开 &#x2F;etc&#x2F;security&#x2F;limits.conf文件（使ulimit -c ulimited 设置永久生效）</p>
+<p>vi &#x2F;etc&#x2F;security&#x2F;limits.conf</p>
+<p>添加红框中两行：</p>
+<ul>
+<li><pre><code>soft   core unlimited
+</code></pre>
+</li>
+<li><pre><code>hard  core unlimited
+</code></pre>
+</li>
+</ul>
+<p>用命令修改的方式：</p>
+<p>echo “* soft core unlimited” &gt;&gt; &#x2F;etc&#x2F;security&#x2F;limits.conf</p>
+<p>echo “* hard core unlimited” &gt;&gt; &#x2F;etc&#x2F;security&#x2F;limits.conf</p>
+<p>4、【重要！！】创建存放 core文件的文件夹 (确认应用有写的权限）</p>
+<p> mkdir &#x2F;export&#x2F;Logs&#x2F;jimdb</p>
+<p>5、设置生成 core文件的名称和生成路径（以下两种方式任选一种，哪种生效与系统有关）</p>
+<p>方式一： 修改&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_pattern和&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_uses_pid</p>
+<p>echo “&#x2F;export&#x2F;Logs&#x2F;jimdb&#x2F;core-%e-%p-%t” &gt; &#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_pattern   </p>
+<p>echo “1” &gt; &#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;core_uses_pid</p>
+<p> （core_pattern文件名为core-命令名-pid-时间戳）</p>
+<p>  (kernel.core_uses_pid控制core文件的文件名中是否添加pid作为扩展,文件内容为1，表示添加pid作为扩展名，生成的core文件格式为core.xxxx；为0则表示生成的core文件同一命名为core)</p>
+<p>以下是参数列表:</p>
+<p>%p - insert pid into filename 添加pid</p>
+<p>%u - insert current uid into filename 添加当前uid</p>
+<p>%g - insert current gid into filename 添加当前gid</p>
+<p>%s - insert signal that caused the coredump into the filename 添加导致产生core的信号</p>
+<p>%t - insert UNIX time that the coredump occurred into filename 添加core文件生成时的unix时间</p>
+<p>%h - insert hostname where the coredump happened into filename 添加主机名</p>
+<p>%e - insert coredumping executable name into filename 添加命令名</p>
+<p>方式二：修改&#x2F;etc&#x2F;sysctl.conf</p>
+<p>sysctl -w “kernel.core_pattern&#x3D;&#x2F;export&#x2F;Logs&#x2F;jimdb&#x2F;core-%e-%p-%t” &gt;&gt;&#x2F;etc&#x2F;sysctl.conf</p>
+<p>sysctl -w “kernel.core_uses_pid&#x3D;1” &gt;&gt;&#x2F;etc&#x2F;sysctl.conf</p>
+<p>sysctl -p (查看生效参数，验证设置是否生效)</p>
+<p>5、快速验证是否能生成core文件</p>
+<p>kill -s SIGSEGV $$</p>
 
 </div>
 
@@ -366,13 +401,18 @@
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/blog/2024/06/26/2024-07-02%20linux-note/">
+              <a href="/blog/2024/10/28/2024-10-28%20robot-a-%E8%B0%83%E8%AF%95%E7%AC%94%E8%AE%B0/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  Linux内核编译笔记
+                  robot_a_调试笔记
               </a>
             
         </div>
         <div class="item right">
+            
+              <a href="/blog/2024/10/17/2024-10-17%20%E4%BD%BF%E7%94%A8shell%E7%BC%96%E8%AF%91qt%E7%9A%84pro%E6%96%87%E4%BB%B6/">
+                使用shell编译qt的pro文件
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
             
         </div>
     </div>
