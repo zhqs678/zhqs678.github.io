@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		windows上建立ftp服务器，在a核里面进行上传下载文件 | 
+		qt中文显示方框问题 | 
 	 
 	工作小记
 	</title>
@@ -300,10 +300,10 @@
 							</ul>
 			
 							<ul>
-								<li class="file">
-									<a href="/blog/2024/06/26/hello-world/">
+								<li class="file active">
+									<a href="/blog/2024/12/11/2024-12-11%20qt%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA%E6%96%B9%E6%A1%86%E9%97%AE%E9%A2%98/">
                      
-										    Hello World
+										    qt中文显示方框问题
                      
 									</a>
 								</li>
@@ -311,10 +311,32 @@
 							</ul>
 			
 							<ul>
-								<li class="file active">
-									<a href="/blog/2024/11/25/windows%E4%B8%8A%E5%BB%BA%E7%AB%8Bftp%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%8C%E5%9C%A8a%E6%A0%B8%E9%87%8C%E9%9D%A2%E8%BF%9B%E8%A1%8C%E4%B8%8A%E4%BC%A0%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6/">
+								<li class="file">
+									<a href="/blog/2024/12/18/2024-12-18%20gdb%E5%91%BD%E4%BB%A4%E7%94%A8%E4%BA%8Ecoredump%E5%88%86%E6%9E%90/">
+                     
+										    gdb命令用于coredump分析
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/11/25/2024-12-20%20windows%E4%B8%8A%E5%BB%BA%E7%AB%8Bftp%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%8C%E5%9C%A8a%E6%A0%B8%E9%87%8C%E9%9D%A2%E8%BF%9B%E8%A1%8C%E4%B8%8A%E4%BC%A0%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6/">
                      
 										    windows上建立ftp服务器，在a核里面进行上传下载文件
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/06/26/hello-world/">
+                     
+										    Hello World
                      
 									</a>
 								</li>
@@ -328,7 +350,7 @@
 	<!-- 引入正文 -->
 	<div id="content" class="content">
 		<h1 id="article-title">
-	windows上建立ftp服务器，在a核里面进行上传下载文件
+	qt中文显示方框问题
 </h1>
 
 <!-- meta -->
@@ -336,7 +358,7 @@
 	
 
 	<span>simith</span>
-	<span>2024-11-25 14:31:00</span>
+	<span>2024-12-11 14:01:26</span>
 
   <div id="article-categories">
     
@@ -354,12 +376,11 @@
 
 <!-- content -->
 <div id="article-content">
-	<p>1、 在windows上建立ftp服务，开启匿名登录<br>2、a核里面登录用户使用anonymous<br>3、匿名登录，要使用二进制文件传输<br>ftp 192.168.0.250<br>anonymous<br>binary<br>get install.tar.gz install.tar.gz<br>put install.tar.gz install2.tar.gz</p>
-<p>4、备份app目录<br>cd &#x2F;mnt&#x2F;nandflash&#x2F;app<br>ftp 192.168.0.250<br>anonymous<br>binary<br>mput *</p>
-<p>最后使用Cisco_TFTP_Server作为服务器，在a核里面执行下面指令：<br>tftp 192.168.0.231 -r tcuregdata.db -g<br>tftp 192.168.0.231 -r tcuregdata.db -p</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">root@ok335x:/mnt/nandflash/download# ftp 192.168.0.250</span><br><span class="line">Connected to 192.168.0.250.</span><br><span class="line">220 Microsoft FTP Service</span><br><span class="line">Name (192.168.0.250:root): anonymous</span><br><span class="line">331 Anonymous access allowed, send identity (e-mail name) as password.</span><br><span class="line">Password:</span><br><span class="line">230 User logged in.</span><br><span class="line">Remote system type is Windows_NT.</span><br><span class="line">ftp&gt; binary</span><br><span class="line">200 Type set to I.</span><br><span class="line">ftp&gt; get install.tar.gz install.tar.gz</span><br><span class="line">local: install.tar.gz remote: install.tar.gz</span><br><span class="line">200 PORT command successful.</span><br><span class="line">125 Data connection already open; Transfer starting.</span><br><span class="line">226 Transfer complete.</span><br><span class="line">66089 bytes received in 0.09 secs (7.2e+02 Kbytes/sec)</span><br><span class="line">ftp&gt; put install.tar.gz install2.tar.gz</span><br><span class="line">local: install.tar.gz remote: install2.tar.gz</span><br><span class="line">200 PORT command successful.</span><br><span class="line">125 Data connection already open; Transfer starting.</span><br><span class="line">226 Transfer complete.</span><br><span class="line">66089 bytes sent in 0.0846 secs (7.6e+02 Kbytes/sec)</span><br><span class="line">ftp&gt; ls</span><br><span class="line">200 PORT command successful.</span><br><span class="line">125 Data connection already open; Transfer starting.</span><br><span class="line">11-25-24  03:01PM       &lt;DIR&gt;          app</span><br><span class="line">11-22-24  05:22PM                66089 install.tar.gz</span><br><span class="line">11-25-24  03:00PM                66089 install2.tar.gz</span><br><span class="line">226 Transfer complete</span><br></pre></td></tr></table></figure>
+	<p>WSL中文乱码问题解决<br>正文：在使用 Windows Subsystem for Linux (WSL) 进行开发时，一些用户可能会遇到在 WSL 终端中显示中文时出现乱码的问题。这种问题可以影响到日常开发和命令行工具的使用。本文将介绍几种常见的解决方法来解决 WSL 中文乱码问题。</p>
+<p>方法一：设置字符编码<br>在终端中执行以下命令，将终端的字符编码设置为 UTF-8：</p>
+<p>export LANG&#x3D;en_US.UTF-8<br>export LC_ALL&#x3D;en_US.UTF-8<br>1<br>2<br>然后，重新启动终端并尝试输入中文字符，应该能够正确显示中文字符了。</p>
+<p>方法二：安装中文字体<br>sudo apt-get update<br>sudo apt-get install fonts-wqy-zenhei<br>1<br>2<br>安装完成后，重新启动终端或注销并重新登录，然后尝试输入中文字符，应该能够正常显示了。</p>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">cd  ../lib</span><br><span class="line">lcd /home/zqs/robot/sy_tcu_final/library</span><br><span class="line">mput *</span><br><span class="line"></span><br><span class="line">cd  /App</span><br><span class="line">lcd /home/zqs/robot/sy_tcu_final/bin</span><br><span class="line">put sytcu sytcu</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">lcd /mnt/nandflash/download/</span><br><span class="line">get install.tar.gz install.tar.gz</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">4、cd、cdup、lcd、pwd、!</span><br><span class="line">①cd改变当前工作目录；（远程）</span><br><span class="line">②cdup回到上一层目录，相当于“cd..”；（远程）</span><br><span class="line">③Icd用于更改或显示LOCAL端的工作目录；（本地）</span><br><span class="line">④pwd显示目前的工作目录（REMOTE端）；（远程）</span><br><span class="line"></span><br><span class="line">6、get、mget、put、mput、recv、send</span><br><span class="line">①get下载文件；</span><br><span class="line">②mget批量下载文件；</span><br><span class="line">③put上传文件；</span><br><span class="line">④mput批量上传文件；</span><br><span class="line">⑤recv相当于get；</span><br><span class="line">⑥send相当于put。</span><br><span class="line"></span><br><span class="line">8、ls、dir、mls、mdir、mkdir、rmdir</span><br><span class="line">①ls有点像Unix下的ls(list)命令；（远程）</span><br><span class="line">②dir相当于“ls-l”；（远程）</span><br><span class="line">③mls只是将远端某目录下的文件存于LOCAL端的某文件里；</span><br><span class="line">④mdir相当于mls；</span><br><span class="line">⑤mkdir像DOS下的md（创建了目录）一样；</span><br><span class="line">⑥rmdir像DOS下的rd（删除了目录）一样。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 </div>
 
 <!-- post-guide -->
@@ -367,11 +388,16 @@
     <div class="post-guide">
         <div class="item left">
             
+              <a href="/blog/2024/12/18/2024-12-18%20gdb%E5%91%BD%E4%BB%A4%E7%94%A8%E4%BA%8Ecoredump%E5%88%86%E6%9E%90/">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  gdb命令用于coredump分析
+              </a>
+            
         </div>
         <div class="item right">
             
-              <a href="/blog/2024/10/28/2024-10-28%20robot-a-%E8%B0%83%E8%AF%95%E7%AC%94%E8%AE%B0/">
-                robot_a_调试笔记
+              <a href="/blog/2024/11/25/2024-12-20%20windows%E4%B8%8A%E5%BB%BA%E7%AB%8Bftp%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%8C%E5%9C%A8a%E6%A0%B8%E9%87%8C%E9%9D%A2%E8%BF%9B%E8%A1%8C%E4%B8%8A%E4%BC%A0%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6/">
+                windows上建立ftp服务器，在a核里面进行上传下载文件
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             

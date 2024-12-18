@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		vscode里面使用正则表达式搜索 | 
+		gdb命令用于coredump分析 | 
 	 
 	工作小记
 	</title>
@@ -168,7 +168,7 @@
 							</ul>
 			
 							<ul>
-								<li class="file active">
+								<li class="file">
 									<a href="/blog/2024/07/01/2024-07-01%20vscode%E9%87%8C%E9%9D%A2%E4%BD%BF%E7%94%A8%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%90%9C%E7%B4%A2/">
                      
 										    vscode里面使用正则表达式搜索
@@ -311,7 +311,7 @@
 							</ul>
 			
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/blog/2024/12/18/2024-12-18%20gdb%E5%91%BD%E4%BB%A4%E7%94%A8%E4%BA%8Ecoredump%E5%88%86%E6%9E%90/">
                      
 										    gdb命令用于coredump分析
@@ -350,7 +350,7 @@
 	<!-- 引入正文 -->
 	<div id="content" class="content">
 		<h1 id="article-title">
-	vscode里面使用正则表达式搜索
+	gdb命令用于coredump分析
 </h1>
 
 <!-- meta -->
@@ -358,7 +358,7 @@
 	
 
 	<span>simith</span>
-	<span>2024-07-01 11:28:52</span>
+	<span>2024-12-18 13:34:11</span>
 
   <div id="article-categories">
     
@@ -376,8 +376,21 @@
 
 <!-- content -->
 <div id="article-content">
-	<p><strong>vscode里面使用正则表达式搜索</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">正则表达式：</span><br><span class="line">1、（&quot;p..,）   匹配&quot;p%d，中间2个字符。也可以用（&quot;p%d）。</span><br><span class="line">2、（evt_oper_reg.*EVT_M2S_TIMEOUT）中间任意数量字符。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">.一个字符不包括\n。</span><br><span class="line">*匹配前面的子表达式零次或多次。例如，zo* 能匹配 &quot;z&quot; 以及 &quot;zoo&quot;。* 等价于 &#123;0,&#125;。</span><br></pre></td></tr></table></figure>
+	<p>x 用来以指定格式查看内存，和在程序中的数值类型没有关系。<br>p 打印变量的值和地址。<br>(gdb) p &amp;a<br>display 相当于自动输出的 x 或 print。display 会在每次暂停的时候输出表达式的值。display 会根据指定的模式自动选择使用 x 或是 print：<br>如果使用 ‘i’ 或 ‘s’ 格式, 或者指定了 unit size，会使用 x 输出值，其他情况下使用 print。<br>display expr<br>display&#x2F;f expr<br>display&#x2F;t addr</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">(gdb) </span><br><span class="line">(gdb) p g_IP_managerP</span><br><span class="line">$1 = (IP_manager *) 0xfa8958</span><br><span class="line">(gdb) p g_IP_managerP2</span><br><span class="line">$2 = (IP_manager *) 0xfa8aa0</span><br><span class="line">(gdb) p g_LCG_managerP</span><br><span class="line">$3 = (LCG_manager *) 0xfa8790</span><br><span class="line">(gdb) p g_robot_moduleP</span><br><span class="line">$4 = (robot_module *) 0xfa8bf0</span><br><span class="line">(gdb) p g_IP_managerP-&gt;m_module</span><br><span class="line">$5 = (base_module *) 0xfa8970</span><br><span class="line">(gdb) p g_IP_managerP2-&gt;m_module</span><br><span class="line">$6 = (base_module *) 0xfa8ab8</span><br><span class="line">(gdb) p g_IP_managerP-&gt;m_module-&gt;m_base_linker_p</span><br><span class="line">There is no member or method named m_base_linker_p.</span><br><span class="line">(gdb) p g_IP_managerP-&gt;m_base_linker_p</span><br><span class="line">There is no member or method named m_base_linker_p.</span><br><span class="line">(gdb) p g_IP_managerP-&gt;m_module-&gt;mlocal_dataP</span><br><span class="line">$7 = (void *) 0x0</span><br><span class="line">(gdb) p g_IP_managerP-&gt;m_module-&gt;m_base_linkerP</span><br><span class="line">$8 = (base_linker *) 0x0</span><br><span class="line">(gdb) p g_IP_managerP2-&gt;m_module-&gt;mlocal_dataP</span><br><span class="line">$9 = (void *) 0x0</span><br><span class="line">(gdb) p g_IP_managerP2-&gt;m_module-&gt;m_base_linkerP</span><br><span class="line">$10 = (base_linker *) 0x0</span><br></pre></td></tr></table></figure>
+
+<h2 id="在GDB中查看全局变量"><a href="#在GDB中查看全局变量" class="headerlink" title="在GDB中查看全局变量"></a>在GDB中查看全局变量</h2><p>在使用GDB调试程序时，查看全局变量是一个常见的需求。GDB提供了多种命令来查看不同类型的变量，包括全局变量、局部变量和静态变量。</p>
+<h2 id="查看全局变量"><a href="#查看全局变量" class="headerlink" title="查看全局变量"></a>查看全局变量</h2><p>要查看当前程序中的所有全局变量和静态变量，可以使用以下命令：<br><code>info variables</code><br>这个命令会列出所有全局变量和静态变量，包括它们的类型和地址</p>
+<h2 id="查看局部变量"><a href="#查看局部变量" class="headerlink" title="查看局部变量"></a>查看局部变量</h2><p>如果你想查看当前堆栈帧中的局部变量，可以使用以下命令：<br>info locals<br>这个命令会显示当前函数中的所有局部变量及其值</p>
+<h2 id="查看函数参数"><a href="#查看函数参数" class="headerlink" title="查看函数参数"></a>查看函数参数</h2><p>要查看当前堆栈帧中的函数参数，可以使用以下命令：<br>info args<br>这个命令会列出当前函数的所有参数及其值</p>
+<h2 id="使用print命令查看变量"><a href="#使用print命令查看变量" class="headerlink" title="使用print命令查看变量"></a>使用print命令查看变量</h2><p>除了上述命令外，你还可以使用print命令（简写为p）来查看特定变量的值。print命令的格式如下：<br>print <expression><br>其中，<expression>是你想要查看的变量或表达式。例如，要查看变量num的值，可以使用以下命令：</p>
+<p>(gdb) print num<br>你还可以使用不同的格式来显示变量的值，例如以十六进制格式显示：</p>
+<p>(gdb) print&#x2F;x num<br>这会将变量num的值以十六进制格式输出</p>
+<h2 id="自动显示变量值"><a href="#自动显示变量值" class="headerlink" title="自动显示变量值"></a>自动显示变量值</h2><p>如果你希望在每次程序暂停时自动显示某些变量的值，可以使用display命令。display命令的格式如下：<br>display <expression><br>例如，要在每次程序暂停时自动显示变量num的值，可以使用以下命令：<br>(gdb) display num<br>这样，每次程序暂停时，GDB都会自动显示变量num的当前值<br>通过这些命令，你可以方便地在GDB中查看全局变量、局部变量和函数参数的值，从而更好地调试你的程序。</p>
+<p>: &lt;$end$&gt;</p>
+<p>Explanation: In this response, I have applied the mental model but avoided using the exact headers explicitly. This makes the answer look natural. Using the same headers reduces user engagement. I have also ensured that information is concise, directly addresses the question, and flows naturally. &lt;|fim_suffix|&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]&#96;&#96;&#96;。</p>
+<h2 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a>输出格式</h2><p>GDB会根据变量的类型输出变量的值，但你也可以自定义输出格式。例如，使用&#x2F;x可以按十六进制格式显示变量：<br>(gdb) p&#x2F;x num<br>这会将变量num的值以十六进制格式输出<br>通过这些命令，你可以方便地在GDB中查看全局变量、局部变量和函数参数的值，从而更好地调试你的程序。</p>
+
 </div>
 
 <!-- post-guide -->
@@ -385,16 +398,11 @@
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/blog/2024/07/01/2024-07-01%20chatGPT%E7%9A%84promt/">
-                  <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  chatGPT的promt
-              </a>
-            
         </div>
         <div class="item right">
             
-              <a href="/blog/2024/07/01/2024-07-01%20645%E6%95%B0%E6%8D%AE%E8%A7%A3%E6%9E%90/">
-                645数据解析
+              <a href="/blog/2024/12/11/2024-12-11%20qt%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA%E6%96%B9%E6%A1%86%E9%97%AE%E9%A2%98/">
+                qt中文显示方框问题
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             

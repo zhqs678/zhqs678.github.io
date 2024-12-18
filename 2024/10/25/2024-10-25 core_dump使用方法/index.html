@@ -301,9 +301,9 @@
 			
 							<ul>
 								<li class="file">
-									<a href="/blog/2024/06/26/hello-world/">
+									<a href="/blog/2024/12/11/2024-12-11%20qt%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA%E6%96%B9%E6%A1%86%E9%97%AE%E9%A2%98/">
                      
-										    Hello World
+										    qt中文显示方框问题
                      
 									</a>
 								</li>
@@ -312,9 +312,31 @@
 			
 							<ul>
 								<li class="file">
-									<a href="/blog/2024/11/25/windows%E4%B8%8A%E5%BB%BA%E7%AB%8Bftp%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%8C%E5%9C%A8a%E6%A0%B8%E9%87%8C%E9%9D%A2%E8%BF%9B%E8%A1%8C%E4%B8%8A%E4%BC%A0%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6/">
+									<a href="/blog/2024/12/18/2024-12-18%20gdb%E5%91%BD%E4%BB%A4%E7%94%A8%E4%BA%8Ecoredump%E5%88%86%E6%9E%90/">
+                     
+										    gdb命令用于coredump分析
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/11/25/2024-12-20%20windows%E4%B8%8A%E5%BB%BA%E7%AB%8Bftp%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%8C%E5%9C%A8a%E6%A0%B8%E9%87%8C%E9%9D%A2%E8%BF%9B%E8%A1%8C%E4%B8%8A%E4%BC%A0%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6/">
                      
 										    windows上建立ftp服务器，在a核里面进行上传下载文件
+                     
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/blog/2024/06/26/hello-world/">
+                     
+										    Hello World
                      
 									</a>
 								</li>
@@ -354,7 +376,7 @@
 
 <!-- content -->
 <div id="article-content">
-	<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">（1）首先确保，在 /etc/profile 中添加了</span><br><span class="line">ulimit -c unlimited</span><br><span class="line">保证开启coredump；</span><br><span class="line"></span><br><span class="line">（2）</span><br><span class="line">修改/proc/sys/kernel/core_pattern和/proc/sys/kernel/core_uses_pid</span><br><span class="line">或者</span><br><span class="line">修改sudo vi /etc/sysctl.conf, 添加coredump对应目录及格式，此处user为你的用户名对应目录，别忘记创建这个/home/user/coredump文件夹：</span><br><span class="line">/home/user/coredump/core.%e.%p.%s.%E</span><br><span class="line"></span><br><span class="line">二. 修改core dump文件路径：</span><br><span class="line">方法1：临时修改/proc/sys/kernel/core_pattern文件，但/proc目录本身是动态加载的，每次系统重启都会重新加载，因此这种方法只能作为临时修改： /proc/sys/kernel/core_pattern</span><br><span class="line"># echo ‘/var/log/%e.core.%p’ &gt; /proc/sys/kernel/core_pattern</span><br><span class="line"></span><br><span class="line">方法2：永久修改：使用sysctl -w name=value命令。</span><br><span class="line"># /sbin/sysctl -w kernel.core_pattern=/var/log/%e.core.%p</span><br><span class="line">为了更详尽的记录core dump当时的系统状态，可通过以下参数来丰富core文件的命名： %% 单个%字符。</span><br></pre></td></tr></table></figure>
+	<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">（1）首先确保，在 /etc/profile 中添加了</span><br><span class="line">ulimit -c unlimited</span><br><span class="line">保证开启coredump；</span><br><span class="line"></span><br><span class="line">（2）</span><br><span class="line">修改/proc/sys/kernel/core_pattern和/proc/sys/kernel/core_uses_pid</span><br><span class="line">或者</span><br><span class="line">修改sudo vi /etc/sysctl.conf, 添加coredump对应目录及格式，此处user为你的用户名对应目录，别忘记创建这个/home/user/coredump文件夹：</span><br><span class="line">/home/user/coredump/core.%e.%p.%s.%E</span><br><span class="line"></span><br><span class="line">二. 修改core dump文件路径：</span><br><span class="line">方法1：临时修改/proc/sys/kernel/core_pattern文件，但/proc目录本身是动态加载的，每次系统重启都会重新加载，因此这种方法只能作为临时修改： /proc/sys/kernel/core_pattern</span><br><span class="line"># echo ‘/var/log/%e.core.%p’ &gt; /proc/sys/kernel/core_pattern</span><br><span class="line"></span><br><span class="line">方法2：永久修改：使用sysctl -w name=value命令。</span><br><span class="line"># /sbin/sysctl -w kernel.core_pattern=/var/log/%e.core.%p</span><br><span class="line">为了更详尽的记录core dump当时的系统状态，可通过以下参数来丰富core文件的命名： %% 单个%字符。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">永久修改在/etc/sysctl.conf文件中，在该文件的最后加上两行：</span><br><span class="line">kernel.core_pattern = /var/core_log/core_%e_%t_%p</span><br><span class="line">kernel.core_uses_pid = 0</span><br></pre></td></tr></table></figure>
 
 <h2 id="使用gdb查找死机原因OK，"><a href="#使用gdb查找死机原因OK，" class="headerlink" title="使用gdb查找死机原因OK，"></a>使用gdb查找死机原因OK，</h2><p>1、运行环境的rootfs文件和lib库要拷贝ubuntu上，用于adb符号分析。<br>2、应用程序sytcu也需要拷贝到Ubuntu上。<br>3、执行adb后才能加载lib，使用set solib-search-path命令</p>
 <p>打开coredump：<br>ulimit -c unlimited。</p>
