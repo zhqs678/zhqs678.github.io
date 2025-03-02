@@ -9,9 +9,11 @@ let moves = "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. Ng5 O-O { 两连击 } 6
 // let regex = /([NBRQK])?([a-h])?([1-8])?[-x]?([a-h][1-8])/;
 
 let regex = /([NBKRQ]?[a-h]?[1-8]?[\-x]?[a-h][1-8](?:=?[nbrqkNBRQK])?|[PNBRQK]?@[a-h][1-8]|--|Z0|0000|@@@@|O-O(?:-O)?|0-0(?:-0)?)|(\{.*)|(;.*)|(\$[0-9]+)|(\()|(\))|(\*|1-0|0-1|1\/2-1\/2)|([\?!]{1,2})/;
+let rex_head = /\[([A-Za-z0-9][A-Za-z0-9_+#=:-]*)\s+\"([^\r]*)\"\]\s*/;
 
 var moves_lists = [];
 var double_steps = [];
+var pgn_header = "";
 
 // 实现子列表，没有对应父关系，准备改变方法
 function Step() {
@@ -34,6 +36,36 @@ function DoubleStep() {
     this.white;
     this.black;
 }
+
+function remove_header(pgns) {
+
+  var regex2 = /\[(.+?)\]/;
+
+  for (var i = 0; i < 20; i++) {
+    var header = regex2.exec(pgns);
+
+    if (header != null) {
+      var line = header[0];
+
+      if (line.search("Event") != -1) {
+        pgn_header = header[0];
+        pgn_header = pgn_header.replace(/\s+/g, "");
+        pgn_header = pgn_header.replace(/\[+/g, '');
+        pgn_header = pgn_header.replace(/\]+/g, '');
+        pgn_header = pgn_header.replace(/Event+/g, '');
+        pgn_header = pgn_header.replace(/\"+/g, '');
+      }
+
+      pgns = pgns.substr(header.index + header[0].length);
+    } else {
+      break;
+    }
+  }
+
+  // pgn_header += pgns;
+  return pgns;
+}
+
 
 function moves2list(moves) {
 
@@ -246,11 +278,17 @@ function moves2list(moves) {
 }
 
 // const dotSource = ` digraph G { A -> B;  B -> C;   C -> A;  }  `;
-var dotSource = " digraph G { \r\n";
+var dotSource = " digraph G { \r\n ";
 
 function moves2graph(double_steps) {
 
   var len = double_steps.length;
+
+  dotSource += "graph [size = \"15,20\";\r\n";
+  dotSource += "label = \"" + pgn_header + "\";\r\n";
+  dotSource += "fontsize = 40;]\r\n";  // 标题大小
+  dotSource += "node [fontsize=40];\r\n";  // 
+  dotSource += "\r\n";
 
   for (var i = 1; i < len; i++) {
     var par_name;
@@ -259,7 +297,8 @@ function moves2graph(double_steps) {
       + double_steps[i].black.move + " " 
       + double_steps[i].white.comment + " " 
       + double_steps[i].black.comment + " "
-      + double_steps[i].white.id + "\"";
+      // + double_steps[i].white.id 
+      + "\"";
 
     par_name = "";
     for (var par = 0; par < len; par++) {
@@ -273,7 +312,8 @@ function moves2graph(double_steps) {
           + double_steps[par].black.move + " " 
           + double_steps[par].white.comment + " " 
           + double_steps[par].black.comment + " "
-          + double_steps[par].white.id+"\"";
+          // + double_steps[par].white.id 
+          + "\"";
         
           dotSource += par_name;
           dotSource += " -> ";

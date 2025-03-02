@@ -19,7 +19,7 @@
 
     <style type="text/css">  
         .comments {  
-         width:95%;/*自动适应父布局宽度*/  
+         width:99%;/*自动适应父布局宽度*/  
          overflow:auto;  
          word-break:break-all;  
         /*在ie中解决断行问题(防止自动变为在一行显示，主要解决ie兼容问题，ie8中当设宽度为100%时，文本域类容超过一行时，  
@@ -29,13 +29,16 @@
 
 <form role="form">
     <div class="comments">
-        <textarea class="comments" id="inputData" rows="10" auto-height="true" ></textarea>
+        <textarea class="comments" id="inputData" rows="8" auto-height="true" ></textarea>
         <span class="comments">
-            <button id="analysisMsgBtn" type="button" class="comments" style="width: 95%; height: 50px;">解析</button>
+            <button id="analysisMsgBtn" type="button" class="comments" style="width: 99%; height: 30px;">解析</button>
         </span>
     </div>
 
-    <div id="graph"></div>
+    <!-- <button id="ZoomIn" type="button">放大</button>
+    <button id="ZoomOut" type="button">缩小</button> -->
+
+    <div id="graph" style="max-width: 100%; max-height: 100%;""></div>
 
 <script type="text/javascript">
 
@@ -44,19 +47,51 @@ const button = document.getElementById('analysisMsgBtn');
     // 添加点击事件监听器
     button.addEventListener('click', function() {
 
-        const dotSource = ` digraph G { A -> B;  B -> C;   C -> A;  }  `;
-        var dott;
+        const pgn_source = `
+[Event "意大利,微课堂: 3-4 贪吃1"]
+[Site "https://lichess.org/study/z966KIpA/STweGnMU"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "C54"]
+[Opening "Italian Game: Classical Variation, Greco Gambit, Main Line"]
+[Annotator "https://lichess.org/@/jownson2"]
+[StudyName "意大利,微课堂"]
+[ChapterName "3-4 贪吃1"]
+[UTCDate "2025.01.29"]
+[UTCTime "07:35:15"]
 
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d4 exd4 6. cxd4 Bb4+ 7. Nc3 { 马c3,弃兵, } 7... Nxe4? 8. O-O Bxc3 (8... Nxc3 9. bxc3 d5!! { 救命之招 } (9... Bxc3?? { 贪吃1 } 10. Ba3! Bxa1? { 贪吃2 } (10... d6 11. Rc1 Bb4 (11... Ba5 12. Qa4 Bd7 13. d5 Ne5 14. Qxa5 Nxf3+ 15. gxf3 O-O 16. Kh1 $16 { 白优 }) 12. Bxb4 Nxb4 13. Qe1+ { 黑方丢子 }) 11. Re1+ Ne7 12. Bxe7 Qxe7 13. Rxe7+ Kxe7 14. Qxa1 $18) 10. cxb4 dxc4 11. Re1+ Ne7 12. Qa4+ Bd7 13. b5 O-O 14. Qxc4 Bg4 $10 { 均势 }) 9. bxc3 { 3-5 } (9. d5! { 白方进兵 } 9... Bf6 { 留象 } 10. Re1 (10. dxc6 bxc6 $15) 10... Ne7 11. Rxe4 d6!! { 挡住白兵 } 12. Bg5 Bxg5 13. Nxg5 h6! (13... O-O? 14. Nxh7 Kxh7 15. Qh5+ Kg8 16. Rh4 f5 17. Qh7+ Kf7 $16 { 黑方危险 }) 14. Nf3 (14. Qh5 O-O 15. Rae1 Ng6 $10) (14. Qe2! { 弃马 } 14... hxg5 15. Re1 Be6 16. dxe6 (16. Re3 c6 17. dxe6 f6 $15) 16... f6 $15 { e6兵变成汉奸兵 }) 14... O-O { 可以短移位 } 15. Qe2 Ng6 16. Re1 Bf5 $10) 9... d5! { 黑方安全 } 10. Bd3 O-O 11. Qc2 Re8 12. Re1 Bf5 13. Bf4 Bg6 $15 *`;
+
+        var dott;
         var inputpgn = document.getElementById("inputData").value;
 
-        moves2list(inputpgn);
+        var pgnss = remove_header(inputpgn);
+
+        moves2list(pgnss);
         dott = moves2graph(double_steps);
 
         Viz.instance().then(function(viz) {
             var svg = viz.renderSVGElement(dott);
+            document.getElementById("graph").innerHTML = "";
             document.getElementById("graph").appendChild(svg);
         });
 
+    });
+
+    button.addEventListener('click', function() {
+      let image = document.getElementById('graph');
+         let width = image.clientWidth;
+         let height = image.clientHeight;
+         image.style.width = (width + 50) + "px";
+         image.style.height = (height + 50) + "px";
+    });
+
+    button.addEventListener('click', function() {
+        let image = document.getElementById('graph');
+         let width = image.clientWidth;
+         let height = image.clientHeight;
+         image.style.width = (width - 50) + "px";
+         image.style.height = (height - 50) + "px";
     });
 
 
