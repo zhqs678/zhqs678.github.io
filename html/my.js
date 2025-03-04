@@ -171,12 +171,20 @@ function moves2list(moves) {
 
       end_vari = 1;
 
-      // 上一个是白棋走，
+      // 上一个是白棋走，只有一个白棋走
       if (temp_node.white == "white") {
         temp_node.is_end = 1;
         var dd = new DoubleStep();
         dd.white = temp_node; 
-        dd.black = temp_node;  // 两步都是白棋
+
+        var nnnn = new Step();
+        nnnn.id = 9999;
+        nnnn.move = "...";
+        nnnn.parent = 9998;
+        nnnn.white = "black";
+        nnnn.comment = "";
+
+        dd.black = nnnn;  // 黑棋未空
         double_steps.push(dd);
         // console.log("double: "+ dd.white.step + " " + dd.white.parent + " " + dd.black.id + " "
         //   + dd.white.move + " " + dd.black.move + "\r\n");
@@ -313,7 +321,7 @@ function moves2graph(double_steps) {
     var par_name;
     var name = "\"" + double_steps[i].white.step + " " 
       + double_steps[i].white.move + " " 
-      + double_steps[i].black.move + " " 
+      + double_steps[i].black.move + "\n" 
       + double_steps[i].white.comment + " " 
       + double_steps[i].black.comment + " "
       + double_steps[i].white.id // 防止有重复步数
@@ -328,7 +336,7 @@ function moves2graph(double_steps) {
       if (double_steps[i].white.parent == double_steps[par].black.id) {
         par_name = "\"" +double_steps[par].white.step + " " 
           + double_steps[par].white.move + " " 
-          + double_steps[par].black.move + " " 
+          + double_steps[par].black.move + "\n" 
           + double_steps[par].white.comment + " " 
           + double_steps[par].black.comment + " "
           + double_steps[par].white.id // 防止有重复步数
