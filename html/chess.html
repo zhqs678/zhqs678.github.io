@@ -33,6 +33,11 @@
         <span class="comments">
             <button id="analysisMsgBtn" type="button" class="comments" style="width: 99%; height: 30px;">解析</button>
         </span>
+        <span class="comments"></span>
+            <label>
+                <a href="#" target="_blank" id="download">下载</a>
+            </label>
+        </span>
     </div>
 
     <!-- <button id="ZoomIn" type="button">放大</button>
@@ -65,15 +70,48 @@ const button = document.getElementById('analysisMsgBtn');
         var dott;
         var inputpgn = document.getElementById("inputData").value;
 
-        var pgnss = remove_header(inputpgn);
+        var pgnss = remove_header(pgn_source);
 
         moves2list(pgnss);
         dott = moves2graph(double_steps);
 
+        let options = {
+            format: "png",
+            engine: "dot",
+          };
+
         Viz.instance().then(function(viz) {
+            // var svg = viz.renderSVGElement(dott,
+            //     { format: "JPEG", engine: "dot", images: [{ name: "test.png", width: 300, height: 200 }] });
+                    // images: [
+                    // { name: "test.png", width: 300, height: 200 }
+                    // ]
+                    //});
+            // var result = viz.renderFormats(dott, {"png"});
+            // result.output;
+            // var svg = viz.render(dott, {format: "png"});
+            // const result = viz.render("digraph { a -> b [href=\"https://example.com\"] }", ["svg", "cmapx"], { engine: "neato" });
+            // const result = viz.renderFormats("digraph { a -> b [href=\"https://example.com\"] }", ["svg", "cmapx"], { engine: "neato" });
+            // console.log(result.output); // => { "svg": ..., "cmapx": ... }
+
+            // let result = viz.renderSVGElement(dott, options);
+            // if (result.status !== undefined && result.status != "success") {
+            //     console.log(result.status);
+            //     return;
+            // }
+
             var svg = viz.renderSVGElement(dott);
             document.getElementById("graph").innerHTML = "";
             document.getElementById("graph").appendChild(svg);
+
+            var downloadBtn = document.getElementById("download");
+            var serializer = new XMLSerializer();
+            var source = serializer.serializeToString(svg);
+            // https://stackoverflow.com/questions/18925210/download-blob-content-using-specified-charset
+            //const blob = new Blob(["\ufeff", svg], {type: 'image/svg+xml;charset=utf-8'});
+            const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+            downloadBtn.href = url;
+            downloadBtn.download = "chess.svg";
         });
 
     });

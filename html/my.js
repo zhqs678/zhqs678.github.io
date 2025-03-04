@@ -8,7 +8,7 @@ let moves = "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. Ng5 O-O { 两连击 } 6
 
 // let regex = /([NBRQK])?([a-h])?([1-8])?[-x]?([a-h][1-8])/;
 
-let regex = /([NBKRQ]?[a-h]?[1-8]?[\-x]?[a-h][1-8](?:=?[nbrqkNBRQK])?|[PNBRQK]?@[a-h][1-8]|--|Z0|0000|@@@@|O-O(?:-O)?|0-0(?:-0)?)|(\{.*)|(;.*)|(\$[0-9]+)|(\()|(\))|(\*|1-0|0-1|1\/2-1\/2)|([\?!]{1,2})/;
+let regex = /([NBKRQ]?[a-h]?[1-8]?[\-x]?[a-h][1-8][+#]?(?:=?[nbrqkNBRQK])?|[PNBRQK]?@[a-h][1-8]|--|Z0|0000|@@@@|O-O(?:-O)?|0-0(?:-0)?)|(\{.*)|(;.*)|(\$[0-9]+)|(\()|(\))|(\*|1-0|0-1|1\/2-1\/2)|([\?!]{1,2})/;
 let rex_head = /\[([A-Za-z0-9][A-Za-z0-9_+#=:-]*)\s+\"([^\r]*)\"\]\s*/;
 
 var moves_lists = [];
@@ -24,6 +24,7 @@ function Step() {
   this.comment = "";
   this.step = 0;    // 步数
   this.white = "";
+  this.is_end = 0;  // 是否结束变着
 }
 
 function Variation() {
@@ -169,6 +170,18 @@ function moves2list(moves) {
     } else if (lists[0].substring(0, 1) == ")") {
 
       end_vari = 1;
+
+      // 上一个是白棋走，
+      if (temp_node.white == "white") {
+        temp_node.is_end = 1;
+        var dd = new DoubleStep();
+        dd.white = temp_node; 
+        dd.black = temp_node;  // 两步都是白棋
+        double_steps.push(dd);
+        // console.log("double: "+ dd.white.step + " " + dd.white.parent + " " + dd.black.id + " "
+        //   + dd.white.move + " " + dd.black.move + "\r\n");
+      }
+
       if (variations.depth > 0) {
         variations.depth--;
         temp_node = variations.nodes.pop();
@@ -205,6 +218,8 @@ function moves2list(moves) {
       }
 
       if (end_vari) {     // 这两个顺序不能变，防止括号连续。
+        // 这里的temp_node是上一个暂存的节点，
+        // node结束上一个后，新的节点
         node.parent = temp_node.id;
         end_vari = 0;
         if (temp_node.white == "white")
@@ -221,7 +236,7 @@ function moves2list(moves) {
         node.white = temp_node.white;
 
 
-        // bug：最后一步是白方，会丢弃
+        // 根据黑方走棋，增加一个双方都走的步骤
         if (node.white == "black") {
           var ppnode; // 找到上上个node，与这个形成一对
           for (var z = 0; z < moves_lists.length; z++) {
@@ -251,6 +266,7 @@ function moves2list(moves) {
 
       // console.log("push: " + node.id + " " + node.move + "\r\n");
 
+      // 根据黑方走棋，增加一个双方都走的步骤
       if ((node.white == "black") && (have_add == 0)) {
         var dd = new DoubleStep();
         dd.white = temp_node;
@@ -284,9 +300,12 @@ function moves2graph(double_steps) {
 
   var len = double_steps.length;
 
-  dotSource += "graph [size = \"15,20\";\r\n";
+  dotSource += "graph [";
+  dotSource += "size = \"15,20\";\r\n";  // 图大小
   dotSource += "label = \"" + pgn_header + "\";\r\n";
-  dotSource += "fontsize = 40;]\r\n";  // 标题大小
+  dotSource += "fontsize = 40;"; // 标题大小
+  dotSource += "]\r\n";  
+
   dotSource += "node [fontsize=40];\r\n";  // 
   dotSource += "\r\n";
 
@@ -297,7 +316,7 @@ function moves2graph(double_steps) {
       + double_steps[i].black.move + " " 
       + double_steps[i].white.comment + " " 
       + double_steps[i].black.comment + " "
-      // + double_steps[i].white.id 
+      + double_steps[i].white.id // 防止有重复步数
       + "\"";
 
     par_name = "";
@@ -312,7 +331,7 @@ function moves2graph(double_steps) {
           + double_steps[par].black.move + " " 
           + double_steps[par].white.comment + " " 
           + double_steps[par].black.comment + " "
-          // + double_steps[par].white.id 
+          + double_steps[par].white.id // 防止有重复步数
           + "\"";
         
           dotSource += par_name;
