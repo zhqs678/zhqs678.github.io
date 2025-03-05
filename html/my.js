@@ -8,11 +8,11 @@ let moves = "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. Ng5 O-O { 两连击 } 6
 
 // let regex = /([NBRQK])?([a-h])?([1-8])?[-x]?([a-h][1-8])/;
 
-let regex = /([NBKRQ]?[a-h]?[1-8]?[\-x]?[a-h][1-8][+#!\?]?(?:=?[nbrqkNBRQK])?|[PNBRQK]?@[a-h][1-8]|--|Z0|0000|@@@@|O-O(?:-O)?|0-0(?:-0)?)|(\{.*)|(;.*)|(\$[0-9]+)|(\()|(\))|(\*|1-0|0-1|1\/2-1\/2)|([\?!]{1,2})/;
+let regex = /([NBKRQ]?[a-h]?[1-8]?[\-x]?[a-h][1-8](?:=?[nbrqkNBRQK])?[+#!?]?[!]?[?]?|[PNBRQK]?@[a-h][1-8]|--|Z0|0000|@@@@|O-O(?:-O)?|0-0(?:-0)?)|(\{.*)|(;.*)|(\$[0-9]+)|(\()|(\))|(\*|1-0|0-1|1\/2-1\/2)|([\?!]{1,2})/;
 let rex_head = /\[([A-Za-z0-9][A-Za-z0-9_+#=:-]*)\s+\"([^\r]*)\"\]\s*/;
 
-var moves_lists = [];
-var double_steps = [];
+
+
 var pgn_header = "";
 
 // 实现子列表，没有对应父关系，准备改变方法
@@ -70,6 +70,8 @@ function remove_header(pgns) {
 
 function moves2list(moves) {
 
+  var double_steps = [];
+  var moves_lists = [];
 
   var moves2 = moves;
   var variations = new Variation();
@@ -298,15 +300,17 @@ function moves2list(moves) {
   }
 
   // console.log(moves_lists);
-
+  return double_steps;
 }
 
 // const dotSource = ` digraph G { A -> B;  B -> C;   C -> A;  }  `;
-var dotSource = " digraph G { \r\n ";
+
 
 function moves2graph(double_steps) {
 
   var len = double_steps.length;
+  var dotSource = "";
+  dotSource = " digraph G { \r\n ";
 
   dotSource += "graph [";
   dotSource += "size = \"15,20\";\r\n";  // 图大小

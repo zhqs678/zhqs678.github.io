@@ -72,7 +72,7 @@ const button = document.getElementById('analysisMsgBtn');
 
         var pgnss = remove_header(inputpgn);
 
-        moves2list(pgnss);
+        var double_steps = moves2list(pgnss);
         dott = moves2graph(double_steps);
 
         let options = {
