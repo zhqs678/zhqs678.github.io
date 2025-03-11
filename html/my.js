@@ -40,31 +40,54 @@ function DoubleStep() {
 
 function remove_header(pgns) {
 
-  var regex2 = /\[(.+?)\]/;
+  // var regex2 = /\[(.+?)\]/;
+  var regex23 = /\"(.+?)\"/;
+  var moves2 = "";
 
-  for (var i = 0; i < 20; i++) {
-    var header = regex2.exec(pgns);
+  var array = pgns.split("\n");
 
-    if (header != null) {
-      var line = header[0];
-
-      if (line.search("Event") != -1) {
-        pgn_header = header[0];
-        pgn_header = pgn_header.replace(/\s+/g, "");
-        pgn_header = pgn_header.replace(/\[+/g, '');
-        pgn_header = pgn_header.replace(/\]+/g, '');
-        pgn_header = pgn_header.replace(/Event+/g, '');
+  for (i = 0; i < array.length; i++) {
+    var line = array[i];
+      
+      if (line == null)
+        continue;
+      if (line.substring(0, 7) == "[Event ") {
+        var events = regex23.exec(line);
+        pgn_header = events[0];
         pgn_header = pgn_header.replace(/\"+/g, '');
       }
-
-      pgns = pgns.substr(header.index + header[0].length);
-    } else {
-      break;
-    }
+      if (line.substring(0, 2) == "1.") {
+        moves2 = line;
+        return moves2
+      }
   }
 
-  // pgn_header += pgns;
-  return pgns;
+  return null;
+
+  // for (var i = 0; i < 20; i++) {
+  //   var header = regex2.exec(pgns);
+
+  //   if (header != null) {
+  //     var line = header[0];
+
+  //     if (line.search("Event") != -1) {
+  //       var events = regex23.exec(line);
+  //       pgn_header = events[0];
+  //       // pgn_header = pgn_header.replace(/\s+/g, "");
+  //       // pgn_header = pgn_header.replace(/\[+/g, '');
+  //       // pgn_header = pgn_header.replace(/\]+/g, '');
+  //       // pgn_header = pgn_header.replace(/Event+/g, '');
+  //       pgn_header = pgn_header.replace(/\"+/g, '');
+  //     }
+
+  //     pgns = pgns.substr(header.index + header[0].length);
+  //   } else {
+  //     break;
+  //   }
+  // }
+
+  // // pgn_header += pgns;
+  // return pgns;
 }
 
 
@@ -101,9 +124,13 @@ function moves2list(moves) {
       var comrex = /{(.+?)}/g;
       var comment = comrex.exec(moves2);
 
-      var cc = comment[0].replace(/\s+/g, "");
+      // var cc = comment[0].replace(/\s+/g, "");
+      var cc = comment[0];
       cc = cc.replace(/{+/g, '');
       cc = cc.replace(/}+/g, '');
+
+      // cc = cc.replace(/,/g, ',\n');
+      cc = cc.replace(/[^\x00-\xff]/g,"$&\x01").replace(/.{30}\x01?/g,"$&\n").replace(/\x01/g,"")
 
       if (temp_node != null) {
         temp_node.comment += cc;

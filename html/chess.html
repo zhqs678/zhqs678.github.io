@@ -53,19 +53,20 @@ const button = document.getElementById('analysisMsgBtn');
     button.addEventListener('click', function() {
 
         const pgn_source = `
-[Event "意大利,微课堂: 3-4 贪吃1"]
-[Site "https://lichess.org/study/z966KIpA/STweGnMU"]
+[Event "The London System: London System"]
+[Site "https://lichess.org/study/rintjy7k/h9QegOWv"]
 [Result "*"]
 [Variant "Standard"]
-[ECO "C54"]
-[Opening "Italian Game: Classical Variation, Greco Gambit, Main Line"]
-[Annotator "https://lichess.org/@/jownson2"]
-[StudyName "意大利,微课堂"]
-[ChapterName "3-4 贪吃1"]
-[UTCDate "2025.01.29"]
-[UTCTime "07:35:15"]
+[ECO "D00"]
+[Opening "Queen's Pawn Game: Accelerated London System"]
+[Annotator "https://lichess.org/@/thecuber1435"]
+[StudyName "The London System"]
+[ChapterName "London System"]
+[UTCDate "2025.02.23"]
+[UTCTime "00:27:49"]
 
-1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d4 exd4 6. cxd4 Bb4+ 7. Nc3 { 马c3,弃兵, } 7... Nxe4? 8. O-O Bxc3 (8... Nxc3 9. bxc3 d5!! { 救命之招 } (9... Bxc3?? { 贪吃1 } 10. Ba3! Bxa1? { 贪吃2 } (10... d6 11. Rc1 Bb4 (11... Ba5 12. Qa4 Bd7 13. d5 Ne5 14. Qxa5 Nxf3+ 15. gxf3 O-O 16. Kh1 $16 { 白优 }) 12. Bxb4 Nxb4 13. Qe1+ { 黑方丢子 }) 11. Re1+ Ne7 12. Bxe7 Qxe7 13. Rxe7+ Kxe7 14. Qxa1 $18) 10. cxb4 dxc4 11. Re1+ Ne7 12. Qa4+ Bd7 13. b5 O-O 14. Qxc4 Bg4 $10 { 均势 }) 9. bxc3 { 3-5 } (9. d5! { 白方进兵 } 9... Bf6 { 留象 } 10. Re1 (10. dxc6 bxc6 $15) 10... Ne7 11. Rxe4 d6!! { 挡住白兵 } 12. Bg5 Bxg5 13. Nxg5 h6! (13... O-O? 14. Nxh7 Kxh7 15. Qh5+ Kg8 16. Rh4 f5 17. Qh7+ Kf7 $16 { 黑方危险 }) 14. Nf3 (14. Qh5 O-O 15. Rae1 Ng6 $10) (14. Qe2! { 弃马 } 14... hxg5 15. Re1 Be6 16. dxe6 (16. Re3 c6 17. dxe6 f6 $15) 16... f6 $15 { e6兵变成汉奸兵 }) 14... O-O { 可以短移位 } 15. Qe2 Ng6 16. Re1 Bf5 $10) 9... d5! { 黑方安全 } 10. Bd3 O-O 11. Qc2 Re8 12. Re1 Bf5 13. Bf4 Bg6 $15 *`;
+{ The London System, unlike a lot of other openings, begins with d4. }
+1. d4 d5 { Usually, Black will play d5, but keep in mind that the London can be played against everything but e5, where you take the pawn with your d4 pawn, and g5, where you would take the pawn with your bishop. } 2. Bf4 { The next move in the London is Bf4. The idea is to play e3 and c3 to make a pyramid of pawns, play Nf3 and Nbd2, and Bd3 and O-O. Observe. } 2... Nc6 3. e3 e6 4. c3 Nge7 5. Nf3 Bd7 6. Nbd2 g6 7. Bd3 Bg7 8. O-O { As you can see, the central d4 pawn is VERY strong, supported by three pieces. The knights are connected, the king is safe, and the bishops are in very good positions. } { [%csl Gd4,Rf3,Rd2,Yg1][%cal Gc3d4,Ge3d4,Gf3d4,Rd2f3,Rf3d2,Bf4h6,Bf4c7,Bd3a6,Bd3g6] } *`;
 
         var dott;
         var inputpgn = document.getElementById("inputData").value;
