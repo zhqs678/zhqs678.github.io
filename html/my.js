@@ -348,35 +348,29 @@ function moves2graph(double_steps) {
   dotSource += "node [fontsize=40];\r\n";  // 
   dotSource += "\r\n";
 
-  for (var i = 1; i < len; i++) {
-    var par_name;
-    var name = "\"" + double_steps[i].white.step + " " 
+  // 填写lable
+  for (var i = 0; i < len; i++) {
+    var line = i + " [label=\"" + double_steps[i].white.step + ". " 
       + double_steps[i].white.move + " " 
-      + double_steps[i].black.move + "\n" 
-      + double_steps[i].white.comment + " " 
-      + double_steps[i].black.comment + " "
-      + double_steps[i].white.id // 防止有重复步数
-      + "\"";
+      + double_steps[i].black.move;
 
-    par_name = "";
+      if (double_steps[i].white.comment != "")
+        line += "\\n" + double_steps[i].white.comment + ".";
+      if (double_steps[i].black.comment != "")
+        line += double_steps[i].black.comment + ".";
+      // + double_steps[i].white.id // 防止有重复步数
+      line += "\"];\r\n";
+    dotSource += line;
+  }
+
+
+  for (var i = 0; i < len; i++) {
+
     for (var par = 0; par < len; par++) {
-      if (double_steps[i].white.parent == 35)
-        var ui = 12;  // 调试用
-      
       //查找每个节点对应父节点
       if (double_steps[i].white.parent == double_steps[par].black.id) {
-        par_name = "\"" +double_steps[par].white.step + " " 
-          + double_steps[par].white.move + " " 
-          + double_steps[par].black.move + "\n" 
-          + double_steps[par].white.comment + " " 
-          + double_steps[par].black.comment + " "
-          + double_steps[par].white.id // 防止有重复步数
-          + "\"";
-        
-          dotSource += par_name;
-          dotSource += " -> ";
-          dotSource += name;
-          dotSource += ";\r\n";
+        var line = par + " -> " + i + ";\r\n";
+        dotSource += line;
       }
     }
 
