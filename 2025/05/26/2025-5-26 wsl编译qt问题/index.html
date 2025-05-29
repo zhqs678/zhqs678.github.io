@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		chatGPT的promt | 
+		2025-5-26 wsl编译qt问题 | 
 	 
 	工作小记
 	</title>
@@ -157,7 +157,7 @@
 							</ul>
 			
 							<ul>
-								<li class="file active">
+								<li class="file">
 									<a href="/blog/2024/07/01/2024-07-01%20chatGPT%E7%9A%84promt/">
                      
 										    chatGPT的promt
@@ -333,7 +333,7 @@
 							</ul>
 			
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/blog/2025/05/26/2025-5-26%20wsl%E7%BC%96%E8%AF%91qt%E9%97%AE%E9%A2%98/">
                      
 										    2025-5-26 wsl编译qt问题
@@ -372,7 +372,7 @@
 	<!-- 引入正文 -->
 	<div id="content" class="content">
 		<h1 id="article-title">
-	chatGPT的promt
+	2025-5-26 wsl编译qt问题
 </h1>
 
 <!-- meta -->
@@ -380,7 +380,7 @@
 	
 
 	<span>simith</span>
-	<span>2024-07-01 11:30:12</span>
+	<span>2025-05-26 15:13:34</span>
 
   <div id="article-categories">
     
@@ -398,12 +398,10 @@
 
 <!-- content -->
 <div id="article-content">
-	<p><strong>chatGPT的promt</strong></p>
-<p><strong>1、翻译</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">你来当翻译家，如果我发送给你的内容是英文，请翻译成中文。如果我发送给你的内容是中文，请翻译成英文。</span><br></pre></td></tr></table></figure>
-
-<p><strong>2、纠错</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">记住，先对我说的话用汉语进行语法错误分析，并给出更地道的英语表达方式，最后对我的说话内容用英语进行答复或聊天。</span><br></pre></td></tr></table></figure>
+	<p>是因为qt的工程存在问题，大小写问题。</p>
+<p>1、c++源文件的路径使用的小写ui；<br>2、git资源库里面的存在两个目录的分别是ui和UI。<br>3、在linux里面git clone后里面的目录包含两个，一个是大写UI，另一个是小写ui。<br>4、在windows里面git clone后里面只有一个小写ui目录。windows里面clone的可以编译，linux里面的编译失败；<br>windows使用的是ntfs文件格式，ubuntu使用的是ext4文件格式。</p>
+<p>5、没找到解决方法</p>
+<p>目前是tcu在wsl下编译，hmi共享到wsl下编译。</p>
 
 </div>
 
@@ -412,16 +410,16 @@
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/blog/2024/07/01/2024-07-02%20%E4%BB%8Eqemu%E5%90%AF%E5%8A%A8linux%E5%86%85%E6%A0%B8%E4%BD%BF%E7%94%A8initramfs/">
+              <a href="/blog/2025/05/29/2025-5-29%20%E4%BD%BF%E7%94%A8ssh%E8%BF%9E%E6%8E%A5wsl/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  从qemu启动linux内核使用initramfs
+                  使用ssh连接wsl
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/blog/2024/07/01/2024-07-01%20vscode%E9%87%8C%E9%9D%A2%E4%BD%BF%E7%94%A8%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%90%9C%E7%B4%A2/">
-                vscode里面使用正则表达式搜索
+              <a href="/blog/2024/12/18/2024-12-18%20gdb%E5%91%BD%E4%BB%A4%E7%94%A8%E4%BA%8Ecoredump%E5%88%86%E6%9E%90/">
+                gdb命令用于coredump分析
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
