@@ -1,0 +1,5149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>报文解析程序</title>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="js/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body style="background-color: #fff;font-size: 14px;line-height: 1.428;">
+<form role="form">
+    <div class="container" style="margin-top: 5px;">
+        <div class="row">
+            <div class="col-md-12 input-group">
+                <span class="input-group-addon">报文内容</span>
+                <input type="text" class="form-control" id="analysisMsg" style="width: 100%" />
+                <span class="input-group-btn">
+                    <button id="analysisMsgBtn" type="button" class="btn btn-default">解析</button>
+                </span>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 10px">
+            <div class="col-md-12">
+                <textarea class="form-control" id="analysisResult" rows="28"></textarea>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript">
+	//自定义函数（用于将sessionId由16进制转换为10进制）
+			function bigMut(big, common) {
+		    big += "";
+		    common += "";
+		    if (big.length < common.length) {
+		        big = [common, common = big][0];
+		    }
+		    big = big.split("").reverse();
+		    var oneMutManyRes = [];
+		    var i = 0,
+		        len = big.length;
+		    for (; i < len; i++) {
+		        oneMutManyRes[oneMutManyRes.length] = oneMutMany(big[i], common) + getLenZero(i);
+		    }
+		    var result = oneMutManyRes[0];
+		    for (i = 1, len = oneMutManyRes.length; i < len; i++) {
+		        result = bigNumAdd(result, oneMutManyRes[i]);
+		    }
+		    return result;
+		}
+
+		function getLenZero(len) {
+		    len += 1;
+		    var ary = [];
+		    ary.length = len;
+		    return ary.join("0");
+		}
+
+		function oneMutMany(one, many) {
+		    one += "";
+		    many += "";
+		    if (one.length != 1) {
+		        one = [many, many = one][0];
+		    }
+		    one = parseInt(one, 10);
+		    var i = 0,
+		        len = many.length,
+		        resAry = [],
+		        addTo = 0,
+		        curItem,
+		        curRes,
+		        toSave;
+		    many = many.split("").reverse();
+		    for (; i <= len; i++) {
+		        curItem = parseInt(many[i] || 0, 10);
+		        curRes = curItem * one + addTo;
+		        toSave = curRes % 10;
+		        addTo = (curRes - curRes % 10) / 10;
+		        resAry.unshift(toSave);
+		    }
+		    if (resAry[0] == 0) {
+		        resAry.splice(0, 1);
+		    }
+		    return resAry.join("");
+		}
+
+		function bigNumAdd(big, common) {
+		    big += "";
+		    common += "";
+		    var maxLen = Math.max(big.length, common.length),
+		        bAry = big.split("").reverse(),
+		        cAry = common.split("").reverse(),
+		        i = 0,
+		        addToNext = 0,
+		        resAry = [],
+		        fn,
+		        sn,
+		        sum;
+		    for (; i <= maxLen; i++) {
+		        fn = parseInt(bAry[i] || 0);
+		        sn = parseInt(cAry[i] || 0);
+		        sum = fn + sn + addToNext;
+		        addToNext = (sum - sum % 10) / 10;
+		        resAry.unshift(sum % 10);
+		    }
+		    if (resAry[0] == 0) {
+		        resAry.splice(0, 1);
+		    }
+		    return resAry.join("");
+		}
+
+		function sumStrings(a, b) {
+		    var res = '',
+		        c = 0;
+		    a = a.split('');
+		    b = b.split('');
+		    while (a.length || b.length || c) {
+		        c += ~~a.pop() + ~~b.pop();
+		        res = c % 10 + res;
+		        c = c > 9;
+		    }
+		    return res.replace(/^0+/, '');
+		}
+    //解析报文开始
+   
+    $("#analysisMsgBtn").on("click", function () {
+     
+        var resultMsg = "";
+        var msg = document.getElementById("analysisMsg").value;
+        //首先去掉报文中的空格
+        msg = msg.replace(/(^\s*)|(\s*$)/g, "");
+        //截取报文中有效的信息
+        msg = msg.substring(2);//截取出报文中的有效信息即从68之后开始
+
+        var msgLength = msg.substring(0,2);
+        var msgType = msg.substring(2,4);
+        msg = msg.substring(4);//截取报文类型及报文长度
+        if (msgType == "20") {
+            msgType = "设备基本信息 ID = 0x20";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x20(msg, resultMsg);
+        } else if (msgType == "21") {
+            msgType = "平台应答充电设备基本信息 ID = 0x21";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x21(msg, resultMsg);
+        } else if (msgType == "23") {
+            msgType = "主动启动用户认证ID = 0x23";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x23(msg, resultMsg);
+        }
+        else if (msgType == "24") {
+            msgType = "主动启动认证结果应答ID = 0x24";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x24(msg, resultMsg);
+        } else if (msgType == "25") {
+            msgType = "预约信息 ID = 0x25";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x25(msg, resultMsg);
+        } else if (msgType == "26") {
+            msgType = "预约返回ID = 0x26";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x26(msg, resultMsg);
+        } else if (msgType == "27") {
+            msgType = "对时指令ID = 0x27";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x27(msg, resultMsg);
+        } else if (msgType == "28") {//充电接口实时状态
+            msgType = "充电接口实时状态";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x28(msg, resultMsg);
+        } else if (msgType == "29") {//充电接口实时状态
+            msgType = "获取设备基本信息";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x29(msg, resultMsg);
+        } else if (msgType == "2a" || (msgType == "2A")) {
+            msgType = "停机原因上发 = 0x2A";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x2a(msg, resultMsg);
+        } else if (msgType == "2b"|| (msgType == "2B")) {
+            msgType = "获取充电桩实时充电数据ID=0x2B";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x2B(msg, resultMsg);
+        } else if (msgType == "2c"|| (msgType == "2C")) {
+            msgType = "充电桩实时充电数据";
+            resultMsg += "报文长度："+parseInt(msgLength,16)+"\r\n";//报文长度
+            resultMsg += "报文类型："+msgType;//报文类型
+            resultMsg = analysis0x2C(msg,resultMsg);
+        } else if (msgType == "2d"|| (msgType == "2D")) {
+            msgType = "获取充电记录数据ID=0x2D";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x2D(msg, resultMsg);
+        } else if (msgType == "2e") {
+            msgType = "充电设备上传单一费率充电记录ID=0x2E";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x2E(msg, resultMsg);
+        } else if (msgType == "2f"|| (msgType == "2F")) {
+            msgType = "响应充电记录确认ID = 0x2F";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x2F(msg, resultMsg);
+        } else if (msgType == "30") {
+            msgType = "充电设备请求下发计费模型(动态模型)ID = 0x30";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x30(msg, resultMsg);
+        } else if (msgType == "31") {
+            msgType = "智能模块下发计费模型(动态模型)ID = 0x31";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x31(msg, resultMsg);
+        } else if (msgType == "32") {
+            msgType = "充电设备请求下发计费模型0x32";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x32(msg, resultMsg);
+        } else if (msgType == "33") {
+
+            msgType = "智能模块下发计费模型0x33";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x33(msg, resultMsg);
+        } else if (msgType == "34") {
+            msgType = "充电设备上传计费模型更新结果0x34";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x34(msg, resultMsg);
+        } else if (msgType == "35") {
+            msgType = "智能模块查询计费模型，0x35";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x35(msg, resultMsg);
+        } else if (msgType == "36") {
+            msgType = "充电设备上传计费模型，0x36";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x36(msg, resultMsg);
+        } else if (msgType == "37") {
+            msgType = "充电设备上传无卡复费率充电记录";
+            resultMsg += "报文长度："+parseInt(msgLength,16)+"\r\n";//报文长度
+            resultMsg += "报文类型："+msgType;//报文类型
+            resultMsg = analysis0x37(msg,resultMsg);
+        } else if (msgType == "38") {
+            msgType = "充电设备上传有卡复费率充电记录0x38";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x38(msg, resultMsg);
+        } else if (msgType == "39") {
+            msgType = "充电桩定时上传时间ID =0x39";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x39(msg, resultMsg);
+        } else if (msgType == "3a" || (msgType == "3A")) {
+            msgType = "平台查询计费模型，动态模型 = 0x3A";
+            resultMsg += "报文长度："+parseInt(msgLength,16)+"\r\n";//报文长度
+            resultMsg += "报文类型："+msgType;//报文类型
+            resultMsg = analysis0x3A(msg,resultMsg);
+        } else if (msgType == "3b" || (msgType == "3B")) {
+            msgType = "充电桩上传计费模型，动态模型 = 0x3B";
+            resultMsg += "报文长度："+parseInt(msgLength,16)+"\r\n";//报文长度
+            resultMsg += "报文类型："+msgType;//报文类型
+            resultMsg = analysis0x3B(msg,resultMsg);
+        } else if (msgType == "3C" || (msgType == "3c")) {
+            msgType = "充电设备上传无卡复费率充电记录，动态模型 = 0x3C";
+            resultMsg += "报文长度："+parseInt(msgLength,16)+"\r\n";//报文长度
+            resultMsg += "报文类型："+msgType;//报文类型
+            resultMsg = analysis0x3C(msg,resultMsg);
+        } else if (msgType == "3D" || (msgType == "3d")) {
+            msgType = "充电桩实时充电数据，动态模型 = 0x3D";
+            resultMsg += "报文长度："+parseInt(msgLength,16)+"\r\n";//报文长度
+            resultMsg += "报文类型："+msgType;//报文类型
+            resultMsg = analysis0x3D(msg,resultMsg);
+        } else if (msgType == "40") {
+            msgType = "平台更新充电中账户余额信息 ID = 0x40";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x40(msg, resultMsg);
+        } else if (msgType == "41") {
+            msgType = "设备响应充电中账户余额信息 ID = 0x41";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x41(msg, resultMsg);
+        } else if (msgType == "42") {
+            msgType = "下发负荷调节指令ID = 0x42";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x42(msg, resultMsg);
+        } else if (msgType == "43") {
+            msgType = "充电桩响应负荷调节指令ID = 0x43";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x43(msg, resultMsg);
+        } else if (msgType == "44") {
+            msgType = "远程开关机控制 = 0x44";
+            resultMsg += "报文长度："+parseInt(msgLength,16)+"\r\n";//报文长度
+            resultMsg += "报文类型："+msgType;//报文类型
+            resultMsg = analysis0x44(msg,resultMsg);
+        } else if (msgType == "45") {
+            msgType = "充电机响应开关机控制ID = 0x45";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x45(msg, resultMsg);
+        } else if (msgType == "46") {
+            msgType = "智能模块请求更改桩ID =0x46";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x46(msg, resultMsg);
+        } else if (msgType == "47") {
+            msgType = "充电机返回更改桩请求ID =0x47";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x47(msg, resultMsg);
+        } else if (msgType == "48") {
+            msgType = "充电机上送远程开关机操作结果 ID=0x48";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x48(msg, resultMsg);
+        } else if (msgType == "49") {
+            msgType = "智能模块响应上送操作结果 ID=0x49";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x49(msg, resultMsg);
+        } else if (msgType == "4a"|| (msgType == "4A")) {
+            msgType = "智能模块读取充电桩实时状态 ID=0x4A";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x4A(msg, resultMsg);
+        } else if (msgType == "4b") {
+            msgType = "主站下发打开门锁指令 ID=0x4B";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x4B(msg, resultMsg);
+        } else if (msgType == "4c") {
+            msgType = "设备响应打开门锁指令 ID=0x4C";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x4C(msg, resultMsg);
+        } else if (msgType == "4d") {
+            msgType = "主站下发打开地锁指令 ID=0x4D";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x4D(msg, resultMsg);
+        } else if (msgType == "4e") {
+            msgType = "设备响应打开地锁指令 ID=0x4E";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x4E(msg, resultMsg);
+        } else if (msgType == "50") {
+            msgType = "远程地锁控制ID = 0x50";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x50(msg, resultMsg);
+        } else if (msgType == "51") {
+            msgType = "远程地锁控制响应ID = 0x51";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x51(msg, resultMsg);
+        } else if (msgType == "55") {
+            msgType = "上报停车记录ID = 0x55";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x55(msg, resultMsg);
+        } else if (msgType == "5f") {
+            msgType = "响应停车记录确认ID = 0x5F";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x5F(msg, resultMsg);
+        } else if (msgType == "90") {
+            msgType = "M1卡密钥下发ID = 0x90";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x90(msg, resultMsg);
+        } else if (msgType == "91") {
+            msgType = "M1卡密钥下发应答ID = 0x91";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x91(msg, resultMsg);
+        } else if (msgType == "a0") {
+            msgType = "OTA 指令 ID = 0xA0";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xA0(msg, resultMsg);	
+        } else if (msgType == "a1") {
+            msgType = "GPRS 模块状态指令 ID = 0xA1";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xA1(msg, resultMsg);
+		} else if ((msgType == "a2") || (msgType == "A2")) {
+            msgType = "MCU 读取GPRS 模块信息ID = 0XA2";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xA2(msg, resultMsg);
+		} else if ((msgType == "a3") || (msgType == "A3")) {
+            msgType = "响应MCU 读取GPRS 模块信息ID = 0XA3";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xA3(msg, resultMsg);
+		} else if (msgType == "b0") {
+            msgType = "远程配置地锁参数ID = 0xB0";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xB0(msg, resultMsg);
+		} else if (msgType == "b1") {
+            msgType = "响应远程配置地锁参数ID = 0xB1";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xB1(msg, resultMsg);
+		} else if (msgType == "b2"|| (msgType == "B2")) {
+            msgType = "响远程清除充电桩记录ID = 0XB2";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xB2(msg, resultMsg);
+		} else if (msgType == "b3"|| (msgType == "B3")) {
+            msgType = "应远程清除充电桩记录ID = 0XB3";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xB3(msg, resultMsg);
+		} else if (msgType == "b4"|| (msgType == "B4")) {
+            msgType = "远程修改桩主KEY_UUID ID = 0XB4";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xB4(msg, resultMsg);
+		} else if (msgType == "b5" || (msgType == "B5")) {
+            msgType = "响应远程修改桩主KEY_UUID ID = 0XB5";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xB5(msg, resultMsg);
+		} else if (msgType == "b6" || (msgType == "B6")) {
+            msgType = "设置即插即用和平台控制ID = 0XB6";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xB6(msg, resultMsg);
+		} else if (msgType == "b7" || (msgType == "B7")) {
+            msgType = "响应设置即插即用和平台控制ID = 0XB7";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xB7(msg, resultMsg);
+		} else if (msgType == "b8") {
+            msgType = "远程设置充电桩状态发送频率ID = 0XB8";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xB8(msg, resultMsg);
+		} else if (msgType == "b9") {
+            msgType = "响应远程设置充电桩状态发送频率ID = 0XB9";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xB9(msg, resultMsg);
+		} else if (msgType == "ba" || (msgType == "BA")) {
+            msgType = "远程设置产品标识码ID = 0XBA";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xBA(msg, resultMsg);
+		} else if (msgType == "bb" || (msgType == "BB")) {
+            msgType = "响应远程设置产品标识码ID = 0XBB";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xBB(msg, resultMsg);
+		} else if (msgType == "bc" || (msgType == "BC")) {
+            msgType = "远程配置卡ID = 0XBC";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xBC(msg, resultMsg);
+		} else if (msgType == "bd" || (msgType == "BD")) {
+            msgType = "响应远程配置卡ID = 0XBD";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xBD(msg, resultMsg);
+		} else if (msgType == "be" || (msgType == "BE")) {
+            msgType = "远程配置扩展指令ID = 0XBE";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xBE(msg, resultMsg);
+		} else if (msgType == "bf" || (msgType == "BF")) {
+            msgType = "响应远程配置扩展指令ID = 0XBF";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xBF(msg, resultMsg);
+		} else if (msgType == "f0" || (msgType == "F0")) {
+            msgType = "GPRS 模块掉电状态上报指令 ID = 0xF0";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xF0(msg, resultMsg);
+		} else if (msgType == "f1" || (msgType == "F1")) {
+            msgType = "GPRS 将手机号上报指令 ID = 0xF1";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xF1(msg, resultMsg);
+        } else if (msgType == "9f") {
+            msgType = "充电桩返回错误指令 ID = 0x9F";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x9F(msg, resultMsg);
+        }else if (msgType == "ff") {
+            msgType = "GPRS 将手机号上报指令 ID = 0xFF";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xFF(msg, resultMsg);
+		}else if (msgType == "70") {
+            msgType = "折扣启动 ID = 0x70";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x70(msg, resultMsg);
+		// }else if (msgType == "70") {
+        //     msgType = "GPRS 将手机号上报指令 ID = 0x70";
+        //     resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+        //     resultMsg += "报文类型：" + msgType;//报文类型
+        //     resultMsg = analysis0x70(msg, resultMsg);
+		}else if (msgType == "76") {
+            msgType = "GPRS 将手机号上报指令 ID = 0x76";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x76(msg, resultMsg);
+		}else if (msgType == "67") {
+            msgType = "充电设备上传复费率充电记录（带车辆VIN编号）ID = 0x67";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x67(msg, resultMsg);
+		}else if (msgType == "fe" || (msgType == "FE")) {
+            msgType = "平台配置通信模块域名和端口 ID = 0xFE";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0xfe(msg, resultMsg);
+		}else if (msgType == "1e" || (msgType == "1E")) {
+            msgType = "平台配置通信模块域名和端口 ID = 0x1E";
+            resultMsg += "报文长度：" + parseInt(msgLength, 16) + "\r\n";//报文长度
+            resultMsg += "报文类型：" + msgType;//报文类型
+            resultMsg = analysis0x67(msg, resultMsg);
+		}
+        document.getElementById("analysisResult").value = resultMsg;
+    }
+    )
+    
+    
+    //解析20设备基本信息
+    function analysis0x20(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //设备运行状态
+        var status = msg.substr(32, 2);
+        if (status == "01") {
+            resultMsg += "\r\n" + "设备运行状态:正常";
+        } else if (status == "02") {
+            resultMsg += "\r\n" + "设备运行状态:故障";
+        } else if (status == "03") {
+            resultMsg += "\r\n" + "设备运行状态:停运";
+        } else  {
+            resultMsg += "\r\n" + "设备运行状态解析出错";
+        }
+        var status = msg.substr(34, 2);
+        if (status == "01") {
+            resultMsg += "\r\n" + "充电接口个数为1";
+        } else if (status == "02") {
+            resultMsg += "\r\n" + "充电接口个数为2";
+        }
+        var status = msg.substr(36, 2);
+        if (status == "01") {
+            resultMsg += "\r\n" + "电表个数为1";
+        } else if (status == "02") {
+            resultMsg += "\r\n" + "电表个数为2";
+        }
+        var status = msg.substr(38, 2);
+        if (status == "01") {
+            resultMsg += "\r\n" + "地锁个数为1";
+        } else if (status == "02") {
+            resultMsg += "\r\n" + "地锁个数为2";
+        }
+        //手机编号
+        var phoneNum = msg.substr(40, 26);
+        phoneNum = hexToAscii(phoneNum);
+        resultMsg += "\r\n" + "手机编号：" + phoneNum;
+        //GPRS 的 MAC 地址
+        var MACAdr = msg.substr(66, 32);
+        MACAdr = hexToAscii(MACAdr);
+        resultMsg += "\r\n" + "GPRS 的 MAC 地址：" + MACAdr;
+        //蓝牙 MAC 地址
+        var blueMACAdr = msg.substr(98, 24);
+        blueMACAdr = hexToAscii(blueMACAdr);
+        resultMsg += "\r\n" + "蓝牙 MAC 地址：" + blueMACAdr;
+        //蓝牙编码
+        var blueNum = msg.substr(122, 32);
+        blueNum = hexToAscii(blueNum);
+        resultMsg += "\r\n" + "蓝牙编码：" + blueNum;
+        //通讯协议版本号"00000014"
+        var protocol = msg.substr(154, 16);
+        protocol = hexToAscii(protocol);
+        resultMsg += "\r\n" + "通讯协议版本号(正确应为00000014)：" + protocol;
+        //充电桩硬件版本号"00000004"
+        var hardNum = msg.substr(170, 16);
+        hardNum = hexToAscii(hardNum);
+        resultMsg += "\r\n" + "充电桩硬件版本号(正确应为00000004)：" + hardNum;
+        //充电桩软件版本号
+        var softNum = msg.substr(186, 16);
+        softNum = hexToAscii(softNum);
+        resultMsg += "\r\n" + "充电桩软件版本号(正确应为00000004)：" + softNum;
+        //产品标志码
+        var productKey = msg.substr(202, 64);
+        productKey = hexToAscii(productKey);
+        resultMsg += "\r\n" + "产品标志码：" + productKey;
+        //保留位
+        var reserved = msg.substr(266, 32);
+        resultMsg += "\r\n" + "保留位：" + reserved;
+
+
+
+
+        return resultMsg;
+            
+    }
+
+    //解析21平台应答基本信息
+    function analysis0x21(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //充电接口编号
+        var interfaceNum = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+        //充电接口编号
+        var result = msg.substr(34, 2);
+        resultMsg += "\r\n" + "状态：" + result;
+        if (result == "01") {
+            resultMsg += "，成功";
+        } else if (result == "02") {
+            resultMsg += "，失败";
+        } else if (result == "03") {
+            resultMsg += "，协议版本不符";
+        } else  {
+            resultMsg += "，解析出错";
+        }
+
+        return resultMsg;
+            
+    }
+    
+    //解析23主动启动用户认证
+    function analysis0x23(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //充电接口编号
+        var interfaceNum = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+        
+        //卡号/VIN 号
+        var chargeCradNo = msg.substr(34, 32);
+        resultMsg += "\r\n" + "卡号/VIN 号：" + hexToAscii(chargeCradNo);
+        //标示
+        var startFlag = msg.substr(66,2);
+        if (startFlag == "01") {
+            resultMsg += "\r\n" + "标示：身份卡启动";
+        } else if (startFlag == "02") {
+            resultMsg += "\r\n" + "标示：VIN启动";
+        } else if (startFlag == "03") {
+            resultMsg += "\r\n" + "标示：余额卡";
+        } else  {
+            resultMsg += "\r\n" + "标示：标示解析出错";
+        }
+        //卡内余额
+        var accountRemainder = msg.substr(68, 8);
+        resultMsg += "\r\n" + "卡内余额:" + parseInt(exchangeHL(accountRemainder), 16) / 100 + "元（VIN卡不需要上报此处为0）";
+        //解析是否结算
+        var flag = msg.substr(76, 2);
+        if (flag == "01") {
+            resultMsg += "\r\n" + "是否结算：未结算";
+        } else if (flag == "02") {
+            resultMsg += "\r\n" + "是否结算：结算";
+        } else if (flag == "00") {
+            resultMsg += "\r\n" + "是否结算：VIN卡不需要上报此处为0";
+        } else {
+            resultMsg += "\r\n" + "是否结算解析出错";
+        }
+        //解析密码标志
+        var flag = msg.substr(78, 2);
+        if (flag == "01") {
+            resultMsg += "\r\n" + "密码标志：有密码";
+        } else if (flag == "02") {
+            resultMsg += "\r\n" + "密码标志：无密码";
+        } else if (flag == "00") {
+            resultMsg += "\r\n" + "密码标志：VIN卡不需要上报此处为0";
+        } else{
+            resultMsg += "\r\n" + "密码标志解析出错";
+        }
+        //解析密码
+        var key = msg.substr(80, 32);
+        if (key == "00000000000000000000000000000000") {
+            resultMsg += "\r\n" + "密码：VIN卡不需要上报此处为0";
+        } else {
+            resultMsg += "\r\n" + "密码：" + hexToAscii(key);
+        }
+
+        return resultMsg;
+
+    }
+
+    //解析24主动启动认证结果应答
+    function analysis0x24(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //充电接口编号
+        var interfaceNum = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+        //卡号/VIN 号
+        var chargeCradNo = msg.substr(34, 32);
+        resultMsg += "\r\n" + "卡号/VIN 号：" + hexToAscii(chargeCradNo);
+        //session_id
+        var sessionId = msg.substr(66, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+		var str1 = sessionId.substring(0, 8);
+		var str2 = sessionId.substring(8);
+		var num1 = parseInt(str1, 16);
+		var num2 = parseInt(str2, 16);
+		var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+		resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+        //启动标示
+        var flag = msg.substr(82, 2);
+        if (flag == "01") {
+            resultMsg += "\r\n" + "启动标示：卡启动";
+        } else if (flag == "02") {
+            resultMsg += "\r\n" + "启动标示：VIN启动";
+        }
+        //验证结果分析
+        var result = msg.substr(84, 2);
+        if (result == "01") {
+            resultMsg += "\r\n" + "验证结果：验证成功";
+        } else if (result == "02") {
+            resultMsg += "\r\n" + "验证结果：验证失败";
+        } else if (result == "03") {
+            resultMsg += "\r\n" + "验证结果：验证失败，余额不足";
+        } else if (result == "04") {
+            resultMsg += "\r\n" + "验证结果：验证失败，存在未付款订单";
+        } else if (result == "05") {
+            resultMsg += "\r\n" + "验证结果：验证失败，存在异常订单";
+        } else if (result == "06") {
+            resultMsg += "\r\n" + "验证结果：验证失败， 未知的应用请求";
+        } else if (result =="07") {
+            resultMsg += "\r\n" + "验证结果：验证失败，该桩尚未投运，请尝试其他充电桩";
+        } else if (result =="08") {
+            resultMsg += "\r\n" + "验证结果：验证失败，该VIN/身份卡无权限";  
+        } else  {
+            resultMsg += "\r\n" + "验证结果解析出错";
+        }
+        //卡号/VIN分析
+        var cardNum = msg.substr(86, 2);
+        if (cardNum == "01") {
+            resultMsg += "\r\n" + "卡号/VIN分析："+"合法卡";
+        } else if (cardNum == "02") {
+            resultMsg += "\r\n" + "卡号/VIN分析：" + "非法卡";
+        } else if (cardNum == "03") {
+            resultMsg += "\r\n" + "卡号/VIN分析：" + "未注册";
+        } else{
+            resultMsg += "\r\n" + "卡号/VIN分析解析出错";
+        }
+        //密码分析 保留未启用
+        //var key = msg.substr(88, 2);
+        //if (key =="01") {
+        //    resultMsg += "\r\n" + "密码分析：" + "密码错误";
+        //} else if (key == "02") {
+        //    resultMsg += "\r\n" + "密码分析：" + "普通密码";
+        //} else if (key =="00") {
+        //    resultMsg += "\r\n" + "密码分析：" + "VIN 号不需要密码补 0";
+        //}
+        //电价
+        var price = msg.substr(90, 8);
+        resultMsg += "\r\n" + "电价(用于单费率充电桩):" + parseInt(exchangeHL(price), 16) / 100000;
+        //账户余额
+        var accountRemainder = msg.substr(98, 8);
+        resultMsg += "\r\n" + "账户余额:" + parseInt(exchangeHL(accountRemainder), 16) / 100+"元";
+        //卡号/用户 ID
+        var cardID = msg.substr(106, 32);
+        resultMsg += "\r\n" + "卡号/用户 ID(VIN 或者卡验证通过（桩与平台交互都用本用户 ID），用户 ID 未通过用为 0)：" + hexToAscii(cardID);
+
+        return resultMsg;
+    }
+    
+    //解析25预约信息
+    function analysis0x25(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        
+        //解析卡号或用户ID
+        var cardID = msg.substr(32, 32);
+        resultMsg += "\r\n" + "卡号/用户 ID：" + hexToAscii(cardID);
+        
+        //解析session ID
+         var sessionId = msg.substr(64, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+		var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+
+        
+        //解析充电接口编号
+        var interfaceNo = msg.substr(80, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNo;
+        
+        //解析预约或者取消预约
+        var orderOrc = msg.substr(82, 2);
+        if (orderOrc == "01") {
+            resultMsg += "\r\n" + "预约或者取消预约：" + "预约";
+        } else if (orderOrc == "02") {
+            resultMsg += "\r\n" + "预约或者取消预约：" + "取消预约";
+        } else  {
+            resultMsg += "\r\n" + "预约或者取消预约解析出错";
+        }
+        //预约等待分钟
+        var waitMin = msg.substr(84, 4);
+        resultMsg += "\r\n" + "预约等待时间：" + parseInt(exchangeHL(waitMin), 16) + "分钟";
+        //预约卡号分析
+        //var chargeCradNo = msg.substr(72, 8);
+        //resultMsg += "\r\n" + "预约卡号：" + hexToAscii(chargeCradNo);
+        
+        //电价
+         var price = msg.substr(88, 8);
+        resultMsg += "\r\n" + "电价(用于单费率充电桩):" + parseInt(exchangeHL(price), 16) / 100000;
+        //账户余额
+        var accountRemainder = msg.substr(96, 8);
+        resultMsg += "\r\n" + "账户余额:" + parseInt(exchangeHL(accountRemainder), 16) / 100+"元";
+
+
+        return resultMsg;
+    }
+    
+    //解析26预约返回
+    function analysis0x26(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        
+        //解析卡号或用户ID
+        var cardID = msg.substr(32, 32);
+        resultMsg += "\r\n" + "卡号/用户 ID：" + hexToAscii(cardID);
+        
+        //解析session ID
+         var sessionId = msg.substr(64, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+        
+        
+        
+        //解析预约成功接口编号
+        var interfaceNo = msg.substr(80, 2);
+        resultMsg += "\r\n" + "预约成功口（协议中有0x01和0x02）：" + interfaceNo;
+        //if (interfaceNo == "01") {
+        //    resultMsg += "\r\n" + "预约成功口:" + "A口";
+        //} else if (interfaceNo == "02") {
+        //    resultMsg += "\r\n" + "预约成功口:" + "B口";
+        //}
+        //解析回复预约
+        var reply = msg.substr(82, 2);
+        if (reply == "01") {
+            resultMsg += "\r\n" + "回复预约:" + "成功";
+        } else if (reply == "02") {
+            resultMsg += "\r\n" + "回复预约:" + "失败";
+        } else  {
+            resultMsg += "\r\n" + "回复预约解析出错";
+        }
+        
+        //解析卡号/vin号
+         var cardID = msg.substr(84, 32);
+        resultMsg += "\r\n" + "卡号/用户 ID(VIN 或者卡验证通过：" + hexToAscii(cardID);
+
+        return resultMsg;
+    }
+	
+	
+    //解析27对时指令
+    function analysis0x27(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析时间帧
+        var time = msg.substr(32, 14);
+        resultMsg += "\r\n" + "时间：" + analysisDate(time);
+
+
+        return resultMsg;
+    }
+	
+    //解析28充电接口实时状态
+    function analysis0x28(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析充电接口编号
+        var interfaceNo = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNo;
+        //if (interfaceNo == "01") {
+        //    resultMsg += "\r\n" + "充电接口编号:" + "A口";
+        //} else if (interfaceNo == "02") {
+        //    resultMsg += "\r\n" + "充电接口编号:" + "B口";
+        //}
+        //解析充电接口类型
+        var interfaceType = msg.substr(34, 2);
+        if (interfaceType == "01") {
+            resultMsg += "\r\n" + "充电接口类型:" + "交流";
+        } else if (interfaceType == "02") {
+            resultMsg += "\r\n" + "充电接口类型:" + "直流";
+        } else{
+            resultMsg += "\r\n" + "充电接口类型解析出错";
+        }
+        //充电接口连接状态
+        var interfaceStatus = msg.substr(36, 2);
+        if (interfaceStatus == "01") {
+            resultMsg += "\r\n" + "充电接口连接状态:" + "空闲";
+        } else if (interfaceStatus == "02") {
+            resultMsg += "\r\n" + "充电接口连接状态:" + "未知";
+        } else if (interfaceStatus == "03") {
+            resultMsg += "\r\n" + "充电接口连接状态:" + "车连接";
+        } else {
+            resultMsg += "\r\n" + "充电接口连接状态解析出错";
+        }
+        //充电接口工作状态
+        var interfaceWorkStatus = msg.substr(38, 2);
+        if (interfaceWorkStatus == "01") {
+            resultMsg += "\r\n" + "充电接口工作状态:" + "充电";
+        } else if (interfaceWorkStatus == "02") {
+            resultMsg += "\r\n" + "充电接口工作状态:" + "待机";
+        } else if (interfaceWorkStatus == "03") {
+            resultMsg += "\r\n" + "充电接口工作状态:" + "故障";
+        } else if (interfaceWorkStatus == "04") {
+            resultMsg += "\r\n" + "充电接口工作状态:" + "充电结束";
+        } else if (interfaceWorkStatus == "05") {
+            resultMsg += "\r\n" + "充电接口工作状态:" + "被预约充电";
+        } else if (interfaceWorkStatus == "06") {
+            resultMsg += "\r\n" + "充电接口工作状态:" + "暂停充电";
+        } else {
+            resultMsg += "\r\n" + "充电接口工作状态解析出错";
+        }
+        //充电接口预约状态
+        var interfaceOrderStatus = msg.substr(40, 2);
+        if (interfaceOrderStatus == "01") {
+            resultMsg += "\r\n" + "充电接口预约状态:" + "无预约";
+        } else if (interfaceOrderStatus == "02") {
+            resultMsg += "\r\n" + "充电接口预约状态:" + "有预约";
+        } else  {
+            resultMsg += "\r\n" + "充电接口预约状态解析出错";
+        }
+        //电表类型
+        var ammeterType = msg.substr(42, 2);
+        if (ammeterType == "01") {
+            resultMsg += "\r\n" + "电表类型:" + "直流";
+        } else if (ammeterType == "02") {
+            resultMsg += "\r\n" + "电表类型:" + "交流";
+        } else  {
+            resultMsg += "\r\n" + "电表类型解析出错";
+        }
+        //电表地址
+        var ammeterAddress = msg.substr(44, 24);
+        ammeterAddress = hexToAscii(ammeterAddress);
+        resultMsg += "\r\n" + "电表地址：" + ammeterAddress;
+        //电表倍率(文档中没解析)
+        var ammeterTimesPower = msg.substr(68, 8);
+        resultMsg += "\r\n" + "电表倍率：" + parseInt(exchangeHL(ammeterTimesPower), 16);
+        //电表有功功率-没弄懂什么意思(之前的版本为：精度到1瓦即0.001KW，app0.01KW;V1.8版本开始为：精度到10瓦即0.01KW)
+        var ammeterActivePower = msg.substr(76, 4);
+        resultMsg += "\r\n" + "电表有功功率：" + parseInt(exchangeHL(ammeterActivePower), 16) / 100 + "Kw";
+        //电表无功功率-没懂什么意思（电表倍率相关）
+        var ammeterNoActivePower = msg.substr(80, 4);
+        resultMsg += "\r\n" + "电表无功功率：" + parseInt(exchangeHL(ammeterNoActivePower), 16) / 100 + "Kw";
+        //电表有功电能-没弄懂什么意思(之前的版本为：精度到1瓦即0.001KW;V1.8版本开始为：精度到10瓦即0.01KW)
+        var ammeterActiveEnergy = msg.substr(84, 8);
+        resultMsg += "\r\n" + "电表有功电能：" + parseInt(exchangeHL(ammeterActiveEnergy), 16) / 1000 + "Kw";
+        //电表无功电能-没弄懂什么意思(电表倍率相关)
+        var ammeterNoActiveEnergy = msg.substr(92, 8);
+        resultMsg += "\r\n" + "电表无功电能：" + parseInt(exchangeHL(ammeterNoActiveEnergy), 16) / 1000 + "Kw";
+        //输出电压   倍率？？？？？
+        var outVoltage = msg.substr(100, 4);
+        resultMsg += "\r\n" + "输出电压：" + parseInt(exchangeHL(outVoltage), 16) / 10 + "V";
+        //输出电流
+        var outCurrent = msg.substr(104, 4);
+        resultMsg += "\r\n" + "输出电流：" + parseInt(exchangeHL(outCurrent), 16) / 10 + "A";
+        //输入A相电压
+        var inAVoltage = msg.substr(108, 4);
+        resultMsg += "\r\n" + "输入A相电压：" + parseInt(exchangeHL(inAVoltage), 16) / 10 + "V";
+        //输入B相电压
+        var inBVoltage = msg.substr(112, 4);
+        resultMsg += "\r\n" + "输入B相电压：" + parseInt(exchangeHL(inBVoltage), 16) / 10 + "V";
+        //输入C相电压
+        var inCVoltage = msg.substr(116, 4);
+        resultMsg += "\r\n" + "输入C相电压：" + parseInt(exchangeHL(inCVoltage), 16) / 10 + "V";
+        //输入A相电流
+        var inACurrent = msg.substr(120, 4);
+        resultMsg += "\r\n" + "输入A相电流：" + parseInt(exchangeHL(inACurrent), 16) / 10 + "A";
+        //输入B相电流
+        var inBCurrent = msg.substr(124, 4);
+        resultMsg += "\r\n" + "输入B相电流：" + parseInt(exchangeHL(inBCurrent), 16) / 10 + "A";
+        //输入C相电流
+        var inCCurrent = msg.substr(128, 4);
+        resultMsg += "\r\n" + "输入C相电流：" + parseInt(exchangeHL(inCCurrent), 16) / 10 + "A";
+        //故障代码
+        var faultInfoFirst = msg.substr(132, 2);
+        //faultInfoFirst = parseInt(faultInfoFirst, 16).toString(2);
+        faultInfoFirst = parseInt(faultInfoFirst, 16);
+        var faultFirstMsg = "";
+        //alert(faultInfoFirst);
+        var len = faultInfoFirst.length;
+        switch (faultInfoFirst) {
+            case 1:
+                faultFirstMsg += "急停按钮故障 ";
+                break;
+            case 2:
+                faultFirstMsg += "电表异常故障 ";
+                break;
+            case 4:
+                faultFirstMsg += "充电输出并联接触器告警 ";
+                break;
+            case 8:
+                faultFirstMsg += "读卡器通信故障 ";
+                break;
+            case 16:
+                faultFirstMsg += "充电机柜过温 ";
+                break;
+            case 32:
+                faultFirstMsg += "连接器故障 ";
+                break;
+            case 64:
+                faultFirstMsg += "绝缘监测故障 ";
+                break;
+            case 128:
+                faultFirstMsg += "充电模块故障";
+                break;
+            default:
+                break;
+
+        }
+        //if (faultInfoFirst.substr(0, 1) == "1") {
+        //    faultFirstMsg += "急停按钮故障 ";
+        //}
+        //if (faultInfoFirst.substr(1, 1) == "1") {
+        //    faultFirstMsg += "电表异常故障 ";
+        //}
+        //if (faultInfoFirst.substr(2, 1) == "1") {
+        //    faultFirstMsg += "充电输出并联接触器告警 ";
+        //}
+        //if (faultInfoFirst.substr(3, 1) == "1") {
+        //    faultFirstMsg += "读卡器通信故障 ";
+        //}
+        //if (faultInfoFirst.substr(4, 1) == "1") {
+        //    faultFirstMsg += "充电机柜过温 ";
+        //}
+        //if (faultInfoFirst.substr(5, 1) == "1") {
+        //    faultFirstMsg += "连接器故障 ";
+        //}
+        //if (faultInfoFirst.substr(6, 1) == "1") {
+        //    faultFirstMsg += "绝缘监测故障 ";
+        //}
+        //if (faultInfoFirst.substr(7, 1) == "1") {
+        //    faultFirstMsg += "充电模块故障";
+        //}
+        resultMsg += "\r\n" + "故障代码：" + faultFirstMsg;
+        //resultMsg += "\r\n" + "故障代码：" + analysisFaultInfo(faultInfoFirst);
+        //故障代码
+        var faultInfoSecond = msg.substr(134, 2);
+        faultInfoSecond = parseInt(faultInfoSecond, 16);
+        //alert(faultInfoSecond);
+        var len = faultInfoSecond.length;
+        var faultSecondMsg = "";
+        switch (faultInfoSecond) {
+            case 1:
+                faultSecondMsg += "电流异常 ";
+                break;
+            case 2:
+                faultSecondMsg += "电压异常 ";
+                break;
+            case 4:
+                faultSecondMsg += "交流断路器故障 ";
+                break;
+            case 8:
+                faultSecondMsg += "BMS 通信异常 ";
+                break;
+            case 16:
+                faultSecondMsg += "避雷器故障 ";
+                break;
+            case 32:
+                faultSecondMsg += "充电枪未归位 ";
+                break;
+            case 64:
+                faultSecondMsg += "烟雾报警故障 ";
+                break;
+            case 128:
+                faultSecondMsg += "交易记录已满告警";
+                break;
+            default:
+                break;
+
+        }
+        //if (faultInfoSecond.substr(0, 1) == "1") {
+        //    faultSecondMsg += "电流异常 ";
+        //}
+        //if (faultInfoSecond.substr(1, 1) == "1") {
+        //    faultSecondMsg += "电压异常 ";
+        //}
+        //if (faultInfoSecond.substr(2, 1) == "1") {
+        //    faultSecondMsg += "交流断路器故障 ";
+        //}
+        //if (faultInfoSecond.substr(3, 1) == "1") {
+        //    faultSecondMsg += "BMS 通信异常 ";
+        //}
+        //if (faultInfoSecond.substr(4, 1) == "1") {
+        //    faultSecondMsg += "避雷器故障 ";
+        //}
+        //if (faultInfoSecond.substr(5, 1) == "1") {
+        //    faultSecondMsg += "充电枪未归位 ";
+        //}
+        //if (faultInfoSecond.substr(6, 1) == "1") {
+        //    faultSecondMsg += "烟雾报警故障 ";
+        //}
+        //if (faultInfoSecond.substr(7, 1) == "1") {
+        //    faultSecondMsg += "交易记录已满告警";
+        //}
+        resultMsg += "\r\n" + "故障代码：" + faultSecondMsg;
+        //resultMsg += "\r\n" + "故障代码：" + analysisFaultInfo(faultInfoSecond);
+        //当前SOC
+        var currentSoc = msg.substr(136, 2);
+        resultMsg += "\r\n" + "SOC：" + parseInt(currentSoc, 16);
+        //充电剩余时间
+        var remaindTime = msg.substr(138, 4);
+        resultMsg += "\r\n" + "充电剩余时间：" + parseInt(exchangeHL(remaindTime), 16) + "分钟";
+        //地锁状态
+        var lockStatus = msg.substr(142, 2);
+        lockStatus = parseInt(lockStatus, 16);
+        switch (lockStatus) {
+            case 1:
+                lockStatus = "降地锁";
+                break;
+            case 2:
+                lockStatus = "升地锁";
+                break;
+            case 5:
+                lockStatus = "有车辆";
+                break;
+            case 238:
+                lockStatus = "地锁故障";
+                break;
+            default:
+                lockStatus = "地锁状态解析错误";
+        }
+        resultMsg += "\r\n" + "地锁状态：" + lockStatus;
+
+        //故障代码
+        var faultInfoThird = msg.substr(144, 2);
+        faultInfoThird = parseInt(faultInfoThird, 16);
+        var faultThirdMsg = "";
+        //var len = faultInfoThird.length;
+        switch (faultInfoThird) {
+            case 1:
+                faultThirdMsg += "充电模块通信告警 ";
+                break;
+            case 2:
+                faultThirdMsg += "充电模块风扇故障 ";
+                break;
+            case 4:
+                faultThirdMsg += "充电模块过温告警 ";
+                break;
+            case 8:
+                faultThirdMsg += "充电模块交流输入告警 ";
+                break;
+            case 16:
+                faultThirdMsg += "充电模块输出短路故障 ";
+                break;
+            case 32:
+                faultThirdMsg += "充电模块输出过流告警 ";
+                break;
+            case 64:
+                faultThirdMsg += "充电模块输出过压告警 ";
+                break;
+            case 128:
+                faultThirdMsg += "充电模块输出欠压告警";
+                break;
+            default:
+                break;
+
+        }
+        resultMsg += "\r\n" + "故障代码：" + faultThirdMsg;
+        //resultMsg += "\r\n" + "故障代码：" + analysisFaultInfo(faultInfoThird);
+       
+		//故障代码
+        var faultInfoFourth = msg.substr(146, 2);
+        //alert(faultInfoFourth);
+        //faultInfoFourth = parseInt(faultInfoFourth, 16).toString(2);
+        faultInfoFourth = parseInt(faultInfoFourth, 16);
+        //alert(faultInfoFourth);
+        var faultFourthMsg = "";
+        //var len = faultInfoFourth.length;
+        //alert(len);
+        //debugger;
+        switch (faultInfoFourth) {
+            case 1:
+                faultFourthMsg += "充电模块输入过压告警 ";
+                break;
+            case 2:
+                faultFourthMsg += "充电模块输入欠压告警 ";
+                break;
+            case 4:
+                faultFourthMsg += "充电模块输入缺相告警 ";
+                break;
+            case 8:
+                faultFourthMsg += "直流输出母线过流故障 ";
+                break;
+            case 16:
+                faultFourthMsg += "直流母线输出过压 ";
+                break;
+            case 32:
+                faultFourthMsg += "直流母线输出欠压 ";
+                break;
+            case 64:
+                faultFourthMsg += "蓄电池充过流告 ";
+                break;
+            case 128:
+                faultFourthMsg += "蓄电池模块过温";
+                break;
+            default:
+                break;
+
+        }
+        resultMsg += "\r\n" + "故障代码：" + faultFourthMsg;
+        //resultMsg += "\r\n" + "故障代码：" + analysisFaultInfo(faultInfoFourth);
+        
+		//故障代码
+        var faultInfoFifth = msg.substr(148, 2);
+        faultInfoFifth = parseInt(faultInfoFifth, 16);
+        var faultFifthMsg = ""; 
+        //var len = faultInfoFifth.length;
+        switch (faultInfoFifth) {
+            case 1:
+                faultFifthMsg += "电池反接故障 ";
+                break;
+            case 2:
+                faultFifthMsg += "充电中车辆控制导引故障 ";
+                break;
+            case 4:
+                faultFifthMsg += "控制器通讯故障 ";
+                break;
+            case 8:
+                faultFifthMsg += "显示屏故障 ";
+                break;
+            case 16:
+                faultFifthMsg += "交易记录存储失败 ";
+                break;
+            default:
+                break;
+
+        }
+        //if (faultInfoFifth.substr(0, 1) == "1") {
+        //    faultFifthMsg += "电池反接故障 ";
+        //}
+        //if (faultInfoFifth.substr(1, 1) == "1") {
+        //    faultFifthMsg += "充电中车辆控制导引故障 ";
+        //}
+        //if (faultInfoFifth.substr(2, 1) == "1") {
+        //    faultFifthMsg += "控制器通讯故障 ";
+        //}
+        //if (faultInfoFifth.substr(3, 1) == "1") {
+        //    faultFifthMsg += "显示屏故障 ";
+        //}
+        //if (faultInfoFifth.substr(4, 1) == "1") {
+        //    faultFifthMsg += "交易记录存储失败 ";
+        //}
+        
+        resultMsg += "\r\n" + "故障代码：" + faultFifthMsg;
+        //resultMsg += "\r\n" + "故障代码：" + analysisFaultInfo(faultInfoFifth);
+        
+
+		//错误代码
+        var faultInfoSixth = msg.substr(150, 2);
+        faultInfoSixth = parseInt(faultInfoSixth, 16).toString(2);
+        var faultSixthMsg = "";
+        if (faultInfoSixth.substr(0, 1) == "1") {
+            faultSixthMsg += "电池反接故障 ";
+        } if (faultInfoSixth.substr(2, 1) == "1") {
+            faultSixthMsg += "充电桩倾斜";
+        }
+        resultMsg += "\r\n" + "错误代码：" + faultSixthMsg;
+        
+		//协议版本号
+        var agreementVer = msg.substr(152, 2);
+        resultMsg += "\r\n" + "协议版本号（V1.8 版本实际数值 18）:" + (parseInt(agreementVer, 16));//(parseInt(sessionId,16))
+
+       //故障代码H（暂时不用）
+		var faultCode = msg.substr(154, 2);
+		resultMsg += "\r\n" + "故障代码H：" + analysisFaultInfo(faultCode);
+
+		//故障代码L（仅2.8及以上协议存在） 
+		var faultCode = msg.substr(156, 2);
+		resultMsg += "\r\n" + "故障代码L：" + analysisFaultInfo(faultCode);
+
+
+        return resultMsg;
+    }
+
+
+
+    //解析29指令
+    function analysis0x29(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析充电接口编号
+        var interfaceNo = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNo;
+        //获取设备信息
+        var equipmentInfo = msg.substr(34, 2);
+        resultMsg += "\r\n" + "获取设备信息：" + interfaceNo;
+
+        return resultMsg;
+    }
+	
+    //解析2a停机原因上
+    function analysis0x2a(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析充电接口编号
+        var interfaceNo = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNo;
+
+        //解析停机原因
+        var stopReason = msg.substr(34, 2);
+        stopReason = parseInt(stopReason, 16);
+        switch (stopReason) {
+            case 1:
+                stopReason += "故障";
+                break;
+            case 2:
+                stopReason += "充满";
+                break;
+            case 3:
+                stopReason += "刷卡";
+                break;
+            case 4:
+                stopReason += "其他";
+                break;
+            default:
+                stopReason += "停止原因解析错误";
+        }
+        resultMsg += "\r\n" + "停机原因:" + stopReason;
+
+        //解析卡号
+        var cardNo = msg.substr(36, 32);
+        if (parseInt(cardNo, 16) == 0) {
+            resultMsg += "\r\n" + "卡号:其他方式充电";
+        } else {
+            resultMsg += "\r\n" + "卡号:" + hexToAscii(cardNo);
+        }
+        //解析本次充电总电量
+        var currentQuantity = msg.substr(68, 8);
+        resultMsg += "\r\n" + "本次充电总电量:" + parseInt(exchangeHL(currentQuantity), 16) / 1000 + "Kwh";
+        //解析本次充电总时间
+        var currentChagreTime = msg.substr(76, 4);
+        resultMsg += "\r\n" + "本次充电总时间:" + parseInt(exchangeHL(currentChagreTime), 16) + "分钟";
+        //解析充电结束时间
+        var chargeEndTime = msg.substr(80, 14);
+        resultMsg += "\r\n" + "充电结束时间:" + analysisDate(chargeEndTime);
+		
+		//解析故障信息H
+        var faultInforH = msg.substr(94, 2);
+        resultMsg += "\r\n" + "故障信息H:" + analysisDate(faultInforH);
+		//解析故障信息L
+        var faultInforL = msg.substr(96, 2);
+        resultMsg += "\r\n" + "故障信息L:" + analysisDate(faultInforL);		
+
+        return resultMsg;
+    }
+    //解析2B获取充电桩实时充电数据
+    function analysis0x2B(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析充电接口编号
+        var interfaceNo = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNo;
+        return resultMsg;
+    }
+	
+	
+    //解析2C指令
+    function analysis0x2C(msg, resultMsg) {
+        //解析充电桩编码
+       var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+       //SessionId
+        var sessionId = msg.substr(32, 16);
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+//alert(mySum);
+        resultMsg += "\r\n" + "Session_Id(session_id 卡和 VIN 为 0app 启动用远程下发)：" + mySum;
+
+		
+		
+        //充电接口编号
+        var chargeInterfaceNo = msg.substr(48, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + chargeInterfaceNo;
+        //充电卡号
+        var chargeCradNo = msg.substr(50, 32);
+        resultMsg += "\r\n" + "卡号/用户 ID ：" + hexToAscii(chargeCradNo);
+        //本次充电金额
+        var thisChagrPrice = msg.substr(82, 8);
+        resultMsg += "\r\n" + "本次充电金额：" + parseInt(exchangeHL(thisChagrPrice), 16) / 100 + "元";
+        //本次充电总电量
+        var thisChagrQuantity = msg.substr(90, 8);
+        resultMsg += "\r\n" + "本次充电总电量：" + parseInt(exchangeHL(thisChagrQuantity), 16) / 1000 + "Kwh";
+        //本次充电时间
+        var thisChagrTime = msg.substr(98, 8);
+        resultMsg += "\r\n" + "本次充电时间：" + parseInt(exchangeHL(thisChagrTime), 16) + "分钟";
+        //尖电量
+        var squantity = msg.substr(106, 8);
+        resultMsg += "\r\n" + "尖电量：" + parseInt(exchangeHL(squantity), 16) / 1000 + "Kwh";
+
+        //峰电量
+        var hquantity = msg.substr(114, 8);
+        resultMsg += "\r\n" + "峰电量：" + parseInt(exchangeHL(hquantity), 16) / 1000 + "Kwh";
+
+        //平电量
+        var lquantity = msg.substr(122, 8);
+        resultMsg += "\r\n" + "平电量：" + parseInt(exchangeHL(lquantity), 16) / 1000 + "Kwh";
+
+        //谷电量
+        var vquantity = msg.substr(130, 8);
+        resultMsg += "\r\n" + "谷电量：" + parseInt(exchangeHL(vquantity), 16) / 1000 + "Kwh";
+        //当前SOC
+        var currentSoc = msg.substr(138, 2);
+        resultMsg += "\r\n" + "当前SOC：" + parseInt(currentSoc, 16);
+        return resultMsg;
+    }
+	
+	
+    //解析2D获取充电数据
+    function analysis0x2D(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析参数类型和参数
+        var parameter = msg.substr(32, 2);
+        if (parameter == "01") {
+            resultMsg += "\r\n" + "参数类型：" + "使用交易流水号获取充电记录";
+            //流水号
+            var stream = msg.substr(34, 4);
+            resultMsg += "\r\n" + "流水号：" + parseInt(exchangeHL(stream), 16);
+        } else if (parameter == "02") {
+            resultMsg += "\r\n" + "参数类型：" + "使用session_id获取充电记录";
+            //SessionId
+           var sessionId = msg.substr(38, 16);
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+		
+		//alert(mySum);
+		
+        resultMsg += "\r\n" + "Session_Id(session_id 卡和 VIN 为 0app 启动用远程下发)：" + mySum;
+
+        } else {
+            resultMsg += "\r\n" + "参数类型解析出错";
+        }
+        return resultMsg;
+    }
+	
+	
+    //解析2E充电设备上传单一费率充电记录
+    function analysis0x2E(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //SessionId
+        var sessionId = msg.substr(32, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+		
+        //解析充电记录序号
+        var num = msg.substr(48, 4);
+
+        resultMsg += "\r\n" + "充电记录序号：" + parseInt(exchangeHL(num), 16);
+        //解析卡号
+        
+        var chargeCradNo = msg.substr(52, 32);
+        resultMsg += "\r\n" + "卡号/用户ID(ASCII码)：" + hexToAscii(chargeCradNo);
+        //充电前卡金额分析
+        var earlyMon = msg.substr(84, 8);
+        resultMsg += "\r\n" + "充电前卡金额：" + parseInt(exchangeHL(earlyMon), 16) / 100 + "元";
+        //本次充电金额分析
+        var thisMon = msg.substr(92, 8);
+        resultMsg += "\r\n" + "本次充电金额：" + parseInt(exchangeHL(thisMon), 16) / 1000 + "元";
+        //本次充电电量
+        var thisElecQ = msg.substr(100, 8);
+        resultMsg += "\r\n" + "本次充电电量：" + parseInt(exchangeHL(thisElecQ), 16) / 1000 + "度";
+        //开始充电电量
+        var startElecQ = msg.substr(108, 8);
+        resultMsg += "\r\n" + "开始充电电量：" + parseInt(exchangeHL(startElecQ), 16) / 1000 + "度";
+        //结束充电电量
+        var endElecQ = msg.substr(116, 8);
+        resultMsg += "\r\n" + "结束充电电量：" + parseInt(exchangeHL(endElecQ), 16) / 1000 + "度";
+        //开始充电时间
+        var startChargeTime = msg.substr(124, 14);
+        resultMsg += "\r\n" + "开始充电时间：" + analysisDate(startChargeTime);
+
+        //结束充电时间
+        var endChargeTime = msg.substr(138, 14);
+        resultMsg += "\r\n" + "结束充电时间：" + analysisDate(endChargeTime);
+        
+        //当前SOC
+        var currentSoc = msg.substr(152, 2);
+        resultMsg += "\r\n" + "当前SOC：" + parseInt(currentSoc, 16);
+        //停止时充电模式解析
+        var endChargeMod = msg.substr(154, 2);
+        if (endChargeMod == "01") {
+            resultMsg += "\r\n" + "停止时充电模式：" + "恒压";
+        } else if (endChargeMod == "02") {
+            resultMsg += "\r\n" + "停止时充电模式：" + "恒流";
+        } else  {
+            resultMsg += "\r\n" + "停止时充电模式解析出错";
+        }
+        //停止充电原因解析
+        var faultInfoSecond = msg.substr(156, 2);
+        resultMsg += "\r\n" + "停止充电原因：" + analysisFaultInfo(faultInfoSecond);
+        //启动原因
+        var startReson = msg.substr(158, 2);
+        resultMsg += "\r\n" + "启动原因：" + analysisStartInfo(startReson);
+
+        return resultMsg;
+
+    }
+    //解析2F下发充电记录确认
+    function analysis0x2F(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //交易流水号
+        var tradeStreamNo = msg.substr(32, 4);
+        resultMsg += "\r\n" + "交易流水号：" + parseInt(exchangeHL(tradeStreamNo), 16);
+
+
+        return resultMsg;
+    }
+    //解析30智能模块下发请求充电验证码
+    function analysis0x30(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        // //解析充电接口编号
+        // var interfaceNo = msg.substr(32, 2);
+        // resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNo;
+        // //用户ID
+        // var cardNo = msg.substr(34, 32);
+        // resultMsg += "\r\n" + "用户ID：" + hexToAscii(cardNo);
+        // //业务流水号
+        // var streamNum = msg.substr(66, 24);
+        // resultMsg += "\r\n" + "业务流水号：" + hexToAscii(streamNum);
+        // //验证码
+        // var identifyCode = msg.substr(90, 12);
+        // resultMsg += "\r\n" + "验证码：" + hexToAscii(identifyCode);
+        return resultMsg;
+    }
+	
+    //解析31充电设备返回请求充电状态
+    function analysis0x31(msg, resultMsg) {
+        var position = 0;
+        //解析充电桩编码
+        var pileCode = msg.substr(position, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析计费模型编号
+        position += 32;
+        var payModel = msg.substr(position, 4);
+        resultMsg += "\r\n" + "计费模型编号：" + parseInt(exchangeHL(payModel), 16);
+        //解析计费模型ID  直接截取出 数据没做任何处理
+        position += 4;
+        var payModelID = msg.substr(position, 16);
+        //payModelID = hexToAscii(payModelID);
+        resultMsg += "\r\n" + "计费模型ID：" + payModelID;
+        //生效时间
+        position += 16;
+        var startTime = msg.substr(position, 14);
+        resultMsg += "\r\n" + "生效时间：" + analysisDate(startTime);
+        //失效时间
+        position += 14;
+        var endTime = msg.substr(position, 14);
+        resultMsg += "\r\n" + "失效时间：" + analysisDate(endTime);
+
+        //预冻结金额第 1 档
+        position += 14;
+        var freezAmONE = msg.substr(position, 4);
+        resultMsg += "\r\n" + "预冻结金额第 1 档：" + parseInt(exchangeHL(freezAmONE), 16) / 100 + "分";
+        //预冻结金额第 2 档
+        position += 4;
+        var freezAmTOW = msg.substr(position, 4);
+        resultMsg += "\r\n" + "预冻结金额第 2 档：" + parseInt(exchangeHL(freezAmTOW), 16) / 100 + "分";
+        //时段数
+        position += 4;
+        var timeNum = msg.substr(position, 2);
+        resultMsg += "\r\n" + "时段数：" + parseInt(exchangeHL(timeNum), 16);
+        //解析各时段
+        var num = parseInt(exchangeHL(timeNum), 16);
+        for (var i = 1; i <= num; i++) {
+            //第i个时段起始时间
+            position += 2;
+            var startTimei = msg.substr(position, 4);
+            resultMsg += "\r\n" + "第" + i + "个时段起始时间：" + analysistime(startTimei);
+            //第i个时段标志
+            position += 4;
+            var timeFlag = msg.substr(position, 2);
+            // if (timeFlag == "01") {
+            resultMsg += "\r\n" + "第" + i + "个时段标志：" + timeFlag+ "时段";
+            // } else if (timeFlag == "02") {
+            //     resultMsg += "\r\n" + "第" + i + "个时段标志：" + "峰时段";
+            // } else if (timeFlag == "03") {
+            //     resultMsg += "\r\n" + "第" + i + "个时段标志：" + "平时段";
+            // } else if (timeFlag == "04") {
+            //     resultMsg += "\r\n" + "第" + i + "个时段标志：" + "谷时段";
+            // } else {
+            //     resultMsg += "\r\n" + "第" + i + "个时段标志：解析出错" ;
+            // }
+            //电价
+            position += 2;
+            var chargePriceS = msg.substr(position, 8);
+            resultMsg += "\r\n" + "时段电价:" + parseInt(exchangeHL(chargePriceS), 16) / 100000 + "元/Kwh";
+            //服务费
+            position += 8;
+            var squantity = msg.substr(position, 4);
+            resultMsg += "\r\n" + "时段服务费：" + parseInt(exchangeHL(squantity), 16) / 100 + "元";
+            position += 2;
+
+        }
+        return resultMsg;
+
+    }
+    //解析32充电设备请求下发计费模型
+    function analysis0x32(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        return resultMsg;
+       
+
+    }
+    //解析33智能模块下发计费模型
+    function analysis0x33(msg, resultMsg) {
+        var position = 0;
+        //解析充电桩编码
+        var pileCode = msg.substr(position, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析计费模型编号
+        position += 32;
+        var payModel = msg.substr(position, 4);
+        resultMsg += "\r\n" + "计费模型编号：" + parseInt(exchangeHL(payModel), 16);
+        //解析计费模型ID  直接截取出 数据没做任何处理
+        position += 4;
+        var payModelID = msg.substr(position, 16);
+        //payModelID = hexToAscii(payModelID);
+        resultMsg += "\r\n" + "计费模型ID：" + payModelID;
+        //生效时间
+        position += 16;
+        var startTime = msg.substr(position, 14);
+        resultMsg += "\r\n" + "生效时间：" + analysisDate(startTime);
+        //失效时间
+        position += 14;
+        var endTime = msg.substr(position, 14);
+        resultMsg += "\r\n" + "失效时间：" + analysisDate(endTime);
+
+        //预冻结金额第 1 档
+        position += 14;
+        var freezAmONE = msg.substr(position, 4);
+        resultMsg += "\r\n" + "预冻结金额第 1 档：" + parseInt(exchangeHL(freezAmONE), 16) / 100 + "分";
+        //预冻结金额第 2 档
+        position += 4;
+        var freezAmTOW = msg.substr(position, 4);
+        resultMsg += "\r\n" + "预冻结金额第 2 档：" + parseInt(exchangeHL(freezAmTOW), 16) / 100 + "分";
+        //时段数
+        position += 4;
+        var timeNum = msg.substr(position, 2);
+        resultMsg += "\r\n" + "时段数：" + parseInt(exchangeHL(timeNum), 16);
+        //解析各时段
+        var num = parseInt(exchangeHL(timeNum), 16);
+        for (var i = 1; i <= num; i++) {
+            //第i个时段起始时间
+            position += 2;
+            var startTimei = msg.substr(position, 4);
+            resultMsg += "\r\n" + "第" + i + "个时段起始时间：" + analysistime(startTimei);
+            //第i个时段标志
+            position += 4;
+            var timeFlag = msg.substr(position, 2);
+            if (timeFlag == "01") {
+                resultMsg += "\r\n" + "第" + i + "个时段标志：" + "尖时段";
+            } else if (timeFlag == "02") {
+                resultMsg += "\r\n" + "第" + i + "个时段标志：" + "峰时段";
+            } else if (timeFlag == "03") {
+                resultMsg += "\r\n" + "第" + i + "个时段标志：" + "平时段";
+            } else if (timeFlag == "04") {
+                resultMsg += "\r\n" + "第" + i + "个时段标志：" + "谷时段";
+            } else {
+                resultMsg += "\r\n" + "第" + i + "个时段标志：解析出错" ;
+            }
+        }
+        //尖时段电价
+        position += 2;
+        var chargePriceS = msg.substr(position, 8);
+        resultMsg += "\r\n" + "尖时段电价:" + parseInt(exchangeHL(chargePriceS), 16) / 100000 + "元/Kwh";
+        //尖时段服务费
+        position += 8;
+        var squantity = msg.substr(position, 4);
+        resultMsg += "\r\n" + "尖时段服务费：" + parseInt(exchangeHL(squantity), 16) / 100 + "元";
+        //峰时段电价
+        position += 4;
+        var chargePriceH = msg.substr(position, 8);
+        resultMsg += "\r\n" + "峰时段电价:" + parseInt(exchangeHL(chargePriceH), 16) / 100000 + "元/Kwh";
+        //峰时段服务费
+        position += 8;
+        var hquantity = msg.substr(position, 4);
+        resultMsg += "\r\n" + "峰时段服务费：" + parseInt(exchangeHL(hquantity), 16) / 100 + "元";
+        //平时段电价
+        position += 4;
+        var chargePriceL = msg.substr(position, 8);
+        resultMsg += "\r\n" + "平时段电价:" + parseInt(exchangeHL(chargePriceL), 16) / 100000 + "元/Kwh";
+        //平时段服务费
+        position += 8;
+        var lquantity = msg.substr(position, 4);
+        resultMsg += "\r\n" + "平时段服务费：" + parseInt(exchangeHL(lquantity), 16) / 100 + "元";
+        //谷时段电价
+        position += 4;
+        var chargePriceV = msg.substr(position, 8);
+        resultMsg += "\r\n" + "谷时段电价:" + parseInt(exchangeHL(chargePriceV), 16) / 100000 + "元/Kwh";
+        //谷时段服务费
+        position += 8;
+        var vquantity = msg.substr(position, 4);
+        resultMsg += "\r\n" + "谷时段服务费：" + parseInt(exchangeHL(vquantity), 16) / 100 + "元";
+
+        return resultMsg;
+    }
+    //解析34充电设备上传计费模型更新结果
+    function analysis0x34(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //更新结果
+        var updateResult = msg.substr(32, 2);
+        if (updateResult == "01") {
+            resultMsg += "\r\n" + "更新结果:" + "更新成功";
+        } else if (updateResult == "02") {
+            resultMsg += "\r\n" + "更新结果:" + "更新失败";
+        } else if (updateResult == "03") {
+            resultMsg += "\r\n" + "更新结果:" + "接收成功";
+        } else  {
+            resultMsg += "\r\n" + "更新结果:解析出错" ;
+        }
+        //计费模型编号
+        var payModel = msg.substr(34, 4);
+        resultMsg += "\r\n" + "计费模型编号：" + parseInt(exchangeHL(payModel), 16);
+		
+        //计费模型ID  直接截取出 数据没做任何处理
+        var payModelID = msg.substr(38, 16);
+        //payModelID = hexToAscii(payModelID);
+        resultMsg += "\r\n" + "计费模型ID：" + payModelID;
+        return resultMsg;
+
+
+    }
+    //解析35智能模块查询计费模型
+    function analysis0x35(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        return resultMsg;
+        
+
+    }
+    //解析36充电设备上传计费模型
+    function analysis0x36(msg, resultMsg) {
+        var position = 0;
+        //解析充电桩编码
+        var pileCode = msg.substr(position, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析计费模型编号
+        position += 32;
+        var payModel = msg.substr(position, 4);
+        resultMsg += "\r\n" + "计费模型编号：" + parseInt(exchangeHL(payModel), 16);
+        //解析计费模型ID  直接截取出 数据没做任何处理
+        position += 4;
+        var payModelID = msg.substr(position, 16);
+        //payModelID = hexToAscii(payModelID);
+        resultMsg += "\r\n" + "计费模型ID：" + payModelID;
+        //生效时间
+        position += 16;
+        var startTime = msg.substr(position, 14);
+        resultMsg += "\r\n" + "生效时间：" + analysisDate(startTime);
+        //失效时间
+        position += 14;
+        var endTime = msg.substr(position, 14);
+        resultMsg += "\r\n" + "失效时间：" + analysisDate(endTime);
+
+        //预冻结金额第 1 档
+        position += 14;
+        var freezAmONE = msg.substr(position, 4);
+        resultMsg += "\r\n" + "预冻结金额第 1 档：" + parseInt(exchangeHL(freezAmONE), 16) / 100 + "分";
+        //预冻结金额第 2 档
+        position += 4;
+        var freezAmTOW = msg.substr(position, 4);
+        resultMsg += "\r\n" + "预冻结金额第 2 档：" + parseInt(exchangeHL(freezAmTOW), 16) / 100 + "分";
+        //时段数
+        position += 4;
+        var timeNum = msg.substr(position, 2);
+        resultMsg += "\r\n" + "时段数：" + parseInt(exchangeHL(timeNum), 16);
+        //解析各时段
+        var num = parseInt(exchangeHL(timeNum), 16);
+        for (var i = 1; i <= num; i++) {
+            //第i个时段起始时间
+            position += 2;
+            var startTimei = msg.substr(position, 4);
+            resultMsg += "\r\n" + "第" + i + "个时段起始时间：" + analysistime(startTimei);
+            //第i个时段标志
+            position += 4;
+            var timeFlag = msg.substr(position, 2);
+            if (timeFlag == "01") {
+                resultMsg += "\r\n" + "第" + i + "个时段标志：" + "尖时段";
+            } else if (timeFlag == "02") {
+                resultMsg += "\r\n" + "第" + i + "个时段标志：" + "峰时段";
+            } else if (timeFlag == "03") {
+                resultMsg += "\r\n" + "第" + i + "个时段标志：" + "平时段";
+            } else if (timeFlag == "04") {
+                resultMsg += "\r\n" + "第" + i + "个时段标志：" + "谷时段";
+            } else {
+                resultMsg += "\r\n" + "第" + i + "个时段标志：解析出错" ;
+            }
+        }
+        //尖时段电价
+        position += 2;
+        var chargePriceS = msg.substr(position, 8);
+        resultMsg += "\r\n" + "尖时段电价:" + parseInt(exchangeHL(chargePriceS), 16) / 100000 + "元/Kwh";
+        //尖时段服务费
+        position += 8;
+        var squantity = msg.substr(position, 4);
+        resultMsg += "\r\n" + "尖时段服务费：" + parseInt(exchangeHL(squantity), 16) / 100 + "元";
+        //峰时段电价
+        position += 4;
+        var chargePriceH = msg.substr(position, 8);
+        resultMsg += "\r\n" + "峰时段电价:" + parseInt(exchangeHL(chargePriceH), 16) / 100000 + "元/Kwh";
+        //峰时段服务费
+        position += 8;
+        var hquantity = msg.substr(position, 4);
+        resultMsg += "\r\n" + "峰时段服务费：" + parseInt(exchangeHL(hquantity), 16) / 100 + "元";
+        //平时段电价
+        position += 4;
+        var chargePriceL = msg.substr(position, 8);
+        resultMsg += "\r\n" + "平时段电价:" + parseInt(exchangeHL(chargePriceL), 16) / 100000 + "元/Kwh";
+        //平时段服务费
+        position += 8;
+        var lquantity = msg.substr(position, 4);
+        resultMsg += "\r\n" + "平时段服务费：" + parseInt(exchangeHL(lquantity), 16) / 100 + "元";
+        //谷时段电价
+        position += 4;
+        var chargePriceV = msg.substr(position, 8);
+        resultMsg += "\r\n" + "谷时段电价:" + parseInt(exchangeHL(chargePriceV), 16) / 100000 + "元/Kwh";
+        //谷时段服务费
+        position += 8;
+        var vquantity = msg.substr(position, 4);
+        resultMsg += "\r\n" + "谷时段服务费：" + parseInt(exchangeHL(vquantity), 16) / 100 + "元";
+
+        return resultMsg;
+    }
+
+
+    //解析37充电设备上传无卡复费率充电记录指令
+    function analysis0x37(msg,resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+        //SessionId
+        var sessionId = msg.substr(32, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+        //alert("num: " + num);
+        var str1 = sessionId.substring(0, 8);
+        //alert("str1: " + str1);
+        var str2 = sessionId.substring(8);
+        //alert("str2: " + str2);
+       //alert("parseInt(str1, 16): " + parseInt(str1, 16));
+       //alert("parseInt(str2, 16): " + parseInt(str2, 16));
+       var num1 = parseInt(str1, 16);
+       var num2 = parseInt(str2, 16);
+       //alert("bigMut(num1,num)" + bigMut(num1,num));
+       var mySum = sumStrings(bigMut(num1, num), num2 + "");
+       //alert(mySum);
+       resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+        //充电记录编号
+        var chargeRcdNo = msg.substr(48, 4);
+        resultMsg += "\r\n" + "充电记录编号：" + parseInt(exchangeHL(chargeRcdNo), 16);
+        //用户ID
+        var userId = msg.substr(52, 32);
+        resultMsg += "\r\n" + "用户ID：" + hexToAscii(userId) ;
+        //计费模型
+        var payModel = msg.substr(84, 4);
+        resultMsg += "\r\n" + "计费模型编号：" + parseInt(exchangeHL(payModel), 16);
+        //电表地址
+        var ammeterAddres = msg.substr(88, 12);
+        resultMsg += "\r\n" + "电表地址：" + parseInt(exchangeHL(ammeterAddres), 16) + "*";
+
+        //尖起示值（sharpstart）
+        var ssValue = msg.substr(100, 8);
+        resultMsg += "\r\n" + "尖起示值：" + parseInt(exchangeHL(ssValue), 16) / 1000 + "Kwh";
+        //尖止示值（sharpend）
+        var seValue = msg.substr(108, 8);
+        resultMsg += "\r\n" + "尖止示值：" + parseInt(exchangeHL(seValue), 16) / 1000 + "Kwh";
+
+        //峰起示值（highstart）
+        var hsValue = msg.substr(116, 8);
+        resultMsg += "\r\n" + "峰起示值：" + parseInt(exchangeHL(hsValue), 16) / 1000 + "Kwh";
+        //峰止示值（highend）
+        var heValue = msg.substr(124, 8);
+        resultMsg += "\r\n" + "峰止示值：" + parseInt(exchangeHL(heValue), 16) / 1000 + "Kwh";
+
+        //平起示值（levelstart）
+        var lsValue = msg.substr(132, 8);
+        resultMsg += "\r\n" + "平起示值：" + parseInt(exchangeHL(lsValue), 16) / 1000 + "Kwh";
+        //平止示值（levelend）
+        var leValue = msg.substr(140, 8);
+        resultMsg += "\r\n" + "平止示值：" + parseInt(exchangeHL(leValue), 16) / 1000 + "Kwh";
+
+        //谷起示值（valleystart）
+        var vsValue = msg.substr(148, 8);
+        resultMsg += "\r\n" + "谷起示值：" + parseInt(exchangeHL(vsValue), 16) / 1000 + "Kwh";
+        //谷止示值（valleyend）
+        var veValue = msg.substr(156, 8);
+        resultMsg += "\r\n" + "谷止示值：" + parseInt(exchangeHL(veValue), 16) / 1000 + "Kwh";
+
+        //总起示值（totalstart）
+        var tsValue = msg.substr(164, 8);
+        resultMsg += "\r\n" + "总起示值：" + parseInt(exchangeHL(tsValue), 16) / 1000 + "Kwh";
+        //总止示值（totalend）
+        var teValue = msg.substr(172, 8);
+        resultMsg += "\r\n" + "总止示值：" + parseInt(exchangeHL(teValue), 16) / 1000 + "Kwh";
+
+        //尖电量
+        var squantity = msg.substr(180, 8);
+        resultMsg += "\r\n" + "尖电量：" + parseInt(exchangeHL(squantity), 16) / 1000 + "Kwh";
+
+        //峰电量
+        var hquantity = msg.substr(188, 8);
+        resultMsg += "\r\n" + "峰电量：" + parseInt(exchangeHL(hquantity), 16) / 1000 + "Kwh";
+
+        //平电量
+        var lquantity = msg.substr(196, 8);
+        resultMsg += "\r\n" + "平电量：" + parseInt(exchangeHL(lquantity), 16) / 1000 + "Kwh";
+
+        //谷电量
+        var vquantity = msg.substr(204, 8);
+        resultMsg += "\r\n" + "谷电量：" + parseInt(exchangeHL(vquantity), 16) / 1000 + "Kwh";
+
+        //总电量
+        var tquantity = msg.substr(212, 8);
+        resultMsg += "\r\n" + "总电量：" + parseInt(exchangeHL(tquantity), 16) / 1000 + "Kwh";
+
+        //本次充电金额
+        var currentPrice = msg.substr(220, 8);
+        resultMsg += "\r\n" + "本次充电金额：" + parseInt(exchangeHL(currentPrice), 16) / 100;
+
+        //开始充电时间
+        var startChargeTime = msg.substr(228, 14);
+        resultMsg += "\r\n" + "开始充电时间：" + analysisDate(startChargeTime);
+
+        //结束充电时间
+        var endChargeTime = msg.substr(242, 14);
+        resultMsg += "\r\n" + "结束充电时间：" + analysisDate(endChargeTime);
+
+        //停止时SOC
+        var endSOC = msg.substr(256, 2);
+        resultMsg += "\r\n" + "停止时SOC：" + parseInt(endSOC, 16);
+
+        //停止时充电模式
+        var endChargeModel = msg.substr(258, 2);
+        if (endChargeModel == 01) {
+            endChargeModel = "恒压";
+        } else if (endChargeModel == 02) {
+            endChargeModel = "恒流";
+        } else {
+            endChargeModel = "解析出错";
+        }
+        resultMsg += "\r\n" + "停止时充电模式：" + endChargeModel;
+
+        //停止时充电原因
+        var endChargeReson = msg.substr(260, 2);
+        resultMsg += "\r\n" + "停止时充电原因：" + analysisFaultInfo(endChargeReson);
+
+        //启动原因
+        var startReson = msg.substr(262, 2);
+        resultMsg += "\r\n" + "启动原因：" + analysisStartInfo(startReson);
+        //解析充电接口编号
+        var interfaceNo = msg.substr(264, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNo;
+        return resultMsg;
+    }
+
+	//解析37充电设备上传无卡复费率充电记录指令
+    function analysis0x3C(msg,resultMsg) {
+        //解析充电桩编码
+        var position = 0;
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+        //SessionId
+        var sessionId = msg.substr(32, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+        //alert("num: " + num);
+        var str1 = sessionId.substring(0, 8);
+        //alert("str1: " + str1);
+        var str2 = sessionId.substring(8);
+        //alert("str2: " + str2);
+       //alert("parseInt(str1, 16): " + parseInt(str1, 16));
+       //alert("parseInt(str2, 16): " + parseInt(str2, 16));
+       var num1 = parseInt(str1, 16);
+       var num2 = parseInt(str2, 16);
+       //alert("bigMut(num1,num)" + bigMut(num1,num));
+       var mySum = sumStrings(bigMut(num1, num), num2 + "");
+       //alert(mySum);
+       resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+        //充电记录编号
+        var chargeRcdNo = msg.substr(48, 4);
+        resultMsg += "\r\n" + "充电记录编号：" + parseInt(exchangeHL(chargeRcdNo), 16);
+        //用户ID
+        var userId = msg.substr(52, 32);
+        resultMsg += "\r\n" + "用户ID：" + hexToAscii(userId) ;
+        //计费模型
+        var payModel = msg.substr(84, 4);
+        resultMsg += "\r\n" + "计费模型编号：" + parseInt(exchangeHL(payModel), 16);
+        //电表地址
+        var ammeterAddres = msg.substr(88, 12);
+        resultMsg += "\r\n" + "电表地址：" + parseInt(exchangeHL(ammeterAddres), 16) + "*";
+
+        //时段数（sharpstart）
+        var shiduan = msg.substr(100, 2);
+        resultMsg += "\r\n" + "时段数：" + parseInt(exchangeHL(shiduan), 16);
+
+        // //时段号（sharpstart）
+        // var shiduanid = msg.substr(100, 2);
+        // resultMsg += "\r\n" + "时段号：" + parseInt(exchangeHL(shiduanid), 16);
+
+        // //尖起示值（sharpstart）
+        // var ssValue = msg.substr(102, 8);
+        // resultMsg += "\r\n" + "时段起示值：" + parseInt(exchangeHL(ssValue), 16) / 1000 + "Kwh";
+        // //尖止示值（sharpend）
+        // var seValue = msg.substr(110, 8);
+        // resultMsg += "\r\n" + "时段止示值：" + parseInt(exchangeHL(seValue), 16) / 1000 + "Kwh";
+        // //尖电量
+        // var squantity = msg.substr(118, 8);
+        // resultMsg += "\r\n" + "时段电量：" + parseInt(exchangeHL(squantity), 16) / 1000 + "Kwh";
+
+        position = 102;
+        //解析各时段
+        var num = parseInt(exchangeHL(shiduan), 16);
+        for (var i = 1; i <= num; i++) {
+
+            //时段号（sharpstart）
+            var shiduanid = msg.substr(position, 2);
+            resultMsg += "\r\n" + "时段号：" + parseInt(exchangeHL(shiduanid), 16);
+            position += 2;
+
+            //尖起示值（sharpstart）
+            var ssValue = msg.substr(position, 8);
+            resultMsg += "\r\n" + "时段起示值：" + parseInt(exchangeHL(ssValue), 16) / 1000 + "Kwh";
+            position += 8;
+
+            //尖止示值（sharpend）
+            var seValue = msg.substr(position, 8);
+            resultMsg += "\r\n" + "时段止示值：" + parseInt(exchangeHL(seValue), 16) / 1000 + "Kwh";
+            position += 8;
+
+            //尖电量
+            var squantity = msg.substr(position, 8);
+            resultMsg += "\r\n" + "时段电量：" + parseInt(exchangeHL(squantity), 16) / 1000 + "Kwh";
+            position += 8;
+
+        }
+
+        //总起示值（totalstart）
+        var tsValue = msg.substr(position, 8);
+        resultMsg += "\r\n" + "总起示值：" + parseInt(exchangeHL(tsValue), 16) / 1000 + "Kwh";
+        position += 8;
+        //总止示值（totalend）
+        var teValue = msg.substr(position, 8);
+        resultMsg += "\r\n" + "总止示值：" + parseInt(exchangeHL(teValue), 16) / 1000 + "Kwh";
+        position += 8;
+
+        //总电量
+        var tquantity = msg.substr(position, 8);
+        resultMsg += "\r\n" + "总电量：" + parseInt(exchangeHL(tquantity), 16) / 1000 + "Kwh";
+        position += 8;
+
+        //本次充电金额
+        var currentPrice = msg.substr(position, 8);
+        resultMsg += "\r\n" + "本次充电金额：" + parseInt(exchangeHL(currentPrice), 16) / 100;
+        position += 8;
+
+        //开始充电时间
+        var startChargeTime = msg.substr(position, 14);
+        resultMsg += "\r\n" + "开始充电时间：" + analysisDate(startChargeTime);
+        position += 14;
+
+        //结束充电时间
+        var endChargeTime = msg.substr(position, 14);
+        resultMsg += "\r\n" + "结束充电时间：" + analysisDate(endChargeTime);
+        position += 14;
+
+        //停止时SOC
+        var endSOC = msg.substr(position, 2);
+        resultMsg += "\r\n" + "停止时SOC：" + parseInt(endSOC, 16);
+        position += 2;
+
+        //停止时充电模式
+        var endChargeModel = msg.substr(position, 2);
+        if (endChargeModel == 01) {
+            endChargeModel = "恒压";
+        } else if (endChargeModel == 02) {
+            endChargeModel = "恒流";
+        } else {
+            endChargeModel = "解析出错";
+        }
+        resultMsg += "\r\n" + "停止时充电模式：" + endChargeModel;
+        position += 2;
+
+        //停止时充电原因
+        var endChargeReson = msg.substr(position, 2);
+        resultMsg += "\r\n" + "停止时充电原因：" + analysisFaultInfo(endChargeReson);
+        position += 2;
+
+        //启动原因
+        var startReson = msg.substr(position, 2);
+        resultMsg += "\r\n" + "启动原因：" + analysisStartInfo(startReson);
+        position += 2;
+        //解析充电接口编号
+        var interfaceNo = msg.substr(position, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNo;
+        position += 2;
+        return resultMsg;
+    }
+
+    //解析3D指令
+    function analysis0x3D(msg, resultMsg) {
+        //解析充电桩编码
+       var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+       //SessionId
+        var sessionId = msg.substr(32, 16);
+        var num = (parseInt("100000000", 16));
+
+        //alert("num: " + num);
+
+        var str1 = sessionId.substring(0, 8);
+
+        //alert("str1: " + str1);
+
+        var str2 = sessionId.substring(8);
+
+        //alert("str2: " + str2);
+
+
+        //alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+        //alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+        var num1 = parseInt(str1, 16);
+        var num2 = parseInt(str2, 16);
+
+        //alert("bigMut(num1,num)" + bigMut(num1,num));
+
+        var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+        //alert(mySum);
+        resultMsg += "\r\n" + "Session_Id(session_id 卡和 VIN 为 0app 启动用远程下发)：" + mySum;
+
+		
+		
+        //充电接口编号
+        var chargeInterfaceNo = msg.substr(48, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + chargeInterfaceNo;
+        //充电卡号
+        var chargeCradNo = msg.substr(50, 32);
+        resultMsg += "\r\n" + "卡号/用户 ID ：" + hexToAscii(chargeCradNo);
+        //本次充电金额
+        var thisChagrPrice = msg.substr(82, 8);
+        resultMsg += "\r\n" + "本次充电金额：" + parseInt(exchangeHL(thisChagrPrice), 16) / 100 + "元";
+        //本次充电总电量
+        var thisChagrQuantity = msg.substr(90, 8);
+        resultMsg += "\r\n" + "本次充电总电量：" + parseInt(exchangeHL(thisChagrQuantity), 16) / 1000 + "Kwh";
+        //本次充电时间
+        var thisChagrTime = msg.substr(98, 8);
+        resultMsg += "\r\n" + "本次充电时间：" + parseInt(exchangeHL(thisChagrTime), 16) + "分钟";
+
+        //时段数（sharpstart）
+        var shiduan = msg.substr(106, 2);
+        resultMsg += "\r\n" + "时段数：" + parseInt(exchangeHL(shiduan), 16);
+        position = 108;
+
+        var num = shiduan;
+        for (var i = 0; i < num; i++) {
+
+            //时段号（sharpstart）
+            var shiduanid = msg.substr(position, 2);
+            resultMsg += "\r\n" + "时段号：" + parseInt(exchangeHL(shiduanid), 16);
+            position += 2;
+
+            //尖电量
+            var quantity = msg.substr(position, 8);
+            resultMsg += "\r\n" + "时段电量：" + parseInt(exchangeHL(quantity), 16) / 1000 + "Kwh";
+            position += 8;
+
+        }
+
+        //当前SOC
+        var currentSoc = msg.substr(position, 2);
+        resultMsg += "\r\n" + "当前SOC：" + parseInt(currentSoc, 16);
+        return resultMsg;
+    }
+
+    //解析38充电设备上传有卡复费率充电记录
+    function analysis0x38(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //充电记录序号
+        var chargeRcdNo = msg.substr(32, 4);
+        resultMsg += "\r\n" + "充电记录序号：" + parseInt(exchangeHL(chargeRcdNo), 16);
+        //卡号
+        var chargeCradNo = msg.substr(36, 32);
+        resultMsg += "\r\n" + "卡号：" + hexToAscii(chargeCradNo);
+        //计费模型编号
+        var payModel = msg.substr(68, 4);
+        resultMsg += "\r\n" + "计费模型编号：" + parseInt(exchangeHL(payModel), 16);
+        //电表地址
+        var ammeterAddress = msg.substr(72, 12);
+        ammeterAddress = hexToAscii(ammeterAddress);
+        resultMsg += "\r\n" + "电表地址：" + ammeterAddress;
+        //尖起示值（sharpstart）
+        var ssValue = msg.substr(84, 8);
+        resultMsg += "\r\n" + "尖起示值：" + parseInt(exchangeHL(ssValue), 16) / 1000 + "Kwh";
+        //尖止示值（sharpend）
+        var seValue = msg.substr(92, 8);
+        resultMsg += "\r\n" + "尖止示值：" + parseInt(exchangeHL(seValue), 16) / 1000 + "Kwh";
+
+        //峰起示值（highstart）
+        var hsValue = msg.substr(100, 8);
+        resultMsg += "\r\n" + "峰起示值：" + parseInt(exchangeHL(hsValue), 16) / 1000 + "Kwh";
+        //峰止示值（highend）
+        var heValue = msg.substr(108, 8);
+        resultMsg += "\r\n" + "峰止示值：" + parseInt(exchangeHL(heValue), 16) / 1000 + "Kwh";
+
+        //平起示值（levelstart）
+        var lsValue = msg.substr(116, 8);
+        resultMsg += "\r\n" + "平起示值：" + parseInt(exchangeHL(lsValue), 16) / 1000 + "Kwh";
+        //平止示值（levelend）
+        var leValue = msg.substr(124, 8);
+        resultMsg += "\r\n" + "平止示值：" + parseInt(exchangeHL(leValue), 16) / 1000 + "Kwh";
+
+        //谷起示值（valleystart）
+        var vsValue = msg.substr(132, 8);
+        resultMsg += "\r\n" + "谷起示值：" + parseInt(exchangeHL(vsValue), 16) / 1000 + "Kwh";
+        //谷止示值（valleyend）
+        var veValue = msg.substr(140, 8);
+        resultMsg += "\r\n" + "谷止示值：" + parseInt(exchangeHL(veValue), 16) / 1000 + "Kwh";
+
+        //总起示值（totalstart）
+        var tsValue = msg.substr(148, 8);
+        resultMsg += "\r\n" + "总起示值：" + parseInt(exchangeHL(tsValue), 16) / 1000 + "Kwh";
+        //总止示值（totalend）
+        var teValue = msg.substr(156, 8);
+        resultMsg += "\r\n" + "总止示值：" + parseInt(exchangeHL(teValue), 16) / 1000 + "Kwh";
+
+        //尖电量
+        var squantity = msg.substr(164, 8);
+        resultMsg += "\r\n" + "尖电量：" + parseInt(exchangeHL(squantity), 16) / 1000 + "Kwh";
+
+        //峰电量
+        var hquantity = msg.substr(172, 8);
+        resultMsg += "\r\n" + "峰电量：" + parseInt(exchangeHL(hquantity), 16) / 1000 + "Kwh";
+
+        //平电量
+        var lquantity = msg.substr(180, 8);
+        resultMsg += "\r\n" + "平电量：" + parseInt(exchangeHL(lquantity), 16) / 1000 + "Kwh";
+
+        //谷电量
+        var vquantity = msg.substr(188, 8);
+        resultMsg += "\r\n" + "谷电量：" + parseInt(exchangeHL(vquantity), 16) / 1000 + "Kwh";
+
+        //总电量
+        var tquantity = msg.substr(196, 8);
+        resultMsg += "\r\n" + "总电量：" + parseInt(exchangeHL(tquantity), 16) / 1000 + "Kwh";
+
+        //尖金额
+        var squantity = msg.substr(204, 8);
+        resultMsg += "\r\n" + "尖金额：" + parseInt(exchangeHL(squantity), 16) / 100 + "元";
+
+        //峰金额
+        var hquantity = msg.substr(212, 8);
+        resultMsg += "\r\n" + "峰金额：" + parseInt(exchangeHL(hquantity), 16) / 100 + "元";
+
+        //平金额
+        var lquantity = msg.substr(220, 8);
+        resultMsg += "\r\n" + "平金额：" + parseInt(exchangeHL(lquantity), 16) / 100 + "元";
+
+        //谷金额
+        var vquantity = msg.substr(228, 8);
+        resultMsg += "\r\n" + "谷金额：" + parseInt(exchangeHL(vquantity), 16) / 100 + "元";
+
+        //尖峰平谷总金额
+        var tquantity = msg.substr(236, 8);
+        resultMsg += "\r\n" + "尖峰平谷总金额：" + parseInt(exchangeHL(tquantity), 16) / 100 + "元";
+
+        //尖服务费
+        var squantity = msg.substr(244, 4);
+        resultMsg += "\r\n" + "尖服务费：" + parseInt(exchangeHL(squantity), 16) / 100 + "元";
+
+        //峰服务费
+        var hquantity = msg.substr(248, 4);
+        resultMsg += "\r\n" + "峰服务费：" + parseInt(exchangeHL(hquantity), 16) / 100 + "元";
+
+        //平服务费
+        var lquantity = msg.substr(252, 4);
+        resultMsg += "\r\n" + "平服务费：" + parseInt(exchangeHL(lquantity), 16) / 100 + "元";
+
+        //谷服务费
+        var vquantity = msg.substr(256, 4);
+        resultMsg += "\r\n" + "谷服务费：" + parseInt(exchangeHL(vquantity), 16) / 100 + "元";
+
+        //谷总服务费
+        var tquantity = msg.substr(260, 4);
+        resultMsg += "\r\n" + "总服务费：" + parseInt(exchangeHL(tquantity), 16) / 100 + "元";
+        //充电前卡金额
+        var tquantity = msg.substr(264, 8);
+        resultMsg += "\r\n" + "充电前卡金额：" + parseInt(exchangeHL(tquantity), 16) / 100 + "元";
+        //总充电金额
+        var tquantity = msg.substr(272, 8);
+        resultMsg += "\r\n" + "总充电金额：" + parseInt(exchangeHL(tquantity), 16) / 100 + "元";
+        //卡余额
+        var tquantity = msg.substr(280, 8);
+        resultMsg += "\r\n" + "卡余额：" + parseInt(exchangeHL(tquantity), 16) / 100 + "元";
+
+
+        //开始充电时间
+        var startChargeTime = msg.substr(288, 14);
+        resultMsg += "\r\n" + "开始充电时间：" + analysisDate(startChargeTime);
+
+        //结束充电时间
+        var endChargeTime = msg.substr(302, 14);
+        resultMsg += "\r\n" + "结束充电时间：" + analysisDate(endChargeTime);
+
+        //结算标志 这个结算标志不知道是十六进制还是十进制
+        var chargeFlag = msg.substr(316, 2);
+        if (chargeFlag == "00") {
+            resultMsg += "\r\n" + "结算标志:" + "已结算";
+        } else if (chargeFlag == "99") {
+            resultMsg += "\r\n" + "结算标志:" + "未结算";
+        } else if (chargeFlag == "01") {
+            resultMsg += "\r\n" + "结算标志:" + "未找到用电记录";
+        } else {
+            resultMsg += "\r\n" + "结算标志:" + "解析出错";
+        }
+
+
+        //停止时SOC
+        var endSOC = msg.substr(318, 2);
+        resultMsg += "\r\n" + "停止时SOC：" + parseInt(endSOC, 16) + "%";
+
+        //停止时充电模式
+        var endChargeModel = msg.substr(320, 2);
+        if (endChargeModel == "01") {
+            endChargeModel = "恒压";
+        } else if (endChargeModel == "02") {
+            endChargeModel = "恒流";
+        } else {
+            endChargeModel = "解析出错";
+        }
+        resultMsg += "\r\n" + "停止时充电模式：" + endChargeModel;
+
+        //停止充电原因
+        var endChargeReson = msg.substr(322, 2);
+        resultMsg += "\r\n" + "停止充电原因：" + analysisFaultInfo(endChargeReson);
+
+        //启动原因
+        var startReson = msg.substr(324, 2);
+        resultMsg += "\r\n" + "启动原因：" + analysisStartInfo(startReson);
+        //ESAM编号
+        var ESAM = msg.substr(326, 12);
+        resultMsg += "\r\n" + "ESAM编号（直接截取报文中的数据）：" + ESAM;
+        //ESAM交易序号
+        var ESAM = msg.substr(338, 8);
+        resultMsg += "\r\n" + "ESAM交易序号（直接截取报文中的数据）：" + ESAM;
+        //SAMTAC
+        var ESAM = msg.substr(346, 8);
+        resultMsg += "\r\n" + "SAMTAC（直接截取报文中的数据）：" + ESAM;
+        //TAC
+        var ESAM = msg.substr(354, 8);
+        resultMsg += "\r\n" + "TAC（直接截取报文中的数据）：" + ESAM;
+		
+        //解析充电接口编号
+        var interfaceNo = msg.substr(362, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNo;
+       
+
+        return resultMsg;
+
+
+    }
+
+
+
+    //解析39充电桩定时上传时间
+    function analysis0x39(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //充电桩时钟
+        var pileTime = msg.substr(32, 14);
+        resultMsg += "\r\n" + "充电桩时钟：" + analysisDate(pileTime);
+        //计费模型编号
+        var payModel = msg.substr(46, 4);
+        resultMsg += "\r\n" + "计费模型编号：" + parseInt(exchangeHL(payModel), 16);
+
+        return resultMsg;
+    }
+
+    //解析3A平台查询计费模型指令
+    function analysis0x3A(msg,resultMsg) {
+        //解析充电桩编码
+        var position = 0;
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+ 
+        return resultMsg;
+    }
+
+	//解析3B充电设备上传计费模型指令
+    function analysis0x3B(msg,resultMsg) {
+        var position = 0;
+        //解析充电桩编码
+        var pileCode = msg.substr(position, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析计费模型编号
+        position += 32;
+        var payModel = msg.substr(position, 4);
+        resultMsg += "\r\n" + "计费模型编号：" + parseInt(exchangeHL(payModel), 16);
+        //解析计费模型ID  直接截取出 数据没做任何处理
+        position += 4;
+        var payModelID = msg.substr(position, 16);
+        //payModelID = hexToAscii(payModelID);
+        resultMsg += "\r\n" + "计费模型ID：" + payModelID;
+        //生效时间
+        position += 16;
+        var startTime = msg.substr(position, 14);
+        resultMsg += "\r\n" + "生效时间：" + analysisDate(startTime);
+        //失效时间
+        position += 14;
+        var endTime = msg.substr(position, 14);
+        resultMsg += "\r\n" + "失效时间：" + analysisDate(endTime);
+
+        //预冻结金额第 1 档
+        position += 14;
+        var freezAmONE = msg.substr(position, 4);
+        resultMsg += "\r\n" + "预冻结金额第 1 档：" + parseInt(exchangeHL(freezAmONE), 16) / 100 + "分";
+        //预冻结金额第 2 档
+        position += 4;
+        var freezAmTOW = msg.substr(position, 4);
+        resultMsg += "\r\n" + "预冻结金额第 2 档：" + parseInt(exchangeHL(freezAmTOW), 16) / 100 + "分";
+        //时段数
+        position += 4;
+        var timeNum = msg.substr(position, 2);
+        resultMsg += "\r\n" + "时段数：" + parseInt(exchangeHL(timeNum), 16);
+        //解析各时段
+        var num = parseInt(exchangeHL(timeNum), 16);
+        for (var i = 1; i <= num; i++) {
+            //第i个时段起始时间
+            position += 2;
+            var startTimei = msg.substr(position, 4);
+            resultMsg += "\r\n" + "第" + i + "个时段起始时间：" + analysistime(startTimei);
+            //第i个时段标志
+            position += 4;
+            var timeFlag = msg.substr(position, 2);
+            // if (timeFlag == "01") {
+            resultMsg += "\r\n" + "第" + i + "个时段标志：" + timeFlag+ "时段";
+            // } else if (timeFlag == "02") {
+            //     resultMsg += "\r\n" + "第" + i + "个时段标志：" + "峰时段";
+            // } else if (timeFlag == "03") {
+            //     resultMsg += "\r\n" + "第" + i + "个时段标志：" + "平时段";
+            // } else if (timeFlag == "04") {
+            //     resultMsg += "\r\n" + "第" + i + "个时段标志：" + "谷时段";
+            // } else {
+            //     resultMsg += "\r\n" + "第" + i + "个时段标志：解析出错" ;
+            // }
+            //电价
+            position += 2;
+            var chargePriceS = msg.substr(position, 8);
+            resultMsg += "\r\n" + "时段电价:" + parseInt(exchangeHL(chargePriceS), 16) / 100000 + "元/Kwh";
+            //服务费
+            position += 8;
+            var squantity = msg.substr(position, 4);
+            resultMsg += "\r\n" + "时段服务费：" + parseInt(exchangeHL(squantity), 16) / 100 + "元";
+            position += 2;
+
+        }
+        return resultMsg;
+    }
+
+
+    //解析40下发更新账户余额
+    function analysis0x40(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        
+        //充电接口编号
+        var port = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + port;
+
+        //用户ID
+        var userCode = msg.substr(34, 32);
+        userCode = hexToAscii(userCode);
+        resultMsg += "\r\n" + "用户ID：" + userCode;
+
+        //SessionId
+        var sessionId = msg.substr(66, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+        //alert("num: " + num);
+        var str1 = sessionId.substring(0, 8);
+        //alert("str1: " + str1);
+        var str2 = sessionId.substring(8);
+        //alert("str2: " + str2);
+       //alert("parseInt(str1, 16): " + parseInt(str1, 16));
+       //alert("parseInt(str2, 16): " + parseInt(str2, 16));
+       var num1 = parseInt(str1, 16);
+       var num2 = parseInt(str2, 16);
+       //alert("bigMut(num1,num)" + bigMut(num1,num));
+       var mySum = sumStrings(bigMut(num1, num), num2 + "");
+       //alert(mySum);
+       resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+        //账户余额
+        var accountRemainder = msg.substr(82, 8);
+        resultMsg += "\r\n" + "账户余额:" + parseInt(exchangeHL(accountRemainder), 16) / 100 + "元";
+
+        return resultMsg;
+
+    }
+	
+    //解析41下发更新账户余额
+    function analysis0x41(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        
+        //充电接口编号
+        var port = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + port;
+
+        //用户ID
+        var userCode = msg.substr(34, 32);
+        userCode = hexToAscii(userCode);
+        resultMsg += "\r\n" + "用户ID：" + userCode;
+
+        //SessionId
+        var sessionId = msg.substr(66, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+        //alert("num: " + num);
+        var str1 = sessionId.substring(0, 8);
+        //alert("str1: " + str1);
+        var str2 = sessionId.substring(8);
+        //alert("str2: " + str2);
+       //alert("parseInt(str1, 16): " + parseInt(str1, 16));
+       //alert("parseInt(str2, 16): " + parseInt(str2, 16));
+       var num1 = parseInt(str1, 16);
+       var num2 = parseInt(str2, 16);
+       //alert("bigMut(num1,num)" + bigMut(num1,num));
+       var mySum = sumStrings(bigMut(num1, num), num2 + "");
+       //alert(mySum);
+       resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+        //账户余额
+        var accountRemainder = msg.substr(82, 8);
+        resultMsg += "\r\n" + "账户余额:" + parseInt(exchangeHL(accountRemainder), 16) / 100 + "元";
+
+        //状态
+        var status = msg.substr(90, 2);
+        if (status == "01") {
+            resultMsg += "\r\n" + "状态:" + "设置成功";
+        } else if (status == "02") {
+            resultMsg += "\r\n" + "状态:" + "设置失败";
+        } else {
+            resultMsg += "\r\n" + "状态:" + "解析出错";
+        }
+
+        return resultMsg;
+
+    }
+
+    //解析42下发负荷调节指令  协议里面的数据对不上
+    function analysis0x42(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        
+        //负荷控制百分比值
+        var percent = msg.substr(32, 2);
+        resultMsg += "\r\n" + "负荷控制百分比值：" + parseInt(percent, 16)+"%";
+        //负荷控制编流水号
+        var streamNum = msg.substr(34, 8);
+        resultMsg += "\r\n" + "负荷控制编流水号：" + parseInt(exchangeHL(streamNum), 16);
+        return resultMsg;
+
+
+    }
+	
+	
+    //解析43充电桩响应负荷调节指令
+    function analysis0x43(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        
+        //负荷控制百分比值
+        var percent = msg.substr(32, 2);
+        resultMsg += "\r\n" + "负荷控制百分比值：" + parseInt(percent, 16) + "%";
+        //状态
+        var status = msg.substr(34, 2);
+        if (status == "01") {
+            resultMsg += "\r\n" + "状态:" + "设置成功";
+        } else if (status == "02") {
+            resultMsg += "\r\n" + "状态:" + "设置失败（校验错误，值错误）";
+        } else if (status == "03") {
+            resultMsg += "\r\n" + "状态:" + "重复设置";
+        } else {
+            resultMsg += "\r\n" + "状态:" + "解析出错";
+        }
+        //负荷控制编流水号
+        var streamNum = msg.substr(36, 8);
+        resultMsg += "\r\n" + "负荷控制编流水号：" + parseInt(exchangeHL(streamNum), 16);
+        return resultMsg;
+
+
+    }
+
+
+
+       //解析44远程开关机控制
+    function analysis0x44(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //卡号或用户ID
+        var cardNo = msg.substr(32, 32);
+        resultMsg += "\r\n" + "卡号或用户ID：" + hexToAscii(cardNo);
+        //SessionId
+        var sessionId = msg.substr(64, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+         var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+        //充电接口编号
+        var interfaceNum = msg.substr(80, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+        //开关机控制
+        var openCloseCtl = msg.substr(82, 2);
+        if (openCloseCtl == "01") {
+            resultMsg += "\r\n" + "开关机控制:" + "开机";
+        } else if (openCloseCtl == "02") {
+            resultMsg += "\r\n" + "开关机控制:" + "关机";
+        }
+        //开关机电压
+        var openCloseVoltage = msg.substr(84, 4);
+        resultMsg += "\r\n" + "开关机电压:" + parseInt(exchangeHL(openCloseVoltage), 16) / 10 + "V";
+        //开关机电流
+        var openCloseCurrent = msg.substr(88, 4);
+        resultMsg += "\r\n" + "开关机电流:" + parseInt(exchangeHL(openCloseCurrent), 16) / 10 + "A";
+        //电价精确到小数点后五位
+        var chargePrice = msg.substr(92, 8);
+        //resultMsg += "\r\n"+"电价:"+chargePrice;
+        resultMsg += "\r\n" + "电价:" + parseInt(exchangeHL(chargePrice), 16) / 100000 + "元/Kwh";
+        //账户余额
+        var accountRemainder = msg.substr(100, 8);
+        resultMsg += "\r\n" + "账户余额:" + parseInt(exchangeHL(accountRemainder), 16) / 100 + "元";
+        return resultMsg;
+    }
+
+
+    //解析45充电机响应开关机控制
+    function analysis0x45(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //卡号或用户ID
+        var cardNo = msg.substr(32, 32);
+        resultMsg += "\r\n" + "卡号或用户ID：" + hexToAscii(cardNo);
+        //SessionId
+        var sessionId = msg.substr(64, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+		
+        //充电接口编号
+        var interfaceNum = msg.substr(80, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+        //开关机控制
+        var openCloseCtl = msg.substr(82, 2);
+        if (openCloseCtl == "01") {
+            resultMsg += "\r\n" + "开关机控制:" + "开机";
+        } else if (openCloseCtl == "02") {
+            resultMsg += "\r\n" + "开关机控制:" + "关机";
+        } else {
+            resultMsg += "\r\n" + "开关机控制:" + "解析出错";
+        }
+        //控制状态
+        var ctlStatus = msg.substr(84, 2);
+        if (ctlStatus == "01") {
+            resultMsg += "\r\n" + "控制状态:" + "设置成功";
+        } else if (ctlStatus == "02") {
+            resultMsg += "\r\n" + "控制状态:" + "设置失败";
+        } else {
+            resultMsg += "\r\n" + "控制状态:" + "解析出错";
+        }
+        //失败原因
+        var falReason = msg.substr(86, 2);
+        if (falReason == "00") {
+            resultMsg += "\r\n" + "失败原因:" + "无失败";
+        } else if (falReason == "01") {
+            resultMsg += "\r\n" + "失败原因:" + "已经开机";
+        } else if (falReason == "02") {
+            resultMsg += "\r\n" + "失败原因:" + "不是待机状态";
+        } else if (falReason == "03") {
+            resultMsg += "\r\n" + "失败原因:" + "枪未连接";
+        } else if (falReason == "04") {
+            resultMsg += "\r\n" + "失败原因:" + "其他";
+        } else if (falReason == "05") {
+            resultMsg += "\r\n" + "失败原因:" + "没有开机";
+        } else if (falReason == "06") {
+            resultMsg += "\r\n" + "失败原因:" + "已经收到命令，正在执行";
+        } else if (falReason == "07") {
+            resultMsg += "\r\n" + "失败原因:" + "桩未有计费模型";
+        }
+        return resultMsg;
+
+    }
+
+
+    //解析46智能模块请求更改桩
+    function analysis0x46(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析新充电桩编码
+        var pileCode = msg.substr(32, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "新充电桩编码：" + pileCode;
+        return resultMsg;
+    }
+
+
+    //解析47智能模块请求更改桩
+    function analysis0x47(msg, resultMsg) {
+        //解析更改后充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "更改后充电桩编码：" + pileCode;
+
+        return resultMsg;
+    }
+
+
+    //解析48充电机上送远程开关机操作结果
+    function analysis0x48(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //卡号或用户ID
+        var cardNo = msg.substr(32, 32);
+        resultMsg += "\r\n" + "卡号或用户ID：" + hexToAscii(cardNo);
+        //SessionId
+        var sessionId = msg.substr(64, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+		
+        //充电接口编号
+        var interfaceNum = msg.substr(80, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+        //开关机控制
+        var openCloseCtl = msg.substr(82, 2);
+        if (openCloseCtl == "01") {
+            resultMsg += "\r\n" + "开关机控制:" + "开机";
+        } else if (openCloseCtl == "02") {
+            resultMsg += "\r\n" + "开关机控制:" + "关机";
+        } else {
+            resultMsg += "\r\n" + "开关机控制:" + "解析出错";
+        }
+        //执行结果
+        var exeResult = msg.substr(84, 2);
+        if (exeResult == "01") {
+            resultMsg += "\r\n" + "执行结果:" + "执行成功";
+        } else if (exeResult == "02") {
+            resultMsg += "\r\n" + "执行结果:" + "执行失败";
+        } else {
+            resultMsg += "\r\n" + "执行结果:" + "解析出错";
+        }
+        //执行失败原因
+        var falReason = msg.substr(86, 2);
+        if (falReason == "00") {
+            resultMsg += "\r\n" + "执行失败原因:" + "无失败";
+        } else if (falReason == "01") {
+            resultMsg += "\r\n" + "执行失败原因:" + "绝缘检测失败";
+        } else if (falReason == "02") {
+            resultMsg += "\r\n" + "执行失败原因:" + "未收到BMS充电需求";
+        } else if (falReason == "03") {
+            resultMsg += "\r\n" + "执行失败原因:" + "充电机开机失败";
+        } else if (falReason == "04") {
+            resultMsg += "\r\n" + "执行失败原因:" + "未收到车辆充电确认（只用于交流充电桩）";
+        } else {
+            resultMsg += "\r\n" + "执行失败原因:" + "解析出错";
+        }
+        return resultMsg;
+
+    }
+
+
+    //解析49智能模块响应上送操作结果
+    function analysis0x49(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //卡号或用户ID
+        var cardNo = msg.substr(32, 32);
+        resultMsg += "\r\n" + "卡号或用户ID：" + hexToAscii(cardNo);
+        //SessionId
+        var sessionId = msg.substr(66, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+         var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+		
+        //充电接口编号
+        var interfaceNum = msg.substr(80, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+
+        return resultMsg;
+    }
+    //解析4A智能模块读取充电桩实时状态
+    function analysis0x4A(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        return resultMsg;
+    }
+
+
+    //解析4B主站下发打开门锁指令
+    function analysis0x4B(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        return resultMsg;
+    }
+
+
+
+    //解析4C设备响应打开门锁指令
+    function analysis0x4C(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        return resultMsg;
+    }
+
+
+
+    //解析4D主站下发打开地锁指令
+    function analysis0x4D(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //解析地锁状态
+        var lockStatus = msg.substr(32, 2);
+        if (lockStatus == "01") {
+            resultMsg += "\r\n" + "地锁状态:" + "降地锁";
+        } else if (lockStatus == "02") {
+            resultMsg += "\r\n" + "地锁状态:" + "升地锁";
+        } else {
+            resultMsg += "\r\n" + "地锁状态:" + "解析出错";
+        }
+
+        return resultMsg;
+    }
+
+
+
+    //解析4E设备响应打开地锁指令
+    function analysis0x4E(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        var lockStatus = msg.substr(32, 2);
+        if (lockStatus == "01") {
+            resultMsg += "\r\n" + "地锁状态:" + "降地锁";
+        } else if (lockStatus == "02") {
+            resultMsg += "\r\n" + "地锁状态:" + "升地锁";
+        } else {
+            resultMsg += "\r\n" + "地锁状态:" + "解析出错";
+        }
+        //解析执行状态
+        var exeStatus = msg.substr(34, 2);
+        if (exeStatus == "01") {
+            resultMsg += "\r\n" + "执行状态:" + "执行成功";
+        } else if (exeStatus == "02") {
+            resultMsg += "\r\n" + "执行状态:" + "执行失败";
+        } else {
+            resultMsg += "\r\n" + "执行状态:" + "解析出错";
+        }
+
+        return resultMsg;
+    }
+
+
+
+    //解析50远程地锁控制
+    function analysis0x50(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //卡号或用户ID
+        var cardNo = msg.substr(32, 32);
+        resultMsg += "\r\n" + "卡号或用户ID：" + hexToAscii(cardNo);
+        //SessionId
+        var sessionId = msg.substr(64, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+		
+        //充电接口编号
+        var interfaceNum = msg.substr(80, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+        //地锁控制
+        var lockCtl = msg.substr(82, 2);
+        if (lockCtl == "01") {
+            resultMsg += "\r\n" + "地锁控制:" + "降地锁";
+        } else if (lockCtl == "02") {
+            resultMsg += "\r\n" + "地锁控制:" + "升地锁";
+        } else {
+            resultMsg += "\r\n" + "地锁控制:" + "解析出错";
+        }
+        //停车费
+        var thisChagrPrice = msg.substr(84, 8);
+        resultMsg += "\r\n" + "停车费：" + parseInt(exchangeHL(thisChagrPrice), 16) / 100000 + "元";
+        //账户余额
+        var thisChagrPrice = msg.substr(92, 8);
+        resultMsg += "\r\n" + "账户余额：" + parseInt(exchangeHL(thisChagrPrice), 16) / 100 + "元" + "先忽略？？？？？";
+        //SessionId
+        var sessionId = msg.substr(100, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+		
+        //电价
+        var thisChagrPrice = msg.substr(116, 8);
+        resultMsg += "\r\n" + "电价：" + parseInt(exchangeHL(thisChagrPrice), 16) / 100000 + "元";
+        return resultMsg;
+
+    }
+
+
+    //解析51远程地锁控制响应
+    function analysis0x51(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //卡号或用户ID
+        var cardNo = msg.substr(32, 32);
+        resultMsg += "\r\n" + "卡号或用户ID：" + hexToAscii(cardNo);
+        //SessionId
+        var sessionId = msg.substr(64, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+		
+        //充电接口编号
+        var interfaceNum = msg.substr(80, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+        //地锁控制
+        var lockCtl = msg.substr(82, 2);
+        if (lockCtl == "01") {
+            resultMsg += "\r\n" + "地锁控制:" + "降地锁";
+        } else if (lockCtl == "02") {
+            resultMsg += "\r\n" + "地锁控制:" + "升地锁";
+        } else {
+            resultMsg += "\r\n" + "地锁控制:" + "解析出错";
+        }
+        //控制状态
+        var ctlStatus = msg.substr(84, 2);
+        if (ctlStatus == "01") {
+            resultMsg += "\r\n" + "控制状态:" + "设置成功";
+        } else if (ctlStatus == "02") {
+            resultMsg += "\r\n" + "控制状态:" + "设置失败";
+        } else {
+            resultMsg += "\r\n" + "控制状态:" + "解析出错";
+        }
+        //解析电量  具体数值再定？？？？？？
+        var eleQuantity = msg.substr(86, 2);
+        //解析执行状态
+        var exeStatus = msg.substr(88, 2);
+        if (exeStatus == "01") {
+            resultMsg += "\r\n" + "执行状态:" + "锐角状态";
+        } else if (exeStatus == "02") {
+            resultMsg += "\r\n" + "执行状态:" + "密码错误";
+        } else if (exeStatus == "03") {
+            resultMsg += "\r\n" + "执行状态:" + "上锁垂直位置";
+        } else if (exeStatus == "10") {
+            resultMsg += "\r\n" + "执行状态:" + "钝角状态";
+        } else if (exeStatus == "11") {
+            resultMsg += "\r\n" + "执行状态:" + "解锁平躺位置";
+        } else if (exeStatus == "ee") {
+            resultMsg += "\r\n" + "执行状态:" + "地锁故障";
+        } else {
+            resultMsg += "\r\n" + "执行状态:" + "解析出错";
+        }
+        //SessionId
+        var sessionId = msg.substr(90, 16);
+         var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+        
+        //alert(mySum);
+        resultMsg += "\r\n" + "Session（充电启动的 session_id，启动地锁后 150 秒未插枪充电，此 session_id 失效。）：" + mySum;
+
+        return resultMsg;
+    }
+	
+	
+    //解析55上报停车记录
+    function analysis0x55(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //SessionId
+        var sessionId = msg.substr(32, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+//alert(mySum);
+
+resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+		
+		
+		//解析Pl_session_id
+		var Plid = msg.substr(48, 16);
+        resultMsg += "\r\n" + "Pl_session_id：" + parseInt(exchangeHL(Plid), 16);
+		
+        //充电记录序号
+        var chargeRcdNo = msg.substr(64, 4);
+        resultMsg += "\r\n" + "充电记录序号：" + parseInt(exchangeHL(chargeRcdNo), 16);
+        //卡号或用户ID
+        var cardNo = msg.substr(68, 32);
+        resultMsg += "\r\n" + "卡号或用户ID：" + hexToAscii(cardNo);
+        //停车前卡金额
+        var startStopChagrPrice = msg.substr(100, 8);
+        resultMsg += "\r\n" + "停车前卡金额：" + parseInt(exchangeHL(startStopChagrPrice), 16) / 100 + "元";
+        //本次停车金额
+        var thisStopPrice = msg.substr(108, 8);
+        resultMsg += "\r\n" + "本次停车金额：" + parseInt(exchangeHL(thisStopPrice), 16) / 100 + "元";
+        //开始停车时间
+        var startStopTime = msg.substr(116, 14);
+        resultMsg += "\r\n" + "开始停车时间：" + analysisDate(startStopTime);
+        //结束停车时间
+        var stopTime = msg.substr(130, 14);
+        resultMsg += "\r\n" + "结束停车时间：" + analysisDate(stopTime);
+        //电池电量
+        var eleQuantity = msg.substr(144, 2);
+        //执行状态
+        var exeStatus = msg.substr(146, 2);
+        if (exeStatus == "01") {
+            resultMsg += "\r\n" + "执行状态:" + "锐角状态";
+        } else if (exeStatus == "02") {
+            resultMsg += "\r\n" + "执行状态:" + "密码错误";
+        } else if (exeStatus == "03") {
+            resultMsg += "\r\n" + "执行状态:" + "上锁垂直位置";
+        } else if (exeStatus == "10") {
+            resultMsg += "\r\n" + "执行状态:" + "钝角状态";
+        } else if (exeStatus == "11") {
+            resultMsg += "\r\n" + "执行状态:" + "解锁平躺位置";
+        } else if (exeStatus == "ee") {
+            resultMsg += "\r\n" + "执行状态:" + "地锁故障";
+        } else {
+            resultMsg += "\r\n" + "执行状态:" + "解析出错";
+        }
+        //SessionId
+        var sessionId = msg.substr(148, 16);
+        var num = (parseInt("100000000", 16));
+
+//alert("num: " + num);
+
+var str1 = sessionId.substring(0, 8);
+
+//alert("str1: " + str1);
+
+var str2 = sessionId.substring(8);
+
+//alert("str2: " + str2);
+
+
+//alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+//alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+var num1 = parseInt(str1, 16);
+var num2 = parseInt(str2, 16);
+
+//alert("bigMut(num1,num)" + bigMut(num1,num));
+
+var mySum = sumStrings(bigMut(num1, num), num2 + "");
+        
+        //alert(mySum);
+        resultMsg += "\r\n" + "Session（最后一次充电的 session_id 上报）：" + mySum;
+		
+        //充电接口编号
+        var interfaceNum = msg.substr(164, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+        return resultMsg;
+    }
+	
+
+    //解析5F响应停车记录确认
+    function analysis0x5F(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //交易流水号
+        var tradeStreamNo = msg.substr(32, 4);
+        resultMsg += "\r\n" + "交易流水号：" + parseInt(exchangeHL(tradeStreamNo), 16);
+
+        return resultMsg;
+    }
+
+    
+    //解析90 M1卡密钥下发
+    function analysis0x90(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+        // 端口
+        var port = msg.substr(32, 2);
+		// port = hexToAscii(port);
+		resultMsg += "\r\n" + "端口：" + port;
+
+        // 扇区号
+        var snum = msg.substr(34, 2);
+		// snum = hexToAscii(snum);
+		resultMsg += "\r\n" + "扇区编号：" + snum;
+
+        //运营商编号
+        var id = msg.substr(36, 4);
+        resultMsg += "\r\n" + "运营商编号：" + parseInt(exchangeHL(id), 16);
+
+        //密钥
+        var keya = msg.substr(40, 12);
+        resultMsg += "\r\n" + "加密密钥A：" + keya; //parseInt(exchangeHL(keya), 16);
+
+        //密钥
+        var keyb = msg.substr(52, 12);
+        resultMsg += "\r\n" + "加密密钥B：" + keyb;//parseInt(exchangeHL(keyb), 16);
+
+        //运营商名称
+        var name = msg.substr(64, 90);
+        resultMsg += "\r\n" + "运营商名称：" + parseInt(exchangeHL(name), 16);
+
+        return resultMsg;
+    }
+
+    
+    //解析5F响应停车记录确认
+    function analysis0x91(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+        // 端口
+        var port = msg.substr(32, 2);
+		resultMsg += "\r\n" + "端口：" + port;
+
+        //解析结果状态
+        var Status = msg.substr(34, 2);
+        resultMsg += "\r\n" + "状态:";
+        if (Status == "01") {
+            resultMsg += "成功";
+        } else if (Status == "02") {
+            resultMsg += "失败";
+        } else {
+            resultMsg += "解析出错";
+        }
+
+        return resultMsg;
+    }
+
+
+    //解析9F充电桩返回错误指令
+    function analysis0x9F(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+        //解析在线状态
+        var onlineStatus = msg.substr(32, 2);
+        if (onlineStatus == "01") {
+            resultMsg += "\r\n" + "在线状态:" + "数据校验错误";
+        } else if (onlineStatus == "02") {
+            resultMsg += "\r\n" + "在线状态:" + "设备ID不一致";
+        } else {
+            resultMsg += "\r\n" + "在线状态:" + "解析出错";
+        }
+
+        return resultMsg;
+    }
+
+
+
+//解析A0 OTA指令
+     /*function analysis0x43(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+        //解析帧参数标识
+        var onlineStatus = msg.substr(32, 2);
+        if (onlineStatus == "01") {
+           resultMsg += "\r\n" + "帧参数标识:" + "0x01";
+        }else {
+            resultMsg += "\r\n" + "帧参数标识:" + "解析出错";
+        }
+       //解析序号
+        var interfaceNum = msg.substr(34, 2);
+        resultMsg += "\r\n" + "序号：" + interfaceNum;
+
+		//解析Flags
+		var Flags = msg.substr(36, 4);
+        resultMsg += "\r\n" + "Flags：" + Flags;
+
+
+    //解析通用串口协议版本号
+		var Serial  = msg.substr(40, 8);
+        resultMsg += "\r\n" + "Serial:" + Serial;
+
+    //业务协议版本号
+			var Software = msg.substr(48, 8);
+        resultMsg += "\r\n" + "Software：" + Software;
+
+    //充电桩硬件版本号
+			var Hardware = msg.substr(56, 8);
+        resultMsg += "\r\n" + "Hardware：" + Hardware;
+
+    //充电桩软件版本号
+			var Software = msg.substr(64, 8);
+        resultMsg += "\r\n" + "Software：" + Software;
+
+    //产品标识码
+			var ProductCode = msg.substr(72, 64);
+        ProductCode = hexToAscii(ProductCode);
+        resultMsg += "\r\n" + "产品标识码：" + ProductCode;
+
+    //可绑定状态失效时间
+		var stopTime = msg.substr(136, 4);
+        resultMsg += "\r\n" + "可绑定状态失效时间：" + analysisDate(stopTime);
+
+
+    //设备属性
+        var EnvironmentAttribute = msg.substr(140, 16);
+        //faultInfoFirst = parseInt(faultInfoFirst, 16).toString(2);
+        EnvironmentAttribute = parseInt(EnvironmentAttribute, 16);
+        var faultFirstMsg = "";
+        //alert(faultInfoFirst);
+        var len = EnvironmentAttribute.length;
+        switch (EnvironmentAttribute) {
+            case 1:
+                EnvironmentAttribute += "中控设备 ";
+                break;
+}
+
+		//解析校验和
+		var jiaoyan = msg.substr(156, 2);
+        resultMsg += "\r\n" + "校验和：" + jiaoyan;
+
+
+//		//解析通用串口协议版本
+//        var interfaceNum = msg.substr(40, 16);
+//        resultMsg += "\r\n" + "通用串口协议版本：" + interfaceNum;
+//
+//		//解析业务协议版本
+
+
+       return resultMsg;
+
+}*/
+
+
+
+	//解析A1 GPRS模块状态指令
+
+    function analysis0xA1(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+        //解析在线状态
+        var onlineStatus = msg.substr(32, 2);
+        if (onlineStatus == "00") {
+            resultMsg += "\r\n" + "在线状态:" + "离线";
+        } else if (onlineStatus == "01") {
+            resultMsg += "\r\n" + "在线状态:" + "在线";
+        } else {
+            resultMsg += "\r\n" + "在线状态:" + "解析出错";
+        }
+
+       //解析信号强度
+        var interfaceNum = msg.substr(34, 2);
+		if (interfaceNum == "99") {
+            resultMsg += "\r\n" + "信号强度:" + "无信号";
+        } else{
+            resultMsg += "\r\n" + "信号强度：" + interfaceNum;
+        }
+		
+		//解析类型
+        var Signal = msg.substr(36, 2);
+		if (Signal == "02") {
+            resultMsg += "\r\n" + "信号类型:" + "2G";
+        } else if(Signal == "03"){
+            resultMsg += "\r\n" + "信号类型：" + "3G";
+		} else  if(Signal == "04"){
+            resultMsg += "\r\n" + "信号类型：" + "4G";
+		} else {
+		    resultMsg += "\r\n" + "信号类型：" + "解析出错";
+		}
+
+		//解析校验和
+		var jiaoyan = msg.substr(38, 2);
+        resultMsg += "\r\n" + "校验和：" + jiaoyan;
+
+       return resultMsg;
+	   }
+
+
+
+	//解析A2 GPRS模块信息
+	function analysis0xA2(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+        return resultMsg;
+    }
+
+
+	//解析A3 响应mcu读取GPRS模块信息
+	function analysis0xA3(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析手机号或iccid号
+		var iccId = msg.substr(32, 38);
+		 resultMsg += "\r\n" + "手机号或iccid号：" + (hexToAscii19(iccId)) ;
+//		iccId = hexToAscii(iccId);
+//		var num = (parseInt("100000000", 16));
+//        
+//        //alert("num: " + num);
+//        
+//        var str1 = iccId.substring(0, 8);
+//        
+//        //alert("str1: " + str1);
+//        
+//        var str2 = iccId.substring(8);
+//        
+//        //alert("str2: " + str2);
+//        
+//        
+//        //alert("parseInt(str1, 16): " + parseInt(str1, 16));
+//        
+//        //alert("parseInt(str2, 16): " + parseInt(str2, 16));
+//        
+//        var num1 = parseInt(str1, 16);
+//        var num2 = parseInt(str2, 16);
+//        
+//        //alert("bigMut(num1,num)" + bigMut(num1,num));
+//        
+//        var mySum = sumStrings(bigMut(num1, num), num2 + "");
+//        
+//        //alert(mySum);
+//        resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+          
+		  //解析mac地址
+        var MACAdr = msg.substr(70, 32);
+        MACAdr = hexToAscii(MACAdr);
+        resultMsg += "\r\n" + "GPRS 的 MAC 地址：" + MACAdr;
+
+		return resultMsg;
+		}
+
+
+	//解析B0 远程配置地锁参数
+	function analysis0xB0(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析蓝牙mac地址
+		var MACAdr = msg.substr(32, 32);
+        MACAdr = hexToAscii(MACAdr);
+        resultMsg += "\r\n" + "GPRS 的 MAC 地址：" + MACAdr;
+
+		//解析充电接口编号
+        var interfaceNum = msg.substr(64, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+
+          return resultMsg;
+		}
+
+
+
+	//解析B1 响应远程配置地锁参数
+	function analysis0xB1(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析地锁状态
+		var lockStatus = msg.substr(32, 2);
+        if (lockStatus == "01") {
+            resultMsg += "\r\n" + "地锁状态:" + "成功";
+        } else if (lockStatus == "02") {
+            resultMsg += "\r\n" + "地锁状态:" + "失败";
+        } else {
+            resultMsg += "\r\n" + "地锁状态:" + "解析出错";
+        }
+
+		//解析充电接口编号
+        var interfaceNum = msg.substr(34, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+
+          return resultMsg;
+		}
+
+
+
+	//解析B2 远程清除充电桩记录
+	function analysis0xB2(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析桩内充电记录
+		var clearCharge = msg.substr(32, 2);
+		if (clearCharge == '01'){
+		    resultMsg += "\r\n" + "是否清除桩内充电记录:" + "是";
+		}else  {
+			resultMsg += "\r\n" + "是否清除桩内充电记录:" + "否";
+		}
+
+          return resultMsg;
+		}
+
+
+
+	//解析B3 响应远程清除充电桩记录
+	function analysis0xB3(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析桩内充电记录
+		var clearCharge = msg.substr(32, 2);
+		if (clearCharge == '01'){
+		    resultMsg += "\r\n" + "是否清除桩内充电记录:" + "成功";
+		}else if (clearCharge == '02'){
+			resultMsg += "\r\n" + "是否清除桩内充电记录:" + "失败";
+		}else {
+			resultMsg +=  "\r\n" + "是否清除桩内充电记录:" + "解析出错";
+        }
+          return resultMsg;
+		}
+
+	
+	//解析B4 远程修改桩主key_UUID
+	function analysis0xB4(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析用户id（桩主）
+        var cardNo = msg.substr(32, 32);
+        resultMsg += "\r\n" + "用户ID：" + hexToAscii(cardNo);
+
+		//解析UUID
+		var uuidNo = msg.substr(64, 16);
+        resultMsg += "\r\n" + "UUID：" + uuidNo;
+
+          return resultMsg;
+		}	
+
+
+	
+	//解析B5 响应远程修改桩主key_UUID
+	function analysis0xB5(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析鉴权状态
+        var authentiCation = msg.substr(32, 16);
+        if (clearCharge == '01'){
+		    resultMsg += "\r\n" + "蓝牙鉴权:" + "成功";
+		}else if (clearCharge == '02'){
+			resultMsg += "\r\n" + "蓝牙鉴权:" + "蓝牙ID错误";
+		}else if (clearCharge == '03'){
+			resultMsg +=  "\r\n" + "蓝牙鉴权:" + "用户名错";
+		}else {
+			resultMsg += "\r\n" + "蓝牙鉴权:" + "解析错误";
+		}
+
+          return resultMsg;
+		}	
+	
+
+
+
+     //解析B6 设置即插即用和平台控制
+	 function analysis0xB6(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析控制类型
+        var conTrol = msg.substr(32, 2);
+        if (conTrol == '01'){
+		    resultMsg += "\r\n" + "控制类型:" + "即插即用";
+		}else if (conTrol == '02'){
+			resultMsg += "\r\n" + "控制类型:" + "平台控制";
+		}else {
+			resultMsg += "\r\n" + "控制类型:" + "解析错误";
+        }
+          return resultMsg;
+		}		
+	
+
+     //解析B7 响应设置即插即用和平台控制
+	 function analysis0xB7(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析控制状态
+        var conTrol = msg.substr(32, 2);
+        if (conTrol == '01'){
+		    resultMsg += "\r\n" + "控制状态:" + "成功";
+		}else if (conTrol == '02'){
+			resultMsg += "\r\n" + "控制状态:" + "失败";
+		}else {
+			resultMsg += "\r\n" + "控制状态:" + "解析错误";
+        }
+          return resultMsg;
+		}		
+
+
+     //解析B8 远程设置充电桩状态发送频率
+	 function analysis0xB8(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析发送时间
+		var thisChagrTime = msg.substr(32, 2);
+        resultMsg += "\r\n" + "发送频率时间：" + parseInt(exchangeHL(thisChagrTime), 4) + "分钟";
+          return resultMsg;
+}
+
+
+     //解析B9 响应远程设置充电桩状态发送频率
+	 function analysis0xB9(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析响应状态
+        var conTrol = msg.substr(32, 2);
+        if (conTrol == '01'){
+		    resultMsg += "\r\n" + "响应状态:" + "成功";
+		}else if (conTrol == '02'){
+			resultMsg += "\r\n" + "响应状态:" + "失败";
+		}else {
+			resultMsg += "\r\n" + "响应状态:" + "解析错误";
+        }
+          return resultMsg;
+		}	
+
+
+     //解析BA 远程设置产品标识码
+	 function analysis0xBA(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //产品标识码
+        var productKey = msg.substr(32, 64);
+        productKey = hexToAscii(productKey);
+        resultMsg += "\r\n" + "产品标志码：" + productKey;
+        return resultMsg;
+		}
+
+
+     //解析BB 响应远程设置产品标识码
+	 function analysis0xBB(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+		//解析响应状态
+        var conTrol = msg.substr(32, 2);
+        if (conTrol == '01'){
+		    resultMsg += "\r\n" + "响应状态:" + "成功";
+		}else if (conTrol == '02'){
+			resultMsg += "\r\n" + "响应状态:" + "失败";
+		}else {
+			resultMsg += "\r\n" + "响应状态:" + "解析错误";
+        }
+          return resultMsg;
+		}	
+
+
+     //解析BC 远程配置卡
+	 function analysis0xBC(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+		//解析充电接口编号
+        var interfaceNum = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+		//解析卡状态
+        var conTrol = msg.substr(34, 2);
+        if (conTrol == '01'){
+		    resultMsg += "\r\n" + "卡状态:" + "发卡";
+		}else if (conTrol == '02'){
+			resultMsg += "\r\n" + "卡状态:" + "换卡";
+		}else if (conTrol == '03'){
+			resultMsg += "\r\n" + "卡状态:" + "注销";
+		}else {
+			resultMsg += "\r\n" + "卡状态:" + "解析错误";
+        }
+		//解析卡号
+        var pileCode = msg.substr(36, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+        //2
+		var pileCode = msg.substr(68, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//3
+		var pileCode = msg.substr(100, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//4
+		var pileCode = msg.substr(132, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//5
+		var pileCode = msg.substr(164, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//6
+		var pileCode = msg.substr(196, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//7
+		var pileCode = msg.substr(228, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//8
+		var pileCode = msg.substr(260, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//9
+		var pileCode = msg.substr(292, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//10
+		var pileCode = msg.substr(324, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+          return resultMsg;
+		}	
+
+
+     //解析BD 响应远程配置卡
+	 function analysis0xBD(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+		//解析充电接口编号
+        var interfaceNum = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+		//解析响应状态
+        var conTrol = msg.substr(34, 2);
+        if (conTrol == '01'){
+		    resultMsg += "\r\n" + "响应状态:" + "成功";
+		}else if (conTrol == '02'){
+			resultMsg += "\r\n" + "响应状态:" + "失败";
+		}else {
+			resultMsg += "\r\n" + "响应状态:" + "解析错误";
+        }
+		//解析卡号
+        var pileCode = msg.substr(36, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+        //2
+		var pileCode = msg.substr(68, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//3
+		var pileCode = msg.substr(100, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//4
+		var pileCode = msg.substr(132, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//5
+		var pileCode = msg.substr(164, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//6
+		var pileCode = msg.substr(196, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//7
+		var pileCode = msg.substr(228, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//8
+		var pileCode = msg.substr(260, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//9
+		var pileCode = msg.substr(292, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+		//10
+		var pileCode = msg.substr(324, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "卡号：" + pileCode;
+          return resultMsg;
+		}
+
+
+
+    //解析BE 远程配置扩展指令
+      function analysis0xBE(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+		//解析充电接口编号
+        var interfaceNum = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+		//解析响应状态
+        var conTrol = msg.substr(34, 2);
+        if (conTrol == '01'){
+		    resultMsg += "\r\n" + "命令参数:" + "电流";
+		}else if (conTrol == '02'){
+			resultMsg += "\r\n" + "命令参数:" + "音量";
+		}else if (conTrol == '03'){
+			resultMsg += "\r\n" + "命令参数:" + "内、外通信模块配置";
+        }else {
+			resultMsg += "\r\n" + "命令参数:" + "解析错误";
+        }
+		//解析数据
+        var conTrol = msg.substr(36, 10000);
+       resultMsg += "\r\n" + "数据：" + interfaceNum;
+       return resultMsg;
+		}
+
+
+
+     //解析BF  响应远程配置扩展指令
+      function analysis0xBF(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+		//解析充电接口编号
+        var interfaceNum = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+		//解析响应状态
+        var conTrol = msg.substr(34, 2);
+        if (conTrol == '01'){
+		    resultMsg += "\r\n" + "状态:" + "成功";
+		}else if (conTrol == '02'){
+			resultMsg += "\r\n" + "状态:" + "失败";
+		}else {
+			resultMsg += "\r\n" + "状态:" + "解析错误";
+        }
+		//解析数据
+        var conTrol = msg.substr(36, 10);
+       resultMsg += "\r\n" + "数据：" + interfaceNum;
+       return resultMsg;
+		}
+
+
+
+     //解析F0 GPRS掉电状态上报
+	 function analysis0xF0(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+
+		//解析掉电
+        var diaodian = msg.substr(32, 2);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "掉电：" + diaodian+"口掉电（只有在断电的时候才上报一次）";
+        return resultMsg;
+		}
+
+
+
+	//解析F1 SIM号以及经纬度上报指令
+	 function analysis0xF1(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+		//解析SIM卡口
+        var simCard = msg.substr(32, 2);
+        if (simCard == '01'){
+		    resultMsg += "\r\n" + "SIM卡口:" + "1卡";
+		}else if (simCard == '02'){
+			resultMsg += "\r\n" + "SIM卡口:" + "2卡";
+		}else {
+			resultMsg += "\r\n" + "SIM卡口:" + "解析错误";
+        }
+		//解析手机号或iccid号
+         var iccId = msg.substr(34, 40);
+         resultMsg += "\r\n" + "手机号或iccid号：" + (hexToAscii19(iccId)) ;
+		//解析mac地址
+        var MACAdr = msg.substr(74, 32);
+        MACAdr = hexToAscii(MACAdr);
+        resultMsg += "\r\n" + "GPRS 的 MAC 地址：" + MACAdr;
+
+		//解析经纬度
+		var longItude = msg.substr(106, 80);
+        longItude = hexToAscii(longItude);
+        resultMsg += "\r\n" + "经纬度：" + longItude;
+
+	return resultMsg;
+		}
+	
+       //解析70远程开关机控制
+       function analysis0x70(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+        //卡号或用户ID
+        var cardNo = msg.substr(32, 32);
+        resultMsg += "\r\n" + "卡号或用户ID：" + hexToAscii(cardNo);
+        //SessionId
+        var sessionId = msg.substr(64, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+         var num = (parseInt("100000000", 16));
+
+        //alert("num: " + num);
+
+        var str1 = sessionId.substring(0, 8);
+
+        //alert("str1: " + str1);
+
+        var str2 = sessionId.substring(8);
+
+        //alert("str2: " + str2);
+
+
+        //alert("parseInt(str1, 16): " + parseInt(str1, 16));
+
+        //alert("parseInt(str2, 16): " + parseInt(str2, 16));
+
+        var num1 = parseInt(str1, 16);
+        var num2 = parseInt(str2, 16);
+
+        //alert("bigMut(num1,num)" + bigMut(num1,num));
+
+        var mySum = sumStrings(bigMut(num1, num), num2 + "");
+
+        //alert(mySum);
+
+        resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+        //充电接口编号
+        var interfaceNum = msg.substr(80, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+        //开关机控制
+        var openCloseCtl = msg.substr(82, 2);
+        if (openCloseCtl == "01") {
+            resultMsg += "\r\n" + "开关机控制:" + "开机";
+        } else if (openCloseCtl == "02") {
+            resultMsg += "\r\n" + "开关机控制:" + "关机";
+        }
+        //开关机类型
+        var type = msg.substr(84, 2);
+        if (type == "01") {
+            resultMsg += "\r\n" + "类型:" + "本地限制最小金额";
+        } else if (type == "02") {
+            resultMsg += "\r\n" + "类型:" + "本地不限制";
+        } else {
+            resultMsg += "\r\n" + "类型:" + type + ", 未知";
+        }
+        //账户余额
+        var accountRemainder = msg.substr(86, 8);
+        resultMsg += "\r\n" + "账户余额:" + parseInt(exchangeHL(accountRemainder), 16) / 100 + "元";
+
+        //折扣类型
+        var dictype = msg.substr(94, 2);
+        if (dictype == "01") {
+            resultMsg += "\r\n" + "折扣类型:" + "无折扣";
+        } else if (dictype == "02") {
+            resultMsg += "\r\n" + "折扣类型:" + "有折扣";
+        } else {
+            resultMsg += "\r\n" + "折扣类型:" + dictype + ", 未知";
+        }
+        if(dictype == "02")
+        {
+            //分时折扣数段
+            var timeNum = msg.substr(96, 2);
+            resultMsg += "\r\n" + "分时折扣数段:" + parseInt(exchangeHL(timeNum), 16);
+
+            //解析各时段
+            var num = parseInt(exchangeHL(timeNum), 16);
+            var position = 98;
+            for (var i = 1; i <= num; i++) {
+                //第i个时段起始时间
+
+
+                var timeFlag = msg.substr(position, 2);
+                resultMsg += "\r\n" + "第" + i + "个时段标志：" + timeFlag;
+                position += 2;
+                var timetype = msg.substr(position, 4);
+                timetype = exchangeHL(timetype);
+                if (timetype == "0001") {
+                    resultMsg += "\r\n" + "第" + i + "个时段类型：" + "服务费折扣";
+                } else if (timetype == "0002") {
+                    resultMsg += "\r\n" + "第" + i + "个时段类型：" + "全价折扣";
+                } else {
+                    resultMsg += "\r\n" + "第" + i + "个时段类型：" + timetype + ", 未知";
+                }
+                position += 4;
+                var timedic = msg.substr(position, 4);
+                resultMsg += "\r\n" + "第" + i + "个时段折扣：" + parseInt(exchangeHL(timedic), 16) / 10 + "折";
+                position += 4;
+            }
+        }
+
+
+        return resultMsg;
+    }
+
+
+
+	// //解析70 安防信息上报指令
+	//  function analysis0x70(msg, resultMsg) {
+    //     //解析充电桩编码
+    //     var pileCode = msg.substr(0, 32);
+    //     pileCode = hexToAscii(pileCode);
+    //     resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+	// 	//解析充电接口编号
+    //     var interfaceNum = msg.substr(32, 2);
+    //     resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+	//    //输入A相电压
+    //     var inAVoltage = msg.substr(34, 4);
+    //     resultMsg += "\r\n" + "A相电压：" + parseInt(exchangeHL(inAVoltage), 16) / 10 + "V";
+    //     //输入B相电压
+    //     var inBVoltage = msg.substr(38, 4);
+    //     resultMsg += "\r\n" + "B相电压：" + parseInt(exchangeHL(inBVoltage), 16) / 10 + "V";
+    //     //输入C相电压
+    //     var inCVoltage = msg.substr(42, 4);
+    //     resultMsg += "\r\n" + "C相电压：" + parseInt(exchangeHL(inCVoltage), 16) / 10 + "V";
+    //     //输入A相电流
+    //     var inACurrent = msg.substr(46, 4);
+    //     resultMsg += "\r\n" + "A相电流：" + parseInt(exchangeHL(inACurrent), 16) / 10 + "A";
+    //     //输入B相电流
+    //     var inBCurrent = msg.substr(50, 4);
+    //     resultMsg += "\r\n" + "B相电流：" + parseInt(exchangeHL(inBCurrent), 16) / 10 + "A";
+    //     //输入C相电流
+    //     var inCCurrent = msg.substr(54, 4);
+    //     resultMsg += "\r\n" + "C相电流：" + parseInt(exchangeHL(inCCurrent), 16) / 10 + "A";
+	//    //解析漏电
+    //     var interfaceNum = msg.substr(58, 4);
+    //     resultMsg += "\r\n" + "漏电：" + interfaceNum;
+	//    //解析第1路温度
+    //     var inCCurrent = msg.substr(62, 4);
+    //     resultMsg += "\r\n" + "第1路温度：" + parseInt(exchangeHL(inCCurrent), 16)  + "℃";
+	//    //解析第2路温度
+    //     var inCCurrent = msg.substr(66, 4);
+    //     resultMsg += "\r\n" + "第2路温度：" + parseInt(exchangeHL(inCCurrent), 16)  + "℃";
+	//   //解析第3路温度
+    //     var inCCurrent = msg.substr(70, 4);
+    //     resultMsg += "\r\n" + "第3路温度：" + parseInt(exchangeHL(inCCurrent), 16)  + "℃";
+	//   //解析桩内环境温度
+    //     var inCCurrent = msg.substr(74, 4);
+    //     resultMsg += "\r\n" + "桩内环境温度：" + parseInt(exchangeHL(inCCurrent), 16)  + "℃";
+	//  //预留
+    //     var reserved = msg.substr(78, 16);
+    //     resultMsg += "\r\n" + "预留：" + reserved;
+
+	// 	return resultMsg;
+	// 	}
+	
+	
+		//解析76 安防信息上报指令
+	   function analysis0x76(msg, resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+		//解析充电接口编号
+        var interfaceNum = msg.substr(32, 2);
+        resultMsg += "\r\n" + "充电接口编号（协议中有0x01和0x02）：" + interfaceNum;
+	   //电流变化CT值
+        var interfaceNum = msg.substr(34, 4);
+        resultMsg += "\r\n" + "电流变化CT值：" + interfaceNum;
+        //漏电报警阀值
+        var interfaceNum = msg.substr(38, 4);
+        resultMsg += "\r\n" + "漏电报警阀值：" + interfaceNum;;
+        //漏电报警延迟
+        var interfaceNum = msg.substr(42, 4);
+        resultMsg += "\r\n" + "漏电报警延迟：" + interfaceNum;
+        //温度通道1报警阀值
+        var interfaceNum = msg.substr(46, 4);
+        resultMsg += "\r\n" + "温度通道1报警阀值：" + interfaceNum;
+        //温度通道2报警阀值
+        var interfaceNum = msg.substr(50, 4);
+        resultMsg += "\r\n" + "温度通道2报警阀值：" + interfaceNum;
+        //温度通道3报警阀值
+        var interfaceNum = msg.substr(54, 4);
+        resultMsg += "\r\n" + "温度通道3报警阀值：" + interfaceNum;
+	   //温度通道4报警阀值
+        var interfaceNum = msg.substr(58, 4);
+        resultMsg += "\r\n" + "温度通道4报警阀值：" + interfaceNum;
+	   //温度通道1报警延迟
+        var interfaceNum = msg.substr(62, 4);
+        resultMsg += "\r\n" + "温度通道1报警延迟：" + interfaceNum;
+	   //温度通道2报警延迟
+        var interfaceNum = msg.substr(66, 4);
+        resultMsg += "\r\n" + "温度通道2报警延迟：" + interfaceNum;
+	  //温度通道3报警延迟
+        var interfaceNum = msg.substr(70, 4);
+        resultMsg += "\r\n" + "温度通道3报警延迟：" + interfaceNum;
+	  //温度通道4报警延迟
+        var interfaceNum = msg.substr(74, 4);
+        resultMsg += "\r\n" + "温度通道4报警延迟：" + interfaceNum;
+	 //预留
+        var reserved = msg.substr(78, 20);
+        resultMsg += "\r\n" + "预留：" + reserved;
+
+
+		return resultMsg;
+		}
+
+	//解析67 充电设备上传复费率充电记录（带车辆VIN编号）0x67
+    function analysis0x67(msg,resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+		
+		var interNo = msg.substr(32, 2);
+        interNo = parseInt(interNo, 16);
+        resultMsg += "\r\n" + "充电接口编号：" + interNo;
+		
+		var type = msg.substr(34, 2);
+        type = parseInt(type, 16);
+        resultMsg += "\r\n" + "类型：" + type;
+
+        //SessionId
+        var sessionId = msg.substr(36, 16);
+        //resultMsg += "\r\n" + "Session：" + (parseInt(sessionId, 16)) ;
+        var num = (parseInt("100000000", 16));
+        var str1 = sessionId.substring(0, 8);
+        //alert("str1: " + str1);
+        var str2 = sessionId.substring(8);
+       var num1 = parseInt(str1, 16);
+       var num2 = parseInt(str2, 16);
+       var mySum = sumStrings(bigMut(num1, num), num2 + "");
+       resultMsg += "\r\n" + "session_id（订单号）：" + mySum;
+
+        //充电记录编号
+        var chargeRcdNo = msg.substr(52, 4);
+        resultMsg += "\r\n" + "充电记录编号：" + parseInt(exchangeHL(chargeRcdNo), 16);
+        //用户ID
+        var userId = msg.substr(56, 32);
+        resultMsg += "\r\n" + "用户ID：" + hexToAscii(userId) ;
+		//VIN码
+		var vin = msg.substr(88, 34);
+		resultMsg += "\r\n" + "VIN码：" + hexToAscii(vin) ;
+        //计费模型
+        var payModel = msg.substr(122, 4);
+        resultMsg += "\r\n" + "计费模型编号：" + parseInt(exchangeHL(payModel), 16);
+        //电表地址
+        var ammeterAddres = msg.substr(126, 12);
+        resultMsg += "\r\n" + "电表地址：" + parseInt(exchangeHL(ammeterAddres), 16) + "*";
+
+        //尖起示值（sharpstart）
+        var ssValue = msg.substr(138, 8);
+        resultMsg += "\r\n" + "尖起示值：" + parseInt(exchangeHL(ssValue), 16) / 1000 + "Kwh";
+        //尖止示值（sharpend）
+        var seValue = msg.substr(146, 8);
+        resultMsg += "\r\n" + "尖止示值：" + parseInt(exchangeHL(seValue), 16) / 1000 + "Kwh";
+
+        //峰起示值（highstart）
+        var hsValue = msg.substr(154, 8);
+        resultMsg += "\r\n" + "峰起示值：" + parseInt(exchangeHL(hsValue), 16) / 1000 + "Kwh";
+        //峰止示值（highend）
+        var heValue = msg.substr(162, 8);
+        resultMsg += "\r\n" + "峰止示值：" + parseInt(exchangeHL(heValue), 16) / 1000 + "Kwh";
+
+        //平起示值（levelstart）
+        var lsValue = msg.substr(170, 8);
+        resultMsg += "\r\n" + "平起示值：" + parseInt(exchangeHL(lsValue), 16) / 1000 + "Kwh";
+        //平止示值（levelend）
+        var leValue = msg.substr(178, 8);
+        resultMsg += "\r\n" + "平止示值：" + parseInt(exchangeHL(leValue), 16) / 1000 + "Kwh";
+
+        //谷起示值（valleystart）
+        var vsValue = msg.substr(186, 8);
+        resultMsg += "\r\n" + "谷起示值：" + parseInt(exchangeHL(vsValue), 16) / 1000 + "Kwh";
+        //谷止示值（valleyend）
+        var veValue = msg.substr(194, 8);
+        resultMsg += "\r\n" + "谷止示值：" + parseInt(exchangeHL(veValue), 16) / 1000 + "Kwh";
+
+        //总起示值（totalstart）
+        var tsValue = msg.substr(202, 8);
+        resultMsg += "\r\n" + "总起示值：" + parseInt(exchangeHL(tsValue), 16) / 1000 + "Kwh";
+        //总止示值（totalend）
+        var teValue = msg.substr(210, 8);
+        resultMsg += "\r\n" + "总止示值：" + parseInt(exchangeHL(teValue), 16) / 1000 + "Kwh";
+
+        //尖电量
+        var squantity = msg.substr(218, 8);
+        resultMsg += "\r\n" + "尖电量：" + parseInt(exchangeHL(squantity), 16) / 1000 + "Kwh";
+
+        //峰电量
+        var hquantity = msg.substr(226, 8);
+        resultMsg += "\r\n" + "峰电量：" + parseInt(exchangeHL(hquantity), 16) / 1000 + "Kwh";
+
+        //平电量
+        var lquantity = msg.substr(234, 8);
+        resultMsg += "\r\n" + "平电量：" + parseInt(exchangeHL(lquantity), 16) / 1000 + "Kwh";
+
+        //谷电量
+        var vquantity = msg.substr(242, 8);
+        resultMsg += "\r\n" + "谷电量：" + parseInt(exchangeHL(vquantity), 16) / 1000 + "Kwh";
+
+        //总电量
+        var tquantity = msg.substr(250, 8);
+        resultMsg += "\r\n" + "总电量：" + parseInt(exchangeHL(tquantity), 16) / 1000 + "Kwh";
+
+        //本次充电金额
+        var currentPrice = msg.substr(258, 8);
+        resultMsg += "\r\n" + "本次充电金额：" + parseInt(exchangeHL(currentPrice), 16) / 100;
+
+        //开始充电时间
+        var startChargeTime = msg.substr(266, 14);
+        resultMsg += "\r\n" + "开始充电时间：" + analysisDate(startChargeTime);
+
+        //结束充电时间
+        var endChargeTime = msg.substr(280, 14);
+        resultMsg += "\r\n" + "结束充电时间：" + analysisDate(endChargeTime);
+
+        //停止时SOC
+        var endSOC = msg.substr(294, 2);
+        resultMsg += "\r\n" + "停止时SOC：" + parseInt(endSOC, 16);
+
+        //停止时充电模式
+        var endChargeModel = msg.substr(296, 2);
+        if (endChargeModel == 01) {
+            endChargeModel = "恒压";
+        } else if (endChargeModel == 02) {
+            endChargeModel = "恒流";
+        } else {
+            endChargeModel = "解析出错";
+        }
+        resultMsg += "\r\n" + "停止时充电模式：" + endChargeModel;
+
+        //停止时充电原因
+        var endChargeReson = msg.substr(298, 2);
+        resultMsg += "\r\n" + "停止时充电原因：" + analysisFaultInfo(endChargeReson);
+
+        //启动原因
+        var startReson = msg.substr(300, 2);
+        resultMsg += "\r\n" + "启动原因：" + analysisStartInfo(startReson);
+        return resultMsg;
+    }
+	
+	//解析FE 平台配置通信模块域名和端口ID=0xFE
+    function analysis0xfe(msg,resultMsg) {
+        //解析充电桩编码
+        var pileCode = msg.substr(0, 32);
+        pileCode = hexToAscii(pileCode);
+        resultMsg += "\r\n" + "充电桩编码：" + pileCode;
+		
+		var password = msg.substr(32, 8);
+        resultMsg += "\r\n" + "密钥：" + password;
+		
+		var url = msg.substr(40, msg.length-10);
+		url = hexToAscii(url);
+        resultMsg += "\r\n" + "域名/IP：" + url + "-" + (msg.length-10);
+		
+		var port = msg.substr(msg.length-10, msg.length-8);
+		port = hexToAscii(port);
+		resultMsg += "\r\n" + "端口：" + port;
+
+        return resultMsg;
+    }
+	
+    //十六进制转换为ASCII
+    function hexToAscii(pileCode){
+        var len = pileCode.length;
+        var asciiPileCode = "";
+        var resultStr = [];
+        for (var i = 0; i < len; i = i + 2) {
+            asciiPileCode = parseInt(pileCode.substr(i, 2), 16);
+            resultStr.push(String.fromCharCode(asciiPileCode));
+        }
+        return resultStr.join("");
+    }
+
+    //十六进制转换为ASCII
+    function hexToAscii19(pileCode){
+        var len = pileCode.length;
+        var asciiPileCode = "";
+        var resultStr = [];
+        for (var i = 0; i < len; i = i + 2) {
+            asciiPileCode = parseInt(pileCode.substr(i, 2), 16);
+            resultStr.push(String.fromCharCode(asciiPileCode));
+        }
+        return resultStr.join("");
+    }
+
+    //切换高低位字符顺序
+    function exchangeHL(hexStr){
+        var resultStr  ='';
+        var hexStrLen = hexStr.length/2;
+        for(var i=0; i<hexStrLen;i++ ){
+            resultStr = hexStr.substr(i*2,2)+resultStr;
+        }
+        return resultStr;
+    }
+    //解析小时分钟
+    function analysistime(timeStr) {
+        var resultTime = "";
+        resultTime = parseInt(timeStr.substr(0, 2), 16) + ":" + parseInt(timeStr.substr(2, 2), 16);
+        return resultTime;
+    }
+    //解析时间
+    function analysisDate(dateStr){
+        var resultDate = "";
+        var dateStrLen = dateStr.length/2;
+        for(var i=0;i<dateStrLen;i++){
+            if(i==2||i==3){
+                resultDate = resultDate+"-" + parseInt(dateStr.substr(i*2,2),16);
+                continue;
+            }else if(i==5||i==6||i==7){
+                resultDate = resultDate+":" + parseInt(dateStr.substr(i*2,2),16);
+                continue;
+            }else if(i==4){
+                resultDate = resultDate+" "+ parseInt(dateStr.substr(i*2,2),16);
+                continue;
+            }
+            resultDate += parseInt(dateStr.substr(i*2,2),16);
+        }
+        return resultDate;
+    }
+    //解析故障代码
+    function analysisFaultInfo(faultCode){
+        var faultReason  ="";
+        var faultNo = parseInt(faultCode,16);
+        switch (faultNo){
+            case 0:
+                faultReason = "0表示无实际意义不处理";
+                break;
+            case 1:
+                faultReason = "1直流：充电枪断开连接停机 交流：充电枪断开停止充电";
+                break;
+            case 2:
+                faultReason = "2直流：充电机输出过压停机";
+                break;
+            case 3:
+                faultReason = "3直流：充电机输出过流停机 交流：输出过载停止充电";
+                break;
+            case 4:
+                faultReason = "4直流：充电自动充满停机 交流：自动充满停止充电";
+                break;
+            case 5:
+                faultReason = "5直流：充电机故障停机 交流：控制器通讯故障";
+                break;
+            case 6:
+                faultReason = "6直流：车辆 SOC 达到设定值主动停止充电 交流：蓝牙故障";
+                break;
+            case 7:
+                faultReason = "7直流：车辆电池总电压达到设定值主动停止充电 交流：电表通讯故障";
+                break;
+            case 8:
+                faultReason = "8直流：车辆单体电池电压达到设定值主动停止充电";
+                break;
+            case 9:
+                faultReason = "9直流：车辆绝缘故障主动停止充电  交流：门禁告警";
+                break;
+            case 10:
+                faultReason = "10直流：车辆连接器过温主动停止充电  交流：烟雾告警";
+                break;
+            case 11:
+                faultReason = "11直流：车辆输出连接器过温主动停止充电输出连接器过温  交流：风扇故障";
+                break;
+            case 12:
+                faultReason = "12直流：车辆连接器故障 交流：充电中车辆控制导引告警";
+                break;
+            case 13:
+                faultReason = "13直流：车辆电池过温 交流：交流接触器粘连故障";
+                break;
+            case 14:
+                faultReason = "14直流：车辆其他故障 交流：交流断路器故障";
+                break;
+            case 15:
+                faultReason = "15直流：车辆电流过流 交流：充电接口电子锁故障";
+                break;
+            case 16:
+                faultReason = "16直流：车辆电压异常 交流：充电接口过温故障";
+                break;
+            case 17:
+                faultReason = "17直流：车辆 BMS 异常 交流：充电连接状态 CC 异常";
+                break;
+            case 18:
+                faultReason = "18直流：充电机 DC20 通信中断 交流：充电控制状态 CP 异常";
+                break;
+            case 19:
+                faultReason = "19直流：充电机模块通讯中断或故障 交流：CP 接地故障";
+                break;
+            case 20:
+                faultReason = "20直流：充电机 RC10 通信中断 交流：充电中 S2 开关动作";
+                break;
+            case 21:
+                faultReason = "21直流：充电机紧急停机 交流：启动中 S2 开关动作超时";
+                break;
+            case 22:
+                faultReason = "22直流：充电机输出过压停机 交流：计量芯片故障";
+                break;
+            case 23:
+                faultReason = "23直流：充电机输出过流停机 交流： 漏电故障";
+                break;
+            case 24:
+                faultReason = "24直流：充电机接收需求超时 交流：输出电流超出占空比的最大电流";
+                break;
+            case 25:
+                faultReason = "25直流：电池反接充电机主动停机 交流：PE 断线故障";
+                break;
+            case 26:
+                faultReason = "26直流：交流输入过压充电机主动停机 交流：交流输入过压充电机主动停机";
+                break;
+            case 27:
+                faultReason = "27直流：交流输入欠压充电机主动停机 交流：交流输入欠压充电机主动停机";
+                break;
+            case 28:
+                faultReason = "28直流：交流输入缺相充电机主动停机  交流：交流接触器未吸合故障";
+                break;
+            case 29:
+                faultReason = "29直流：交流防雷故障充充电机主动停机";
+                break;
+            case 30:
+                faultReason = "30直流：充电机内部过温充电机主动停机 交流：充电桩过温故障";
+                break;
+            case 31:
+                faultReason = "31直流：充电机输出过压停机";
+                break;
+            case 32:
+                faultReason = "32直流：充电机输出欠压停机";
+                break;
+            case 33:
+                faultReason = "33直流：充电机急停按下停机 交流：充电机急停按下停机";
+                break;
+            case 34:
+                faultReason = "34直流：充电机熔断器故障停机";
+                break;
+            case 35:
+                faultReason = "35直流：输入频率异常充电机主动停机";
+                break;
+            case 36:
+                faultReason = "36直流：充电机输出短路停机";
+                break;
+            case 37:
+                faultReason = "37直流：充电机模块故障停机";
+                break;
+            case 38:
+                faultReason = "38直流：充电机模块通信故障停机";
+                break;
+            case 39:
+                faultReason = "39直流：系统采集板离线停机";
+                break;
+            case 40:
+                faultReason = "40直流：充电机软启动失败停机";
+                break;
+            case 41:
+                faultReason = "41直流：充电机继电器故障停机";
+                break;
+            case 42:
+                faultReason = "42直流：充电机绝缘故障停机";
+                break;
+            case 43:
+                faultReason = "43直流：计费板通信故障 交流：计费系统通信超时停机";
+                break;
+            case 44:
+                faultReason = "44直流：APP远程控制停机";
+                break;
+            case 45:
+                faultReason = "45直流：输出电流超过最大充电电流";
+                break;
+            case 46:
+                faultReason = "46直流：输出电压超过最大充电电压";
+                break;
+            case 47:
+                faultReason = "47直流：电池温度超出最大允许温度 交流：APP 账户余额不足停机";
+                break;
+            case 48:
+                faultReason = "48直流：电池单体超过最大允许电压";
+                break;
+            case 49:
+                faultReason = "49直流：车辆 BMS 单体电压异常 交流：蓝牙 APP 桩主停止";
+                break;
+            case 50:
+                faultReason = "50直流：BMS 电池 SOC 异常 交流：蓝牙 APP 家人停止";
+                break;
+            case 51:
+                faultReason = "51直流：BMS 充电电流过流 交流：蓝牙 APP 租户停止";
+                break;
+            case 52:
+                faultReason = "52直流：BMS 电池温度过温 交流：蓝牙 APP 重置 KEY 停止";
+                break;
+            case 53:
+                faultReason = "53直流：BMS 电池绝缘异常 交流：蓝牙 APP 工厂 KEY 停止";
+                break;
+            case 54:
+                faultReason = "54直流：BMS 输出连接器异常";
+                break;
+            case 55:
+                faultReason = "55直流：与充电机通信故障 交流：充电卡停止充电";
+                break;
+            case 56:
+                faultReason = "56直流：小电流持续充电超时关机 交流：一次性 KEY 用户停止";
+                break;
+            case 57:
+                faultReason = "57直流：BMS 通信超时故障停机 交流：刷桩主卡停止";
+                break;
+            case 58:
+                faultReason = "58直流：直流接触器断开停机 交流：GPRS 后台发送停止";
+                break;
+            case 59:
+                faultReason = "59直流：电表通信故障停机";
+                break;
+            case 60:
+                faultReason = "60直流：未收到BMS充电需求开机失败";
+            case 61:
+                faultReason = "61直流：充电机开机失败";
+                break;
+            case 62:
+                faultReason = "62直流：APP账户余额不足停机";
+                break;
+            case 63:
+                faultReason = "63直流：风扇故障";
+                break;
+            case 64:
+                faultReason = "64直流：充电桩连接器过温 交流：充电桩连接器过温";
+                break;
+            case 65:
+                faultReason = "65直流：刷卡停止充电";
+                break;
+            case 66:
+                faultReason = "66直流：其他故障代码";
+                break;
+            case 67:
+                faultReason = "67直流：车辆连接器存在高压";
+                break;
+            case 68:
+                faultReason = "68直流：充电桩倾斜 交流：充电桩倾斜";
+                break;
+            case 69:
+                faultReason = "69直流：BMS 其他故障 交流：电表故障停止充电";
+                break;
+            case 70:
+                faultReason = "70直流：卡余额不足 交流：卡余额不足";
+                break;
+            case 71:
+                faultReason = "71直流：控制板与监控通讯故障  交流：掉电故障";
+                break;
+            case 72:
+                faultReason = "72直流：泄放回路故障";
+                break;
+            case 73:
+                faultReason = "73直流：电池端电压高于最高允许电压告警";
+                break;
+            case 74:
+                faultReason = "74直流：最高允许电压低于充电机最低输出电压告警";
+                break;
+            case 75:
+                faultReason = "75直流：启动充电前直流输出接触器外侧电压越限";
+                break;
+            case 76:
+                faultReason = "76直流：ESAM 故障  交流：ESAM 故障";
+                break;
+            case 77:
+                faultReason = "77直流：门禁告警  交流：门禁告警";
+                break;
+            case 78:
+                faultReason = "78直流：充电模块过温故障";
+                break;
+            case 79:
+                faultReason = "79直流：直流母线输出接触器故障";
+                break;
+            case 80:
+                faultReason = "80直流：充电接口电子锁故障";
+                break;
+            case 81:
+                faultReason = "81直流：充电机风扇故障";
+                break;
+            case 82:
+                faultReason = "82直流：动力蓄电池输出连接器过温故障";
+                break;
+            case 83:
+                faultReason = "83直流：BMS 元件，输出连接器过温故障";
+                break;
+            case 84:
+                faultReason = "84直流：BMS 高压继电器故障";
+                break;
+            case 85:
+                faultReason = "85直流：BMS 电压异常故障";
+                break;
+            case 86:
+                faultReason = "86直流：检测点 2 电压检测故障";
+                break;
+            case 87:
+                faultReason = "87直流：绝缘监测前电压监测越限";
+                break;
+            case 88:
+                faultReason = "88直流：分流器异常";
+                break;
+            case 89:
+                faultReason = "89直流：绝缘模块通信中断";
+                break;
+            case 90:
+                faultReason = "90直流：采集模块通信中断";
+                break;
+            case 91:
+                faultReason = "91直流：BRM 超时";
+                break;
+            case 92:
+                faultReason = "92直流：BCP 超时";
+                break;
+            case 93:
+                faultReason = "93直流：BRO 超时";
+                break;
+            case 94:
+                faultReason = "94直流：BCL 超时";
+                break;
+            case 95:
+                faultReason = "95直流：BCS 超时";
+                break;
+            case 100:
+                faultReason = "100直流：刷身份卡停止充电 交流：刷身份卡停止充电";
+                break;
+            case 101:
+                faultReason = "101直流：达到设定值停止充电 交流：达到设定值停止充电";
+                break;
+			case 102:
+                faultReason = "102直流：交流输入断路器故障";
+				break;
+			case 103:
+                faultReason = "103直流：交流输入接触器拒动/误动故障";
+				break;
+			case 104:
+                faultReason = "104直流：交流输入接触器粘连故障";
+				break;
+			case 105:
+                faultReason = "105直流：并联接触器拒动/误动故障";
+				break;
+			case 106:
+                faultReason = "106直流：并联接触器粘连故障";
+				break;
+			case 107:
+                faultReason = "107直流：电流采集异常";
+                break;
+case 108:
+                faultReason = "108直流：充电模块与电表功率异常";
+                break;
+case 109:
+                faultReason = "109直流：VIN或身份卡验证失败";
+                break;
+case 110:
+                faultReason = "110直流：充电电量异常停机";
+                break;
+case 111:
+                faultReason = "111直流：平台异常中断下行停止";
+                break;
+            default :
+                faultReason = "没有对应停止原因，停止原因码出错";
+                break;
+        }
+        return faultReason;
+    }
+
+    //解析启动原因
+    function analysisStartInfo(startCode){
+        var startReason = "";
+        var startNo = parseInt(startCode,16);
+        switch (startNo){
+            case 1:
+                startReason = "桩主启动"
+                break;
+            case 2:
+                startReason = "家人启动"
+                break;
+            case 3:
+                startReason = "租户启动"
+                break;
+            case 4:
+                startReason = "重置KEY启动"
+                break;
+            case 5:
+                startReason = "工厂KEY启动"
+                break;
+            //case 6:
+            //    startReason = ""
+            //    break;
+            case 7:
+                startReason = "家人启动"
+                break;
+            case 8:
+                startReason = "一次性KEY用户启动"
+                break;
+            case 17:
+                startReason = "刷卡启动"
+                break;
+            case 18:
+                startReason = "GPRS发送启动"
+                break;
+            case 19:
+                startReason = "车辆发送启动"
+                break;
+            case 20:
+                startReason = "车辆 VIN 启动"
+                break;
+            case 21:
+                startReason = "刷身份卡启动充电"
+                break;
+            case 22:
+                startReason = "刷应急卡启动充电"
+                break;
+            case 23:
+                startReason = "即插即充启动充电"
+                break;
+            default:
+                startReason = "没有对应启动原因，启动原因码解析出错"
+        }
+        return startReason;
+    }
+
+
+	
+
+//	//电池类型
+//	function analysisStartInfo(startCode){
+//        var startReason = "";
+//        var lockStatus = parseInt(startCode,16);
+//        switch (lockStatus){
+//            case 11:
+//                startReason = "感应式—普通型"
+//                break;
+//            case 12:
+//                startReason = "感应式—长寿型"
+//                break;
+//            case 13:
+//                startReason = "感应式—亚长寿型"
+//                break;
+//            case 21:
+//                startReason = "电子式—普通型"
+//                break;
+//            case 22:
+//                startReason = "电子式—复费率"
+//                break;
+//            case 23:
+//                startReason = "电子式—最大需量"
+//                break;
+//            case 24:
+//                startReason = "电子式—多功能"
+//                break;
+//            case 25:
+//                startReason = "电子式—预付费"
+//                break;
+//            case 31:
+//                startReason = "机电式—复费率"
+//                break;
+//            case 32:
+//                startReason = "机电式—最大需量"
+//                break;
+//            case 33:
+//                startReason = "机电式—最大需量+复费率"
+//                break;
+//            case 34:
+//                startReason = "机电式—普通型"
+//                break;
+//				case 35:
+//                startReason = "机电式—单费率"
+//                break;
+//            default:
+//                startReason = "没有对应的地锁信息"
+//        }
+//        return startReason;
+//    }
+
+</script>
+</form>
+</body>
+</html>

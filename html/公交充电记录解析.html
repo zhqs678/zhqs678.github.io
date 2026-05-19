@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>充电协议解析工具</title>
+
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        margin:10px;
+        background:#f5f5f5;
+    }
+
+    h2{
+        color:#333;
+    }
+
+    textarea{
+        width:100%;
+        height:50px;
+        padding:10px;
+        font-size:14px;
+        border:1px solid #ccc;
+        border-radius:6px;
+        resize:vertical;
+        background:#fff;
+    }
+
+    button{
+        margin-top:15px;
+        padding:10px 24px;
+        border:none;
+        background:#1677ff;
+        color:white;
+        border-radius:6px;
+        cursor:pointer;
+        font-size:14px;
+    }
+
+    button:hover{
+        background:#4096ff;
+    }
+
+    table{
+        width:100%;
+        border-collapse: collapse;
+        margin-top:20px;
+        background:#fff;
+    }
+
+    th, td{
+        border:1px solid #ddd;
+        padding:1px;
+        font-size:14px;
+    }
+
+    th{
+        background:#fafafa;
+    }
+
+    tr:nth-child(even){
+        background:#fcfcfc;
+    }
+
+    .raw{
+        color:#999;
+        font-size:12px;
+    }
+
+</style>
+</head>
+
+<body>
+
+<!-- <h2>充电协议解析工具（小端模式）</h2> -->
+
+<textarea id="hexInput">
+3132323843314530364238414542354520241008191126002F3CFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0F00180608410188180C2700180C2700DC701601247E1601386D2201386D2201D0C24900D0C24900FCACA90244BAA902000000000000000000000000480D00000000000000000000000000000000000000000000000000000000000000000000480D00000000000014180A08130B1A14180A0813153064026411014D000279979C6AA15456290000
+</textarea>
+
+<br>
+
+<button onclick="parseProtocol()">解析协议（从桩ID开始解析）</button>
+
+<div id="result"></div>
+
+<script>
+
+function read(hex, offset, byteLen){
+    return hex.substr(offset, byteLen * 2);
+}
+
+// HEX转ASCII
+function hexToAscii(hex){
+    let str = "";
+
+    for(let i=0;i<hex.length;i+=2){
+        str += String.fromCharCode(parseInt(hex.substr(i,2),16));
+    }
+
+    return str;
+}
+
+// 小端转UINT
+function hexToUintLE(hex){
+
+    let bytes = hex.match(/../g);
+
+    bytes.reverse();
+
+    return parseInt(bytes.join(''),16);
+}
+
+// BCD时间解析
+function parseBCDTime(hex){
+
+    let arr = hex.match(/../g);
+
+    let year = parseInt(arr[0], 16) * 100 + parseInt(arr[1], 16);
+    let month = parseInt(arr[2], 16);
+    let day = parseInt(arr[3], 16);
+    let hour = parseInt(arr[4], 16);
+    let minute = parseInt(arr[5], 16);
+    let second = parseInt(arr[6], 16);
+
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+}
+
+// 添加普通字段
+function addRow(rows, name, raw, value){
+    rows.push({
+        name,
+        raw,
+        value
+    });
+}
+
+function parseProtocol(){
+
+    let hex = document.getElementById("hexInput")
+        .value
+        .replace(/\s+/g,'')
+        .toUpperCase();
+
+    let offset = 0;
+
+    function next(byteLen){
+        let value = read(hex, offset, byteLen);
+        offset += byteLen * 2;
+        return value;
+    }
+
+    let rows = [];
+
+    // 桩ID
+    let pileIdHex = next(16);
+    addRow(
+        rows,
+        "桩ID",
+        pileIdHex,
+        hexToAscii(pileIdHex)
+    );
+
+    // session_id
+    let sessionId = next(8);
+    addRow(rows,"session_id",sessionId,sessionId);
+
+    // 充电记录序号
+    let recordNo = next(2);
+    addRow(
+        rows,
+        "充电记录序号",
+        recordNo,
+        hexToUintLE(recordNo)
+    );
+
+    // VIN
+    let vin = next(17);
+    addRow(rows,"VIN",vin,vin);
+
+    // 计费模型编号
+    let modelNo = next(2);
+    addRow(
+        rows,
+        "计费模型编号",
+        modelNo,
+        hexToUintLE(modelNo)
+    );
+
+    // 电表地址
+    let meterAddr = next(6);
+    addRow(rows,"电表地址",meterAddr,meterAddr);
+
+    // 电表示值
+    function addMeter(name){
+
+        let raw = next(4);
+
+        let value = (hexToUintLE(raw) / 100).toFixed(2);
+
+        addRow(rows,name,raw,value);
+    }
+
+    addMeter("尖起示值");
+    addMeter("尖止示值");
+    addMeter("峰起示值");
+    addMeter("峰止示值");
+    addMeter("平起示值");
+    addMeter("平止示值");
+    addMeter("谷起示值");
+    addMeter("谷止示值");
+    addMeter("总起示值");
+    addMeter("总止示值");
+
+    // 电量
+    function addPower(name){
+
+        let raw = next(4);
+
+        let value = (hexToUintLE(raw) / 100).toFixed(2);
+
+        addRow(rows,name,raw,value);
+    }
+
+    // 金额
+    function addMoney(name){
+
+        let raw = next(4);
+
+        let value = (hexToUintLE(raw) / 10000).toFixed(4);
+
+        addRow(rows,name,raw,value);
+    }
+
+    addPower("尖电量");
+    addMoney("尖电费");
+    addMoney("尖服务费");
+
+    addPower("峰电量");
+    addMoney("峰电费");
+    addMoney("峰服务费");
+
+    addPower("平电量");
+    addMoney("平电费");
+    addMoney("平服务费");
+
+    addPower("谷电量");
+    addMoney("谷电费");
+    addMoney("谷服务费");
+
+    addPower("总电量");
+
+    addMoney("本次充电金额");
+
+    // 开始时间
+    let startTime = next(7);
+
+    addRow(
+        rows,
+        "开始充电时间",
+        startTime,
+        parseBCDTime(startTime)
+    );
+
+    // 结束时间
+    let endTime = next(7);
+
+    addRow(
+        rows,
+        "结束充电时间",
+        endTime,
+        parseBCDTime(endTime)
+    );
+
+    // 停止SOC
+    let stopSoc = next(1);
+
+    addRow(
+        rows,
+        "停止时SOC",
+        stopSoc,
+        parseInt(stopSoc,16) + "%"
+    );
+
+    // 充电模式
+    let mode = next(1);
+
+    let modeValue = "未知";
+
+    if(mode === "01"){
+        modeValue = "恒压";
+    }else if(mode === "02"){
+        modeValue = "恒流";
+    }
+
+    addRow(
+        rows,
+        "停止时充电模式",
+        mode,
+        modeValue
+    );
+
+    // 停止原因
+    let stopReason = next(1);
+
+    addRow(
+        rows,
+        "停止充电原因",
+        stopReason,
+        parseInt(stopReason,16)
+    );
+
+    // 启动原因
+    let startReason = next(1);
+
+    addRow(
+        rows,
+        "启动原因",
+        startReason,
+        parseInt(startReason,16)
+    );
+
+    // 接口编号
+    let gunNo = next(1);
+
+    addRow(
+        rows,
+        "充电接口编号",
+        gunNo,
+        parseInt(gunNo,16)
+    );
+
+    // 开始SOC
+    let startSoc = next(1);
+
+    addRow(
+        rows,
+        "开始时SOC",
+        startSoc,
+        parseInt(startSoc,16) + "%"
+    );
+
+    // 车辆自编号
+    let carNo = next(4);
+
+    addRow(
+        rows,
+        "车辆自编号",
+        carNo,
+        hexToUintLE(carNo)
+    );
+
+    // 物理卡号
+    let cardNo = next(4);
+
+    addRow(
+        rows,
+        "物理卡号",
+        cardNo,
+        hexToUintLE(cardNo)
+    );
+
+    // 输出HTML
+    let html = `
+        <table>
+            <tr>
+                <th width="220">字段</th>
+                <th width="280">原始HEX</th>
+                <th>解析结果</th>
+            </tr>
+    `;
+
+    rows.forEach(item=>{
+
+        html += `
+            <tr>
+                <td>${item.name}</td>
+                <td class="raw">${item.raw}</td>
+                <td>${item.value}</td>
+            </tr>
+        `;
+    });
+
+    html += "</table>";
+
+    document.getElementById("result").innerHTML = html;
+}
+
+</script>
+
+</body>
+</html>
